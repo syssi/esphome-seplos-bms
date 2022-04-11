@@ -1,0 +1,67 @@
+substitutions:
+  name: seplos-bms
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+
+esphome:
+  name: ${name}
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
+
+# api:
+ota:
+logger:
+  baud_rate: 0
+
+uart:
+  id: uart0
+  baud_rate: 19200
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
+  debug:
+    direction: BOTH
+    dummy_receiver: true
+    after:
+      delimiter: "\r"
+    sequence:
+      - lambda: UARTDebug::log_string(direction, bytes);
+
+interval:
+  - interval: 20s
+    then:
+      - uart.write: "~20004642E00200FD37\r"
+      - delay: 2s
+
+      # Get protocol version
+      - uart.write: "~2000464F0000FD9A\r"
+      - delay: 2s
+
+      # Get manufacturer info
+      - uart.write: "~200046510000FDAE\r"
+      - delay: 2s
+
+      # Get system parameters
+      - uart.write: "~200246470000FDA7\r"
+      - delay: 2s
+
+      # Get management info
+      - uart.write: "~200246920000FDA7\r"
+      - delay: 2s
+
+      # Get module serial number
+      - uart.write: "~200246930000FDA6\r"
+      - delay: 2s
+
+      # Get module serial number
+      - uart.write: "~20024642E002FFFD09\r"
+      - delay: 2s
