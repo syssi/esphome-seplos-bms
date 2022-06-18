@@ -16,7 +16,7 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   ESP_LOGW(TAG, "Unhandled data received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
 }
 
-void SeplosBms::on_telemetry_data(const std::vector<uint8_t> &data) {
+void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
