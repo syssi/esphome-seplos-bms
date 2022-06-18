@@ -9,7 +9,7 @@ static const char *const TAG = "seplos_bms";
 
 void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   if (data.size() == 81 && data[5] == 0x96) {
-    this->on_telemetry_data(data);
+    this->on_telemetry_data_(data);
     return;
   }
 
