@@ -118,7 +118,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Battery capacity: %.2f Ah", (float) seplos_get_16bit(offset + 7) * 0.01f);
 
   //   63     0x03 0x13      Stage of charge                  787 * 0.1f = 78.7             %
-  ESP_LOGD(TAG, "State of charge: %.1f %%", (float) seplos_get_16bit(offset + 9) * 0.1f);
+  this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9) * 0.1f);
 
   //   65     0x46 0x50      Rated capacity                   18000 * 0.01f = 180.00        Ah
   ESP_LOGD(TAG, "Rated capacity: %.2f Ah", (float) seplos_get_16bit(offset + 11) * 0.01f);
@@ -127,7 +127,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Number of cycles: %.0f", (float) seplos_get_16bit(offset + 13));
 
   //   69     0x03 0xE8      State of health                  1000 * 0.1f = 100.0           %
-  ESP_LOGD(TAG, "State of health: %.1f %%", (float) seplos_get_16bit(offset + 15) * 0.1f);
+  this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
 
   //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
   ESP_LOGD(TAG, "Port voltage: %.2f V", (float) seplos_get_16bit(offset + 17) * 0.01f);

@@ -115,6 +115,10 @@ sensor:
       name: "${name} charging power"
     discharging_power:
       name: "${name} discharging power"
+    state_of_charge:
+      name: "${name} state of charge"
+    state_of_health:
+      name: "${name} state of health"
 
 text_sensor:
   - platform: seplos_bms
