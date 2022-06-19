@@ -130,7 +130,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
 
   //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
-  ESP_LOGD(TAG, "Port voltage: %.2f V", (float) seplos_get_16bit(offset + 17) * 0.01f);
+  this->publish_state_(this->port_voltage_sensor_, (float) seplos_get_16bit(offset + 17) * 0.01f);
 
   //   73     0x00 0x00      Reserved
   //   75     0x00 0x00      Reserved
@@ -172,6 +172,8 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Power", this->power_sensor_);
   LOG_SENSOR("", "Charging Power", this->charging_power_sensor_);
   LOG_SENSOR("", "Discharging Power", this->discharging_power_sensor_);
+  LOG_SENSOR("", "State of charge", this->state_of_charge_sensor_);
+  LOG_SENSOR("", "State of health", this->state_of_health_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {

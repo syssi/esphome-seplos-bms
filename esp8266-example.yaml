@@ -119,6 +119,8 @@ sensor:
       name: "${name} state of charge"
     state_of_health:
       name: "${name} state of health"
+    port_voltage:
+      name: "${name} port voltage"
 
 text_sensor:
   - platform: seplos_bms
