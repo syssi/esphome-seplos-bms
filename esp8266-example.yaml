@@ -117,6 +117,8 @@ sensor:
       name: "${name} discharging power"
     state_of_charge:
       name: "${name} state of charge"
+    charging_cycles:
+      name: "${name} charging cycles"
     state_of_health:
       name: "${name} state of health"
     port_voltage:

@@ -38,6 +38,7 @@ CONF_TOTAL_VOLTAGE = "total_voltage"
 CONF_CHARGING_POWER = "charging_power"
 CONF_DISCHARGING_POWER = "discharging_power"
 CONF_STATE_OF_CHARGE = "state_of_charge"
+CONF_CHARGING_CYCLES = "charging_cycles"
 CONF_STATE_OF_HEALTH = "state_of_health"
 CONF_PORT_VOLTAGE = "port_voltage"
 
@@ -68,6 +69,7 @@ CONF_TEMPERATURE_6 = "temperature_6"
 ICON_MIN_VOLTAGE_CELL = "mdi:battery-minus-outline"
 ICON_MAX_VOLTAGE_CELL = "mdi:battery-plus-outline"
 ICON_STATE_OF_CHARGE = "mdi:battery-50"
+ICON_CHARGING_CYCLES = "mdi:battery-sync"
 ICON_STATE_OF_HEALTH = "mdi:heart-flash"
 
 CELLS = [
@@ -111,6 +113,7 @@ SENSORS = [
     CONF_CHARGING_POWER,
     CONF_DISCHARGING_POWER,
     CONF_STATE_OF_CHARGE,
+    CONF_CHARGING_CYCLES,
     CONF_STATE_OF_HEALTH,
     CONF_PORT_VOLTAGE,
 ]
@@ -354,6 +357,13 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_PERCENT,
             icon=ICON_STATE_OF_CHARGE,
             accuracy_decimals=1,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_CHARGING_CYCLES): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_CHARGING_CYCLES,
+            accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),

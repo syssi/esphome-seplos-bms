@@ -124,7 +124,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Rated capacity: %.2f Ah", (float) seplos_get_16bit(offset + 11) * 0.01f);
 
   //   67     0x00 0x46      Number of cycles                 70
-  ESP_LOGD(TAG, "Number of cycles: %.0f", (float) seplos_get_16bit(offset + 13));
+  this->publish_state_(this->charging_cycles_sensor_, (float) seplos_get_16bit(offset + 13));
 
   //   69     0x03 0xE8      State of health                  1000 * 0.1f = 100.0           %
   this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
@@ -172,6 +172,7 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Power", this->power_sensor_);
   LOG_SENSOR("", "Charging Power", this->charging_power_sensor_);
   LOG_SENSOR("", "Discharging Power", this->discharging_power_sensor_);
+  LOG_SENSOR("", "Charging cycles", this->charging_cycles_sensor_);
   LOG_SENSOR("", "State of charge", this->state_of_charge_sensor_);
   LOG_SENSOR("", "State of health", this->state_of_health_sensor_);
 }
