@@ -57,7 +57,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   float average_cell_voltage = 0.0f;
   uint8_t min_voltage_cell = 0;
   uint8_t max_voltage_cell = 0;
-  for (uint8_t i = 0; i < std::min(16, cells); i++) {
+  for (uint8_t i = 0; i < std::min((uint8_t) 16, cells); i++) {
     float cell_voltage = (float) seplos_get_16bit(9 + (i * 2)) * 0.001f;
     average_cell_voltage = average_cell_voltage + cell_voltage;
     if (cell_voltage < min_cell_voltage) {
@@ -91,18 +91,18 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   48     0x0B 0xA6      Temperature sensor 4             2982 * 0.01f = 29.82          °C
   //   50     0x0B 0xA5      Environment temperature          2981 * 0.01f = 29.81          °C
   //   52     0x0B 0xA2      Mosfet temperature               2978 * 0.01f = 29.78          °C
-  for (uint8_t i = 0; i < std::min(6, temperature_sensors); i++) {
+  for (uint8_t i = 0; i < std::min((uint8_t) 6, temperature_sensors); i++) {
     this->publish_state_(this->temperatures_[i].temperature_sensor_,
                          (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
   }
   offset = offset + 1 + (temperature_sensors * 2);
 
   //   54     0xFD 0x5C      Charge/discharge current         signed int?                   A
-  float current = (float) ((int16_t) seplos_get_16bit(offset + 4)) * 0.01f;
+  float current = (float) ((int16_t) seplos_get_16bit(offset)) * 0.01f;
   this->publish_state_(this->current_sensor_, current);
 
   //   56     0x14 0xA0      Total battery voltage            5280 * 0.01f = 52.80          V
-  float total_voltage = (float) seplos_get_16bit(offset + 6) * 0.01f;
+  float total_voltage = (float) seplos_get_16bit(offset + 2) * 0.01f;
   this->publish_state_(this->total_voltage_sensor_, total_voltage);
 
   float power = total_voltage * current;
@@ -111,26 +111,26 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->discharging_power_sensor_, std::abs(std::min(0.0f, power)));  // -500W vs 0W -> 500W
 
   //   58     0x34 0x4E      Residual capacity                13390 * 0.01f = 133.90        Ah
-  ESP_LOGD(TAG, "Residual capacity: %.2f Ah", (float) seplos_get_16bit(offset + 8) * 0.01f);
+  ESP_LOGD(TAG, "Residual capacity: %.2f Ah", (float) seplos_get_16bit(offset + 4) * 0.01f);
 
   //   60     0x0A           Custom number                    10
   //   61     0x42 0x68      Battery capacity                 17000 * 0.01f = 170.00        Ah
-  ESP_LOGD(TAG, "Battery capacity: %.2f Ah", (float) seplos_get_16bit(offset + 11) * 0.01f);
+  ESP_LOGD(TAG, "Battery capacity: %.2f Ah", (float) seplos_get_16bit(offset + 7) * 0.01f);
 
   //   63     0x03 0x13      Stage of charge                  787 * 0.1f = 78.7             %
-  ESP_LOGD(TAG, "State of charge: %.1f %%", (float) seplos_get_16bit(offset + 13) * 0.1f);
+  ESP_LOGD(TAG, "State of charge: %.1f %%", (float) seplos_get_16bit(offset + 9) * 0.1f);
 
   //   65     0x46 0x50      Rated capacity                   18000 * 0.01f = 180.00        Ah
-  ESP_LOGD(TAG, "Rated capacity: %.2f Ah", (float) seplos_get_16bit(offset + 15) * 0.01f);
+  ESP_LOGD(TAG, "Rated capacity: %.2f Ah", (float) seplos_get_16bit(offset + 11) * 0.01f);
 
   //   67     0x00 0x46      Number of cycles                 70
-  ESP_LOGD(TAG, "Number of cycles: %.0f", (float) seplos_get_16bit(offset + 17));
+  ESP_LOGD(TAG, "Number of cycles: %.0f", (float) seplos_get_16bit(offset + 13));
 
   //   69     0x03 0xE8      State of health                  1000 * 0.1f = 100.0           %
-  ESP_LOGD(TAG, "State of health: %.1f %%", (float) seplos_get_16bit(offset + 19) * 0.1f);
+  ESP_LOGD(TAG, "State of health: %.1f %%", (float) seplos_get_16bit(offset + 15) * 0.1f);
 
   //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
-  ESP_LOGD(TAG, "Port voltage: %.2f V", (float) seplos_get_16bit(offset + 21) * 0.01f);
+  ESP_LOGD(TAG, "Port voltage: %.2f V", (float) seplos_get_16bit(offset + 17) * 0.01f);
 
   //   73     0x00 0x00      Reserved
   //   75     0x00 0x00      Reserved
