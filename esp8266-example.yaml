@@ -42,11 +42,6 @@ seplos_bms:
   id: bms0
   seplos_modbus_id: modbus0
 
-binary_sensor:
-  - platform: seplos_bms
-    fan_running:
-      name: "${name} fan running"
-
 sensor:
   - platform: seplos_bms
     min_cell_voltage:
@@ -129,8 +124,3 @@ sensor:
       name: "${name} state of health"
     port_voltage:
       name: "${name} port voltage"
-
-text_sensor:
-  - platform: seplos_bms
-    errors:
-      name: "${name} errors"
