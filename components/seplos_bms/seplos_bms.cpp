@@ -47,7 +47,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   8      0x10           Number of cells                  16
   uint8_t cells = data[8];
 
-  ESP_LOGD(TAG, "Number of cells: %d", cells);
+  ESP_LOGV(TAG, "Number of cells: %d", cells);
   //   9      0x0C 0xD7      Cell voltage 1                   3287 * 0.001f = 3.287         V
   //   11     0x0C 0xE9      Cell voltage 2                   3305 * 0.001f = 3.305         V
   //   ...    ...            ...
@@ -83,7 +83,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
 
   //   41     0x06           Number of temperatures           6                             V
   uint8_t temperature_sensors = data[offset];
-  ESP_LOGD(TAG, "Number of temperature sensors: %d", temperature_sensors);
+  ESP_LOGV(TAG, "Number of temperature sensors: %d", temperature_sensors);
 
   //   42     0x0B 0xA6      Temperature sensor 1             2982 * 0.01f = 29.82          °C
   //   44     0x0B 0xA0      Temperature sensor 2             2976 * 0.01f = 29.76          °C
