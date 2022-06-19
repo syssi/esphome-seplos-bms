@@ -46,14 +46,39 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   7      0x01           Command group
   //   8      0x10           Number of cells                  16
   uint8_t cells = data[8];
+
   ESP_LOGD(TAG, "Number of cells: %d", cells);
   //   9      0x0C 0xD7      Cell voltage 1                   3287 * 0.001f = 3.287         V
   //   11     0x0C 0xE9      Cell voltage 2                   3305 * 0.001f = 3.305         V
   //   ...    ...            ...
   //   39     0x0C 0xD8      Cell voltage 16                                                V
+  float min_cell_voltage = 100.0f;
+  float max_cell_voltage = -100.0f;
+  float average_cell_voltage = 0.0f;
+  uint8_t min_voltage_cell = 0;
+  uint8_t max_voltage_cell = 0;
   for (uint8_t i = 0; i < cells; i++) {
-    ESP_LOGD(TAG, "Cell voltage %d: %.3f V", i + 1, (float) seplos_get_16bit(9 + (i * 2)) * 0.001f);
+    float cell_voltage = (float) seplos_get_16bit(9 + (i * 2)) * 0.001f;
+    average_cell_voltage = average_cell_voltage + cell_voltage;
+    if (cell_voltage < min_cell_voltage) {
+      min_cell_voltage = cell_voltage;
+      min_voltage_cell = i + 1;
+    }
+    if (cell_voltage > max_cell_voltage) {
+      max_cell_voltage = cell_voltage;
+      max_voltage_cell = i + 1;
+    }
+    this->publish_state_(this->cells_[i].cell_voltage_sensor_, cell_voltage);
   }
+  average_cell_voltage = average_cell_voltage / cells;
+
+  this->publish_state_(this->min_cell_voltage_sensor_, min_cell_voltage);
+  this->publish_state_(this->max_cell_voltage_sensor_, max_cell_voltage);
+  this->publish_state_(this->max_voltage_cell_sensor_, (float) max_voltage_cell);
+  this->publish_state_(this->min_voltage_cell_sensor_, (float) min_voltage_cell);
+  this->publish_state_(this->delta_cell_voltage_sensor_, max_cell_voltage - min_cell_voltage);
+  this->publish_state_(this->average_cell_voltage_sensor_, average_cell_voltage);
+
   uint8_t offset = 9 + (cells * 2);
 
   //   41     0x06           Number of temperatures           6                             V
@@ -111,7 +136,27 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
 
 void SeplosBms::dump_config() {
   ESP_LOGCONFIG(TAG, "SeplosBms:");
-  // @TODO
+  LOG_SENSOR("", "Minimum Cell Voltage", this->min_cell_voltage_sensor_);
+  LOG_SENSOR("", "Maximum Cell Voltage", this->max_cell_voltage_sensor_);
+  LOG_SENSOR("", "Minimum Voltage Cell", this->min_voltage_cell_sensor_);
+  LOG_SENSOR("", "Maximum Voltage Cell", this->max_voltage_cell_sensor_);
+  LOG_SENSOR("", "Delta Cell Voltage", this->delta_cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 1", this->cells_[0].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 2", this->cells_[1].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 3", this->cells_[2].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 4", this->cells_[3].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 5", this->cells_[4].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 6", this->cells_[5].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 7", this->cells_[6].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 8", this->cells_[7].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 9", this->cells_[8].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 10", this->cells_[9].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 11", this->cells_[10].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 12", this->cells_[11].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 13", this->cells_[12].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 14", this->cells_[13].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 15", this->cells_[14].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 16", this->cells_[15].cell_voltage_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {
