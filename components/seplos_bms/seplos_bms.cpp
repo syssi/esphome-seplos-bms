@@ -174,7 +174,12 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Discharging Power", this->discharging_power_sensor_);
   LOG_SENSOR("", "Charging cycles", this->charging_cycles_sensor_);
   LOG_SENSOR("", "State of charge", this->state_of_charge_sensor_);
+  LOG_SENSOR("", "Residual capacity", this->residual_capacity_sensor_);
+  LOG_SENSOR("", "Battery capacity", this->battery_capacity_sensor_);
+  LOG_SENSOR("", "Rated capacity", this->rated_capacity_sensor_);
+  LOG_SENSOR("", "Charging cycles", this->charging_cycles_sensor_);
   LOG_SENSOR("", "State of health", this->state_of_health_sensor_);
+  LOG_SENSOR("", "Port Voltage", this->port_voltage_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {
