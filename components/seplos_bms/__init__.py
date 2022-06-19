@@ -3,7 +3,7 @@ from esphome.components import seplos_modbus
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-AUTO_LOAD = ["seplos_modbus"]
+AUTO_LOAD = ["seplos_modbus", "binary_sensor", "sensor", "text_sensor"]
 CODEOWNERS = ["@syssi"]
 MULTI_CONF = True
 
