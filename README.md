@@ -4,7 +4,8 @@ ESPHome component to monitor Seplos BMS via UART or RS485
 
 ## Supported devices
 
-TBD.
+* 1101-SP15
+* 1101-ZH26
 
 ## Untested devices
 
