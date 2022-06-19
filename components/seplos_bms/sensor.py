@@ -7,10 +7,12 @@ from esphome.const import (
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_POWER,
+    DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
     ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
     UNIT_AMPERE,
+    UNIT_CELSIUS,
     UNIT_EMPTY,
     UNIT_VOLT,
     UNIT_WATT,
@@ -52,6 +54,13 @@ CONF_CELL_VOLTAGE_14 = "cell_voltage_14"
 CONF_CELL_VOLTAGE_15 = "cell_voltage_15"
 CONF_CELL_VOLTAGE_16 = "cell_voltage_16"
 
+CONF_TEMPERATURE_1 = "temperature_1"
+CONF_TEMPERATURE_2 = "temperature_2"
+CONF_TEMPERATURE_3 = "temperature_3"
+CONF_TEMPERATURE_4 = "temperature_4"
+CONF_TEMPERATURE_5 = "temperature_5"
+CONF_TEMPERATURE_6 = "temperature_6"
+
 ICON_MIN_VOLTAGE_CELL = "mdi:battery-minus-outline"
 ICON_MAX_VOLTAGE_CELL = "mdi:battery-plus-outline"
 
@@ -72,6 +81,15 @@ CELLS = [
     CONF_CELL_VOLTAGE_14,
     CONF_CELL_VOLTAGE_15,
     CONF_CELL_VOLTAGE_16,
+]
+
+TEMPERATURES = [
+    CONF_TEMPERATURE_1,
+    CONF_TEMPERATURE_2,
+    CONF_TEMPERATURE_3,
+    CONF_TEMPERATURE_4,
+    CONF_TEMPERATURE_5,
+    CONF_TEMPERATURE_6,
 ]
 
 SENSORS = [
@@ -246,6 +264,48 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_TEMPERATURE_1): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_2): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_3): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_4): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_5): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_6): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            icon=ICON_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
         cv.Optional(CONF_TOTAL_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
             icon=ICON_EMPTY,
@@ -292,6 +352,11 @@ async def to_code(config):
             conf = config[key]
             sens = await sensor.new_sensor(conf)
             cg.add(hub.set_cell_voltage_sensor(i, sens))
+    for i, key in enumerate(TEMPERATURES):
+        if key in config:
+            conf = config[key]
+            sens = await sensor.new_sensor(conf)
+            cg.add(hub.set_temperature_sensor(i, sens))
     for key in SENSORS:
         if key in config:
             conf = config[key]

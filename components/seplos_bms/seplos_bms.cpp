@@ -89,16 +89,13 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   44     0x0B 0xA0      Temperature sensor 2             2976 * 0.01f = 29.76          °C
   //   46     0x0B 0x97      Temperature sensor 3             2967 * 0.01f = 29.67          °C
   //   48     0x0B 0xA6      Temperature sensor 4             2982 * 0.01f = 29.82          °C
-  for (uint8_t i = 0; i < temperature_sensors - 2; i++) {
-    ESP_LOGD(TAG, "Temperature sensor %d: %.2f °C", i, (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
-  }
-  offset = offset + 1 + ((temperature_sensors - 2) * 2);
-
   //   50     0x0B 0xA5      Environment temperature          2981 * 0.01f = 29.81          °C
-  ESP_LOGD(TAG, "Environment temperature: %.2f °C", (float) seplos_get_16bit(offset) * 0.01f);
-
   //   52     0x0B 0xA2      Mosfet temperature               2978 * 0.01f = 29.78          °C
-  ESP_LOGD(TAG, "Mosfet temperature: %.2f °C", (float) seplos_get_16bit(offset + 2) * 0.01f);
+  for (uint8_t i = 0; i < temperature_sensors; i++) {
+    this->publish_state_(this->temperatures_[i].temperature_sensor_,
+                         (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
+  }
+  offset = offset + 1 + (temperature_sensors * 2);
 
   //   54     0xFD 0x5C      Charge/discharge current         signed int?                   A
   float current = (float) ((int16_t) seplos_get_16bit(offset + 4)) * 0.01f;
@@ -164,7 +161,17 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Cell Voltage 14", this->cells_[13].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 15", this->cells_[14].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 16", this->cells_[15].cell_voltage_sensor_);
+  LOG_SENSOR("", "Temperature 1", this->temperatures_[0].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 2", this->temperatures_[1].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 3", this->temperatures_[2].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 4", this->temperatures_[3].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 5", this->temperatures_[4].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 6", this->temperatures_[5].temperature_sensor_);
   LOG_SENSOR("", "Total Voltage", this->total_voltage_sensor_);
+  LOG_SENSOR("", "Current", this->current_sensor_);
+  LOG_SENSOR("", "Power", this->power_sensor_);
+  LOG_SENSOR("", "Charging Power", this->charging_power_sensor_);
+  LOG_SENSOR("", "Discharging Power", this->discharging_power_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {

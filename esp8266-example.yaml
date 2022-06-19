@@ -93,6 +93,18 @@ sensor:
       name: "${name} cell voltage 15"
     cell_voltage_16:
       name: "${name} cell voltage 16"
+    temperature_1:
+      name: "${name} temperature 1"
+    temperature_2:
+      name: "${name} temperature 2"
+    temperature_3:
+      name: "${name} temperature 3"
+    temperature_4:
+      name: "${name} temperature 4"
+    temperature_5:
+      name: "${name} environment temperature"
+    temperature_6:
+      name: "${name} mosfet temperature"
     total_voltage:
       name: "${name} total voltage"
     current:

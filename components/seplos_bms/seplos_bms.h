@@ -36,6 +36,9 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void set_cell_voltage_sensor(uint8_t cell, sensor::Sensor *cell_voltage_sensor) {
     this->cells_[cell].cell_voltage_sensor_ = cell_voltage_sensor;
   }
+  void set_temperature_sensor(uint8_t temperature, sensor::Sensor *temperature_sensor) {
+    this->temperatures_[temperature].temperature_sensor_ = temperature_sensor;
+  }
   void set_total_voltage_sensor(sensor::Sensor *total_voltage_sensor) { total_voltage_sensor_ = total_voltage_sensor; }
   void set_current_sensor(sensor::Sensor *current_sensor) { current_sensor_ = current_sensor; }
   void set_power_sensor(sensor::Sensor *power_sensor) { power_sensor_ = power_sensor; }
@@ -74,6 +77,10 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   struct Cell {
     sensor::Sensor *cell_voltage_sensor_{nullptr};
   } cells_[16];
+
+  struct Temperature {
+    sensor::Sensor *temperature_sensor_{nullptr};
+  } temperatures_[6];
 
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
