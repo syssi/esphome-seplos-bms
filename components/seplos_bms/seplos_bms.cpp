@@ -46,62 +46,91 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   7      0x01           Command group
   //   8      0x10           Number of cells                  16
   uint8_t cells = data[8];
-  ESP_LOGD(TAG, "Number of cells: %d", cells);
+
+  ESP_LOGV(TAG, "Number of cells: %d", cells);
   //   9      0x0C 0xD7      Cell voltage 1                   3287 * 0.001f = 3.287         V
   //   11     0x0C 0xE9      Cell voltage 2                   3305 * 0.001f = 3.305         V
   //   ...    ...            ...
   //   39     0x0C 0xD8      Cell voltage 16                                                V
-  for (uint8_t i = 0; i < cells; i++) {
-    ESP_LOGD(TAG, "Cell voltage %d: %.3f V", i + 1, (float) seplos_get_16bit(9 + (i * 2)) * 0.001f);
+  float min_cell_voltage = 100.0f;
+  float max_cell_voltage = -100.0f;
+  float average_cell_voltage = 0.0f;
+  uint8_t min_voltage_cell = 0;
+  uint8_t max_voltage_cell = 0;
+  for (uint8_t i = 0; i < std::min((uint8_t) 16, cells); i++) {
+    float cell_voltage = (float) seplos_get_16bit(9 + (i * 2)) * 0.001f;
+    average_cell_voltage = average_cell_voltage + cell_voltage;
+    if (cell_voltage < min_cell_voltage) {
+      min_cell_voltage = cell_voltage;
+      min_voltage_cell = i + 1;
+    }
+    if (cell_voltage > max_cell_voltage) {
+      max_cell_voltage = cell_voltage;
+      max_voltage_cell = i + 1;
+    }
+    this->publish_state_(this->cells_[i].cell_voltage_sensor_, cell_voltage);
   }
+  average_cell_voltage = average_cell_voltage / cells;
+
+  this->publish_state_(this->min_cell_voltage_sensor_, min_cell_voltage);
+  this->publish_state_(this->max_cell_voltage_sensor_, max_cell_voltage);
+  this->publish_state_(this->max_voltage_cell_sensor_, (float) max_voltage_cell);
+  this->publish_state_(this->min_voltage_cell_sensor_, (float) min_voltage_cell);
+  this->publish_state_(this->delta_cell_voltage_sensor_, max_cell_voltage - min_cell_voltage);
+  this->publish_state_(this->average_cell_voltage_sensor_, average_cell_voltage);
+
   uint8_t offset = 9 + (cells * 2);
 
   //   41     0x06           Number of temperatures           6                             V
   uint8_t temperature_sensors = data[offset];
-  ESP_LOGD(TAG, "Number of temperature sensors: %d", temperature_sensors);
+  ESP_LOGV(TAG, "Number of temperature sensors: %d", temperature_sensors);
 
   //   42     0x0B 0xA6      Temperature sensor 1             2982 * 0.01f = 29.82          °C
   //   44     0x0B 0xA0      Temperature sensor 2             2976 * 0.01f = 29.76          °C
   //   46     0x0B 0x97      Temperature sensor 3             2967 * 0.01f = 29.67          °C
   //   48     0x0B 0xA6      Temperature sensor 4             2982 * 0.01f = 29.82          °C
-  for (uint8_t i = 0; i < temperature_sensors - 2; i++) {
-    ESP_LOGD(TAG, "Temperature sensor %d: %.2f °C", i, (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
-  }
-  offset = offset + 1 + ((temperature_sensors - 2) * 2);
-
   //   50     0x0B 0xA5      Environment temperature          2981 * 0.01f = 29.81          °C
-  ESP_LOGD(TAG, "Environment temperature: %.2f °C", (float) seplos_get_16bit(offset) * 0.01f);
-
   //   52     0x0B 0xA2      Mosfet temperature               2978 * 0.01f = 29.78          °C
-  ESP_LOGD(TAG, "Mosfet temperature: %.2f °C", (float) seplos_get_16bit(offset + 2) * 0.01f);
+  for (uint8_t i = 0; i < std::min((uint8_t) 6, temperature_sensors); i++) {
+    this->publish_state_(this->temperatures_[i].temperature_sensor_,
+                         (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
+  }
+  offset = offset + 1 + (temperature_sensors * 2);
 
   //   54     0xFD 0x5C      Charge/discharge current         signed int?                   A
-  ESP_LOGD(TAG, "Current: %.2f A", (float) ((int16_t) seplos_get_16bit(offset + 4)) * 0.01f);
+  float current = (float) ((int16_t) seplos_get_16bit(offset)) * 0.01f;
+  this->publish_state_(this->current_sensor_, current);
 
   //   56     0x14 0xA0      Total battery voltage            5280 * 0.01f = 52.80          V
-  ESP_LOGD(TAG, "Total battery voltage: %.2f V", (float) seplos_get_16bit(offset + 6) * 0.01f);
+  float total_voltage = (float) seplos_get_16bit(offset + 2) * 0.01f;
+  this->publish_state_(this->total_voltage_sensor_, total_voltage);
+
+  float power = total_voltage * current;
+  this->publish_state_(this->power_sensor_, power);
+  this->publish_state_(this->charging_power_sensor_, std::max(0.0f, power));               // 500W vs 0W -> 500W
+  this->publish_state_(this->discharging_power_sensor_, std::abs(std::min(0.0f, power)));  // -500W vs 0W -> 500W
 
   //   58     0x34 0x4E      Residual capacity                13390 * 0.01f = 133.90        Ah
-  ESP_LOGD(TAG, "Residual capacity: %.2f Ah", (float) seplos_get_16bit(offset + 8) * 0.01f);
+  this->publish_state_(this->residual_capacity_sensor_, (float) seplos_get_16bit(offset + 4) * 0.01f);
 
   //   60     0x0A           Custom number                    10
   //   61     0x42 0x68      Battery capacity                 17000 * 0.01f = 170.00        Ah
-  ESP_LOGD(TAG, "Battery capacity: %.2f Ah", (float) seplos_get_16bit(offset + 11) * 0.01f);
+  this->publish_state_(this->battery_capacity_sensor_, (float) seplos_get_16bit(offset + 7) * 0.01f);
 
   //   63     0x03 0x13      Stage of charge                  787 * 0.1f = 78.7             %
-  ESP_LOGD(TAG, "State of charge: %.1f %%", (float) seplos_get_16bit(offset + 13) * 0.1f);
+  this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9) * 0.1f);
 
   //   65     0x46 0x50      Rated capacity                   18000 * 0.01f = 180.00        Ah
-  ESP_LOGD(TAG, "Rated capacity: %.2f Ah", (float) seplos_get_16bit(offset + 15) * 0.01f);
+  this->publish_state_(this->rated_capacity_sensor_, (float) seplos_get_16bit(offset + 11) * 0.01f);
 
   //   67     0x00 0x46      Number of cycles                 70
-  ESP_LOGD(TAG, "Number of cycles: %.0f", (float) seplos_get_16bit(offset + 17));
+  this->publish_state_(this->charging_cycles_sensor_, (float) seplos_get_16bit(offset + 13));
 
   //   69     0x03 0xE8      State of health                  1000 * 0.1f = 100.0           %
-  ESP_LOGD(TAG, "State of health: %.1f %%", (float) seplos_get_16bit(offset + 19) * 0.1f);
+  this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
 
   //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
-  ESP_LOGD(TAG, "Port voltage: %.2f V", (float) seplos_get_16bit(offset + 21) * 0.01f);
+  this->publish_state_(this->port_voltage_sensor_, (float) seplos_get_16bit(offset + 17) * 0.01f);
 
   //   73     0x00 0x00      Reserved
   //   75     0x00 0x00      Reserved
@@ -111,7 +140,46 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
 
 void SeplosBms::dump_config() {
   ESP_LOGCONFIG(TAG, "SeplosBms:");
-  // @TODO
+  LOG_SENSOR("", "Minimum Cell Voltage", this->min_cell_voltage_sensor_);
+  LOG_SENSOR("", "Maximum Cell Voltage", this->max_cell_voltage_sensor_);
+  LOG_SENSOR("", "Minimum Voltage Cell", this->min_voltage_cell_sensor_);
+  LOG_SENSOR("", "Maximum Voltage Cell", this->max_voltage_cell_sensor_);
+  LOG_SENSOR("", "Delta Cell Voltage", this->delta_cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 1", this->cells_[0].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 2", this->cells_[1].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 3", this->cells_[2].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 4", this->cells_[3].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 5", this->cells_[4].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 6", this->cells_[5].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 7", this->cells_[6].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 8", this->cells_[7].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 9", this->cells_[8].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 10", this->cells_[9].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 11", this->cells_[10].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 12", this->cells_[11].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 13", this->cells_[12].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 14", this->cells_[13].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 15", this->cells_[14].cell_voltage_sensor_);
+  LOG_SENSOR("", "Cell Voltage 16", this->cells_[15].cell_voltage_sensor_);
+  LOG_SENSOR("", "Temperature 1", this->temperatures_[0].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 2", this->temperatures_[1].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 3", this->temperatures_[2].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 4", this->temperatures_[3].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 5", this->temperatures_[4].temperature_sensor_);
+  LOG_SENSOR("", "Temperature 6", this->temperatures_[5].temperature_sensor_);
+  LOG_SENSOR("", "Total Voltage", this->total_voltage_sensor_);
+  LOG_SENSOR("", "Current", this->current_sensor_);
+  LOG_SENSOR("", "Power", this->power_sensor_);
+  LOG_SENSOR("", "Charging Power", this->charging_power_sensor_);
+  LOG_SENSOR("", "Discharging Power", this->discharging_power_sensor_);
+  LOG_SENSOR("", "Charging cycles", this->charging_cycles_sensor_);
+  LOG_SENSOR("", "State of charge", this->state_of_charge_sensor_);
+  LOG_SENSOR("", "Residual capacity", this->residual_capacity_sensor_);
+  LOG_SENSOR("", "Battery capacity", this->battery_capacity_sensor_);
+  LOG_SENSOR("", "Rated capacity", this->rated_capacity_sensor_);
+  LOG_SENSOR("", "Charging cycles", this->charging_cycles_sensor_);
+  LOG_SENSOR("", "State of health", this->state_of_health_sensor_);
+  LOG_SENSOR("", "Port Voltage", this->port_voltage_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {
