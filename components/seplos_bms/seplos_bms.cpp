@@ -101,10 +101,17 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Mosfet temperature: %.2f °C", (float) seplos_get_16bit(offset + 2) * 0.01f);
 
   //   54     0xFD 0x5C      Charge/discharge current         signed int?                   A
-  ESP_LOGD(TAG, "Current: %.2f A", (float) ((int16_t) seplos_get_16bit(offset + 4)) * 0.01f);
+  float current = (float) ((int16_t) seplos_get_16bit(offset + 4)) * 0.01f;
+  this->publish_state_(this->current_sensor_, current);
 
   //   56     0x14 0xA0      Total battery voltage            5280 * 0.01f = 52.80          V
-  ESP_LOGD(TAG, "Total battery voltage: %.2f V", (float) seplos_get_16bit(offset + 6) * 0.01f);
+  float total_voltage = (float) seplos_get_16bit(offset + 6) * 0.01f;
+  this->publish_state_(this->total_voltage_sensor_, total_voltage);
+
+  float power = total_voltage * current;
+  this->publish_state_(this->power_sensor_, power);
+  this->publish_state_(this->charging_power_sensor_, std::max(0.0f, power));               // 500W vs 0W -> 500W
+  this->publish_state_(this->discharging_power_sensor_, std::abs(std::min(0.0f, power)));  // -500W vs 0W -> 500W
 
   //   58     0x34 0x4E      Residual capacity                13390 * 0.01f = 133.90        Ah
   ESP_LOGD(TAG, "Residual capacity: %.2f Ah", (float) seplos_get_16bit(offset + 8) * 0.01f);
@@ -157,6 +164,7 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Cell Voltage 14", this->cells_[13].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 15", this->cells_[14].cell_voltage_sensor_);
   LOG_SENSOR("", "Cell Voltage 16", this->cells_[15].cell_voltage_sensor_);
+  LOG_SENSOR("", "Total Voltage", this->total_voltage_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {
