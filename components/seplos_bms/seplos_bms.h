@@ -51,6 +51,15 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void set_state_of_charge_sensor(sensor::Sensor *state_of_charge_sensor) {
     state_of_charge_sensor_ = state_of_charge_sensor;
   }
+  void set_residual_capacity_sensor(sensor::Sensor *residual_capacity_sensor) {
+    residual_capacity_sensor_ = residual_capacity_sensor;
+  }
+  void set_battery_capacity_sensor(sensor::Sensor *battery_capacity_sensor) {
+    battery_capacity_sensor_ = battery_capacity_sensor;
+  }
+  void set_rated_capacity_sensor(sensor::Sensor *rated_capacity_sensor) {
+    rated_capacity_sensor_ = rated_capacity_sensor;
+  }
   void set_charging_cycles_sensor(sensor::Sensor *charging_cycles_sensor) {
     charging_cycles_sensor_ = charging_cycles_sensor;
   }
@@ -82,6 +91,9 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   sensor::Sensor *charging_power_sensor_;
   sensor::Sensor *discharging_power_sensor_;
   sensor::Sensor *state_of_charge_sensor_;
+  sensor::Sensor *residual_capacity_sensor_;
+  sensor::Sensor *battery_capacity_sensor_;
+  sensor::Sensor *rated_capacity_sensor_;
   sensor::Sensor *charging_cycles_sensor_;
   sensor::Sensor *state_of_health_sensor_;
   sensor::Sensor *port_voltage_sensor_;

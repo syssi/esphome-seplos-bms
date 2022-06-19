@@ -111,17 +111,17 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->discharging_power_sensor_, std::abs(std::min(0.0f, power)));  // -500W vs 0W -> 500W
 
   //   58     0x34 0x4E      Residual capacity                13390 * 0.01f = 133.90        Ah
-  ESP_LOGD(TAG, "Residual capacity: %.2f Ah", (float) seplos_get_16bit(offset + 4) * 0.01f);
+  this->publish_state_(this->residual_capacity_sensor_, (float) seplos_get_16bit(offset + 4) * 0.01f);
 
   //   60     0x0A           Custom number                    10
   //   61     0x42 0x68      Battery capacity                 17000 * 0.01f = 170.00        Ah
-  ESP_LOGD(TAG, "Battery capacity: %.2f Ah", (float) seplos_get_16bit(offset + 7) * 0.01f);
+  this->publish_state_(this->battery_capacity_sensor_, (float) seplos_get_16bit(offset + 7) * 0.01f);
 
   //   63     0x03 0x13      Stage of charge                  787 * 0.1f = 78.7             %
   this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9) * 0.1f);
 
   //   65     0x46 0x50      Rated capacity                   18000 * 0.01f = 180.00        Ah
-  ESP_LOGD(TAG, "Rated capacity: %.2f Ah", (float) seplos_get_16bit(offset + 11) * 0.01f);
+  this->publish_state_(this->rated_capacity_sensor_, (float) seplos_get_16bit(offset + 11) * 0.01f);
 
   //   67     0x00 0x46      Number of cycles                 70
   this->publish_state_(this->charging_cycles_sensor_, (float) seplos_get_16bit(offset + 13));

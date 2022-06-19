@@ -115,6 +115,12 @@ sensor:
       name: "${name} charging power"
     discharging_power:
       name: "${name} discharging power"
+    residual_capacity:
+      name: "${name} residual capacity"
+    battery_capacity:
+      name: "${name} battery capacity"
+    rated_capacity:
+      name: "${name} rated capacity"
     state_of_charge:
       name: "${name} state of charge"
     charging_cycles:
