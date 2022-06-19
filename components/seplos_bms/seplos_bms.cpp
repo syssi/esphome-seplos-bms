@@ -57,7 +57,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   float average_cell_voltage = 0.0f;
   uint8_t min_voltage_cell = 0;
   uint8_t max_voltage_cell = 0;
-  for (uint8_t i = 0; i < cells; i++) {
+  for (uint8_t i = 0; i < std::min(16, cells); i++) {
     float cell_voltage = (float) seplos_get_16bit(9 + (i * 2)) * 0.001f;
     average_cell_voltage = average_cell_voltage + cell_voltage;
     if (cell_voltage < min_cell_voltage) {
@@ -91,7 +91,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   48     0x0B 0xA6      Temperature sensor 4             2982 * 0.01f = 29.82          °C
   //   50     0x0B 0xA5      Environment temperature          2981 * 0.01f = 29.81          °C
   //   52     0x0B 0xA2      Mosfet temperature               2978 * 0.01f = 29.78          °C
-  for (uint8_t i = 0; i < temperature_sensors; i++) {
+  for (uint8_t i = 0; i < std::min(6, temperature_sensors); i++) {
     this->publish_state_(this->temperatures_[i].temperature_sensor_,
                          (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
   }
