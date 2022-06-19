@@ -96,7 +96,7 @@ esphome run esp32-example.yaml
 
 ## Protocol
 
-See [SEPLOS BMS Communication Protocol_V2.0.pdf](SEPLOS%20BMS%20Communication%20Protocol_V2.0.pdf) and [Seplos 48v 100A BMS RS485 Protocol.pdf](docs/Seplos%2048v%20100A%20BMS%20RS485%20Protocol.pdf).
+See [SEPLOS BMS Communication Protocol_V2.0.pdf](docs/SEPLOS%20BMS%20Communication%20Protocol_V2.0.pdf) and [Seplos 48v 100A BMS RS485 Protocol.pdf](docs/Seplos%2048v%20100A%20BMS%20RS485%20Protocol.pdf).
 
 ```
 $ echo -ne "~20004642E00200FD37\r" | hexdump -ve '1/1 "%.2X."'
