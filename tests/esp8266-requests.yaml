@@ -32,29 +32,56 @@ uart:
 interval:
   - interval: 20s
     then:
+      # Get pack #0 telemetry data (CID2 `0x42`)
       - uart.write: "~20004642E00200FD37\r"
       - delay: 2s
 
-      # Get protocol version
+      # Get system parameters (CID2 `0x47`)
+      - uart.write: "~200046470000FDA9\r"
+      - delay: 2s
+
+      # Get protocol version (CID2 `0x4F`)
       - uart.write: "~2000464F0000FD9A\r"
       - delay: 2s
 
-      # Get manufacturer info
+      # Get manufacturer info (CID2 `0x51`)
       - uart.write: "~200046510000FDAE\r"
       - delay: 2s
 
-      # Get system parameters
-      - uart.write: "~200246470000FDA7\r"
+      # Get management info (pylontech only?)
+      - uart.write: "~200046920000FDA9\r"
       - delay: 2s
 
-      # Get management info
-      - uart.write: "~200246920000FDA7\r"
+      # Get module serial number (pylontech only?)
+      - uart.write: "~200046930000FDA8\r"
       - delay: 2s
 
-      # Get module serial number
-      - uart.write: "~200246930000FDA6\r"
-      - delay: 2s
-
-      # Get module serial number
-      - uart.write: "~20024642E002FFFD09\r"
-      - delay: 2s
+      # Guessed/untested/dangerous request payloads
+      #
+      # Please don't uncomment the following commands
+      # in the worst case they can brick your device!
+      #
+      # Telecontrol command (CID2 `0x45`)
+      # - uart.write: "~200046450000FDAB\r"
+      # - delay: 2s
+      # Setting of teleregulation information (CID2 `0x49`)
+      # - uart.write: "~200046490000FDA7\r"
+      # - delay: 2s
+      # Acquisition of historical data (CID2 `0x4B`)
+      # - uart.write: "~2000464B0000FD9E\r"
+      # - delay: 2s
+      # Acquisition time (CID2 `0x4D`)
+      # - uart.write: "~2000464D0000FD9C\r"
+      # - delay: 2s
+      # Synchronization time (CID2 `0x4E`)
+      # - uart.write: "~2000464E0000FD9B\r"
+      # - delay: 2s
+      # Production calibration (CID2 `0xA0`)
+      # - uart.write: "~200046A00000FDA3\r"
+      # - delay: 2s
+      # Production setting (CID2 `0xA1`)
+      # - uart.write: "~200046A10000FDA2\r"
+      # - delay: 2s
+      # Regular recording (CID2 `0xA2`)
+      # - uart.write: "~200046A20000FDA1\r"
+      # - delay: 2s
