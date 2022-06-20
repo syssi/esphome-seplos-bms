@@ -9,7 +9,8 @@ ESPHome component to monitor Seplos BMS via UART or RS485
 
 ## Untested devices
 
-TBD.
+* EMU10xx
+* 11XX Series
 
 ## Requirements
 
