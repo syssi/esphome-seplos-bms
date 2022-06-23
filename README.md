@@ -123,6 +123,12 @@ esphome run esp32-example.yaml
 [D][sensor:124]: 'seplos-bms port voltage': Sending state 52.79000 V with 2 decimals of accuracy
 ```
 
+## Known issues and limitations
+
+* At the moment only battery bank `#0` (DIP switch / address `0x00`) is supported. ([#7][i7])
+
+[i7]: https://github.com/syssi/esphome-seplos-bms/issues/7
+
 ## Protocol
 
 See [SEPLOS BMS Communication Protocol_V2.0.pdf](docs/SEPLOS%20BMS%20Communication%20Protocol_V2.0.pdf) and [Seplos 48v 100A BMS RS485 Protocol.pdf](docs/Seplos%2048v%20100A%20BMS%20RS485%20Protocol.pdf).
