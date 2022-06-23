@@ -12,6 +12,37 @@ ESPHome component to monitor Seplos BMS via UART or RS485
 * EMU10xx
 * 11XX Series
 
+## Schematics
+
+```
+                  RS485                      UART
+┌────────────┐              ┌──────────┐                ┌─────────┐
+│            │              │          │<----- RX ----->│         │
+│   Seplos   │<-----B- ---->│  RS485   │<----- TX ----->│ ESP32/  │
+│    BMS     │<---- A+ ---->│  to TTL  │<----- GND ---->│ ESP8266 │
+│            │<--- GND ---->│  module  │<----- 3.3V --->│         │<-- VCC
+│            │              │          │                │         │<-- GND
+└────────────┘              └──────────┘                └─────────┘
+
+```
+
+Please make sure to power the RS485 module with 3.3V because it affects the TTL (transistor-transistor logic) voltage between RS485 module and ESP.
+
+### RJ45 jack
+
+|  Pin  | Purpose | RS485-to-TTL pin | Color T-568B |
+|:-----:|:--------|:-----------------|--------------|
+| **1** | **B-**  | **B-**           | Orange-White |
+| **2** | **A+**  | **A+**           | Orange       |
+| **3** | **GND** | **GND**          | Green-White  |
+|   4   | NC      |                  |              |
+|   5   | NC      |                  |              |
+|   6   | GND     |                  |              |
+|   7   | A+      |                  |              |
+|   8   | B-      |                  |              |
+
+Please be aware of the different RJ45 pinout colors ([T-568A vs. T-568B](images/rj45-colors-t568a-vs-t568.png)).
+
 ## Requirements
 
 * [ESPHome 2022.4.0 or higher](https://github.com/esphome/esphome/releases).
