@@ -22,7 +22,7 @@ class SeplosModbus : public uart::UARTDevice, public Component {
 
   float get_setup_priority() const override;
 
-  void send(uint8_t address);
+  void send(uint8_t address, uint8_t function, uint8_t value);
   void set_flow_control_pin(GPIOPin *flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 
  protected:
@@ -42,7 +42,7 @@ class SeplosModbusDevice {
   void set_parent(SeplosModbus *parent) { parent_ = parent; }
   void set_address(uint8_t address) { address_ = address; }
   virtual void on_seplos_modbus_data(const std::vector<uint8_t> &data) = 0;
-  void send() { this->parent_->send(this->address_); }
+  void send(uint8_t function, uint8_t value) { this->parent_->send(this->address_, function, value); }
 
  protected:
   friend SeplosModbus;

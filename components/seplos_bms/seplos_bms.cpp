@@ -187,7 +187,7 @@ float SeplosBms::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SeplosBms::update() { this->send(); }
+void SeplosBms::update() { this->send(0x42, this->address_); }
 
 void SeplosBms::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)
