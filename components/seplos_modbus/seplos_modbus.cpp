@@ -41,6 +41,18 @@ uint16_t chksum(const uint8_t data[], const uint16_t len) {
   return checksum;
 }
 
+uint16_t lchksum(const uint16_t len) {
+  uint16_t lchecksum = 0x0000;
+
+  if (len == 0)
+    return 0x0000;
+
+  lchecksum = (len & 0xf) + ((len >> 4) & 0xf) + ((len >> 8) & 0xf);
+  lchecksum = ~(lchecksum % 16) + 1;
+
+  return (lchecksum << 12) + len;  // 4 byte checksum + 12 bytes length
+}
+
 uint8_t ascii_hex_to_byte(char a, char b) {
   a = (a <= '9') ? a - '0' : (a & 0x7) + 9;
   b = (b <= '9') ? b - '0' : (b & 0x7) + 9;
