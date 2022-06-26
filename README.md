@@ -125,9 +125,7 @@ esphome run esp32-example.yaml
 
 ## Known issues and limitations
 
-* At the moment only battery bank `#0` (DIP switch / address `0x00`) is supported. ([#7][i7])
-
-[i7]: https://github.com/syssi/esphome-seplos-bms/issues/7
+None.
 
 ## Protocol
 
