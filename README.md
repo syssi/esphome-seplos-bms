@@ -77,6 +77,8 @@ EOF
 esphome run esp32-example.yaml
 ```
 
+![Screen recording](install.gif)
+
 ## Example response all sensors enabled
 
 ```
