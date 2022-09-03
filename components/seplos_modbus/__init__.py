@@ -13,11 +13,15 @@ SeplosModbusDevice = seplos_modbus_ns.class_("SeplosModbusDevice")
 MULTI_CONF = True
 
 CONF_SEPLOS_MODBUS_ID = "seplos_modbus_id"
+CONF_RX_TIMEOUT = "rx_timeout"
 
 CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SeplosModbus),
+            cv.Optional(
+                CONF_RX_TIMEOUT, default="150ms"
+            ): cv.positive_time_period_milliseconds,
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
         }
     )
@@ -30,9 +34,9 @@ async def to_code(config):
     cg.add_global(seplos_modbus_ns.using)
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-
     await uart.register_uart_device(var, config)
 
+    cg.add(var.set_rx_timeout(config[CONF_RX_TIMEOUT]))
     if CONF_FLOW_CONTROL_PIN in config:
         pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN])
         cg.add(var.set_flow_control_pin(pin))

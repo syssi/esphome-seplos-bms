@@ -23,9 +23,11 @@ class SeplosModbus : public uart::UARTDevice, public Component {
   float get_setup_priority() const override;
 
   void send(uint8_t address, uint8_t function, uint8_t value);
+  void set_rx_timeout(uint16_t rx_timeout) { rx_timeout_ = rx_timeout; }
   void set_flow_control_pin(GPIOPin *flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 
  protected:
+  uint16_t rx_timeout_{150};
   GPIOPin *flow_control_pin_{nullptr};
 
   bool parse_seplos_modbus_byte_(uint8_t byte);
