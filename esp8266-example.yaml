@@ -37,6 +37,7 @@ uart:
 seplos_modbus:
   id: modbus0
   uart_id: uart0
+  rx_timeout: 150ms
 
 seplos_bms:
   id: bms0

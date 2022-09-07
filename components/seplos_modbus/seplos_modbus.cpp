@@ -15,7 +15,7 @@ void SeplosModbus::setup() {
 void SeplosModbus::loop() {
   const uint32_t now = millis();
 
-  if (now - this->last_seplos_modbus_byte_ > 50) {
+  if (now - this->last_seplos_modbus_byte_ > this->rx_timeout_) {
     this->rx_buffer_.clear();
     this->last_seplos_modbus_byte_ = now;
   }
@@ -128,6 +128,7 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
 void SeplosModbus::dump_config() {
   ESP_LOGCONFIG(TAG, "SeplosModbus:");
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
+  ESP_LOGCONFIG(TAG, " RX timeout: %d ms", this->rx_timeout_);
 }
 float SeplosModbus::get_setup_priority() const {
   // After UART bus
