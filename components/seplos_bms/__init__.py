@@ -20,7 +20,7 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(SeplosBms),
         }
     )
-    .extend(cv.polling_component_schema("2s"))
+    .extend(cv.polling_component_schema("10s"))
     .extend(seplos_modbus.seplos_modbus_device_schema(0x00))
 )
 
