@@ -85,15 +85,15 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   uint8_t temperature_sensors = data[offset];
   ESP_LOGV(TAG, "Number of temperature sensors: %d", temperature_sensors);
 
-  //   42     0x0B 0xA6      Temperature sensor 1             2982 * 0.01f = 29.82          °C
-  //   44     0x0B 0xA0      Temperature sensor 2             2976 * 0.01f = 29.76          °C
-  //   46     0x0B 0x97      Temperature sensor 3             2967 * 0.01f = 29.67          °C
-  //   48     0x0B 0xA6      Temperature sensor 4             2982 * 0.01f = 29.82          °C
-  //   50     0x0B 0xA5      Environment temperature          2981 * 0.01f = 29.81          °C
-  //   52     0x0B 0xA2      Mosfet temperature               2978 * 0.01f = 29.78          °C
+  //   42     0x0B 0xA6      Temperature sensor 1             (2982 - 2731) * 0.1f = 25.1          °C
+  //   44     0x0B 0xA0      Temperature sensor 2             (2976 - 2731) * 0.1f = 24.5          °C
+  //   46     0x0B 0x97      Temperature sensor 3             (2967 - 2731) * 0.1f = 23.6          °C
+  //   48     0x0B 0xA6      Temperature sensor 4             (2982 - 2731) * 0.1f = 25.1          °C
+  //   50     0x0B 0xA5      Environment temperature          (2981 - 2731) * 0.1f = 25.0          °C
+  //   52     0x0B 0xA2      Mosfet temperature               (2978 - 2731) * 0.1f = 24.7          °C
   for (uint8_t i = 0; i < std::min((uint8_t) 6, temperature_sensors); i++) {
-    this->publish_state_(this->temperatures_[i].temperature_sensor_,
-                         (float) seplos_get_16bit(offset + 1 + (i * 2)) * 0.01f);
+    float raw_temperature = (float) seplos_get_16bit(offset + 1 + (i * 2));
+    this->publish_state_(this->temperatures_[i].temperature_sensor_, (raw_temperature - 2731.0f) * 0.1f);
   }
   offset = offset + 1 + (temperature_sensors * 2);
 
