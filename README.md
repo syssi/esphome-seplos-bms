@@ -4,8 +4,9 @@ ESPHome component to monitor Seplos BMS via UART or RS485
 
 ## Supported devices
 
-* 1101-SP15
-* 1101-ZH26
+* 1101-SP15 (reported by [@NosIreland](https://github.com/syssi/esphome-seplos-bms/issues/1))
+* 1101-SP16 (reported by [@atze09](https://github.com/syssi/esphome-seplos-bms/issues/28))
+* 1101-ZH26 (reported by [@faizan-elite](https://github.com/syssi/esphome-seplos-bms/issues/2))
 
 ## Untested devices
 
