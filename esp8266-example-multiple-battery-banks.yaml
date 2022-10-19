@@ -39,15 +39,24 @@ seplos_modbus:
 
 seplos_bms:
   - id: battery_bank0
-    address: 0x00
-    seplos_modbus_id: modbus0
-    update_interval: 10s
-  - id: battery_bank1
+    # Dip switch configuration of the first pack / address 0x01
+    #  8    7    6    5    4    3    2   1
+    # off, off, off, off, off, off, off, on
     address: 0x01
     seplos_modbus_id: modbus0
     update_interval: 10s
-  - id: battery_bank2
+  - id: battery_bank1
+    # Dip switch configuration of the second pack / address 0x02
+    #  8    7    6    5    4    3   2    1
+    # off, off, off, off, off, off, on, off
     address: 0x02
+    seplos_modbus_id: modbus0
+    update_interval: 10s
+  - id: battery_bank2
+    # Dip switch configuration of the third pack / address 0x03
+    #  8    7    6    5    4    3   2   1
+    # off, off, off, off, off, off, on, on
+    address: 0x03
     seplos_modbus_id: modbus0
     update_interval: 10s
 

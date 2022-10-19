@@ -44,6 +44,10 @@ seplos_modbus:
 
 seplos_bms:
   id: bms0
+  # Dip switch configuration of a single pack setup / address 0x0
+  #  8    7    6    5    4    3    2    1
+  # off, off, off, off, off, off, off, off
+  address: 0x00
   seplos_modbus_id: modbus0
   update_interval: 10s
 
