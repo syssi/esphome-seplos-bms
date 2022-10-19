@@ -29,6 +29,8 @@ uart:
   baud_rate: 9600
   tx_pin: ${tx_pin}
   rx_pin: ${rx_pin}
+  # The increased RX buffer size is important because
+  # the full BMS response must fit into the buffer
   rx_buffer_size: 384
 
 seplos_modbus:
