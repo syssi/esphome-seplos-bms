@@ -20,6 +20,12 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
     return;
   }
 
+  // telemetry of a 14 cell battery
+  if (data.size() == 77 && data[5] == 0x8E) {
+    this->on_telemetry_data_(data);
+    return;
+  }
+
   ESP_LOGW(TAG, "Unhandled data received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
 }
 
