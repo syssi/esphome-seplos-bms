@@ -8,20 +8,13 @@ namespace seplos_bms {
 static const char *const TAG = "seplos_bms";
 
 void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
-  // telemetry of a 16 cell battery
-  if (data.size() == 81 && data[5] == 0x96) {
-    this->on_telemetry_data_(data);
-    return;
-  }
-
-  // telemetry of a 15 cell battery
-  if (data.size() == 79 && data[5] == 0x92) {
-    this->on_telemetry_data_(data);
-    return;
-  }
-
-  // telemetry of a 14 cell battery
-  if (data.size() == 77 && data[5] == 0x8E) {
+  // num_of_cells   frame_size   data_len
+  // 8              65           118 (0x76)   guessed
+  // 14             77           142 (0x8E)
+  // 15             79           146 (0x92)
+  // 16             81           150 (0x96)
+  // 24             97           182 (0xB6)   guessed
+  if (data.size() >= 65 && data[8] > 8 && data[8] < 24) {
     this->on_telemetry_data_(data);
     return;
   }
