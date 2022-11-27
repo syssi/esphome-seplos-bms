@@ -179,6 +179,7 @@ uart:
   rx_pin: ${rx_pin}
   rx_buffer_size: 384
   debug:
+    dummy_receiver: false
     direction: BOTH
     after:
       delimiter: "\r"

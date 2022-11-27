@@ -30,12 +30,6 @@ uart:
   # The increased RX buffer size is important because
   # the full BMS response must fit into the buffer
   rx_buffer_size: 384
-  debug:
-    direction: BOTH
-#    after:
-#      delimiter: "\r"
-#    sequence:
-#      - lambda: UARTDebug::log_string(direction, bytes);
 
 seplos_modbus:
   id: modbus0
