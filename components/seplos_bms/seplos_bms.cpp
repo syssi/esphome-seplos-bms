@@ -14,7 +14,7 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   // 15             79           146 (0x92)
   // 16             81           150 (0x96)
   // 24             97           182 (0xB6)   guessed
-  if (data.size() >= 65 && data[8] > 8 && data[8] < 24) {
+  if (data.size() >= 65 && data[8] >= 8 && data[8] <= 24) {
     this->on_telemetry_data_(data);
     return;
   }
