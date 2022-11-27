@@ -15,7 +15,7 @@ uart:
   debug:
     dummy_receiver: false
     direction: BOTH
-    after:
-      delimiter: "\r"
-    sequence:
-      - lambda: UARTDebug::log_string(direction, bytes);
+    # after:
+    #   delimiter: "\r"
+    # sequence:
+    #   - lambda: UARTDebug::log_string(direction, bytes);
