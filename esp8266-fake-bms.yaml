@@ -1,10 +1,15 @@
 substitutions:
   name: seplos-bms-tx
+  device_description: "Fake Seplos BMS"
   tx_pin: GPIO4
   rx_pin: GPIO5
 
 esphome:
   name: ${name}
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-seplos-bms"
+    version: 1.0.0
 
 esp8266:
   board: d1_mini

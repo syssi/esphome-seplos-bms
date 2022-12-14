@@ -1,11 +1,16 @@
 substitutions:
   name: seplos-bms
+  device_description: "Monitor a Seplos BMS via RS485"
   external_components_source: github://syssi/esphome-seplos-bms@main
   tx_pin: GPIO4
   rx_pin: GPIO5
 
 esphome:
   name: ${name}
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-seplos-bms"
+    version: 1.0.0
 
 esp8266:
   board: d1_mini
