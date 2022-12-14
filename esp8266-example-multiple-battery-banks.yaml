@@ -3,12 +3,17 @@ substitutions:
   battery_bank0: "${name} bank 0"
   battery_bank1: "${name} bank 1"
   battery_bank2: "${name} bank 2"
+  device_description: "Monitor a Seplos BMS via RS485"
   external_components_source: github://syssi/esphome-seplos-bms@main
   tx_pin: GPIO4
   rx_pin: GPIO5
 
 esphome:
   name: ${name}
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-seplos-bms"
+    version: 1.0.0
 
 esp8266:
   board: d1_mini
