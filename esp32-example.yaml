@@ -7,8 +7,8 @@ substitutions:
 esphome:
   name: ${name}
 
-esp8266:
-  board: d1_mini
+esp32:
+  board: wemos_d1_mini32
 
 external_components:
   - source: ${external_components_source}
