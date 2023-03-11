@@ -10,6 +10,7 @@ ESPHome component to monitor Seplos BMS via UART or RS485
 * 1101-ZH26 (reported by [@faizan-elite](https://github.com/syssi/esphome-seplos-bms/issues/2))
 * 1101-MZ02 (reported by [@fajera81](https://github.com/syssi/esphome-seplos-bms/discussions/33))
 * 1101-10E-SP76-16S (reported by [@tobox](https://github.com/syssi/esphome-seplos-bms/discussions/42))
+* Boqiang BMS007-LD43-16S-HW (requires protocol version 0x26, reported by [@xdilian](https://github.com/syssi/esphome-seplos-bms/discussions/43))
 
 ## Untested devices
 

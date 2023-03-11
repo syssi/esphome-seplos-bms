@@ -32,19 +32,15 @@ uart:
       - lambda:
           std::string request(bytes.begin(), bytes.end());
           if(request == "~2000464F0000FD9A\r") {
-            id(uart0).write_str("~200046000000FDB4\r");
+            id(uart0).write_str("~260046000000FDAE\r");
             return;
           }
-          if(request == "~200046510000FDAE\r") {
-            id(uart0).write_str("~20004600C040313130312D5A4832362002062020202020202020202020202020202020202020F116\r");
+          if(request == "~260046510000FDA8\r") {
+            id(uart0).write_str("~26004600C040424D5330372D4C44343301084A532D52696368706F77657220436F2E2C4C7464EFF7\r");
             return;
           }
-          if(request == "~20004642E00200FD37\r") {
-            id(uart0).write_str("~2000460010960001100CD80CE80CF40CD70CEE0CE50CE10CDD0CE90CF00CE80CEF0CEB0CDA0CDE0CD9060BA60BA00B970BA60BA50BA2FD7214A0344A0A426803134650004603E8149F0000000000000000DC7C\r");
-            return;
-          }
-          if(request == "~20004644E00200FD35\r") {
-            id(uart0).write_str("~20004600A06000010F000000000000000000000000000000060000000000000000140000000000000300000200000000000000000002EB74\r");
+          if(request == "~26004642E00201FD30\r") {
+            id(uart0).write_str("~26004600307600011000000000000000000000000000000000000000000000000000000000000000000608530853085308530BAD0B9600000000002F0213880001E6AF\r");
             return;
           }
           ESP_LOGD("Lambda", "Unhandled request %s", request.c_str());

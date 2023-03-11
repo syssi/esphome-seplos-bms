@@ -48,6 +48,8 @@ seplos_bms:
   #  8    7    6    5    4    3    2    1
   # off, off, off, off, off, off, off, off
   address: 0x00
+  # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
+  protocol_version: 0x20
   seplos_modbus_id: modbus0
   update_interval: 10s
 
