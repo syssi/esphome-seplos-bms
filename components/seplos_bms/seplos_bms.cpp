@@ -19,7 +19,8 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
     return;
   }
 
-  ESP_LOGW(TAG, "Unhandled data received: %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  ESP_LOGW(TAG, "Unhandled data received (data_len: 0x%02X): %s", data[5],
+           format_hex_pretty(&data.front(), data.size()).c_str());
 }
 
 void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
