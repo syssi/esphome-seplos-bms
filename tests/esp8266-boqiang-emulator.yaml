@@ -1,5 +1,5 @@
 substitutions:
-  name: seplos-emu
+  name: boqiang-emu
   tx_pin: GPIO4
   rx_pin: GPIO5
 

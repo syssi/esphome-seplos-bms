@@ -5,6 +5,7 @@ seplos_bms:
   address: 0x00
   protocol_version: 0x26
 
+# Telemetry response of a BMS007-LD43-16S-HW
 interval:
   - interval: 2s
     then:
