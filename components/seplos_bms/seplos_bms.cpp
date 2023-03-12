@@ -13,8 +13,7 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   // 14             77           142 (0x8E)
   // 15             79           146 (0x92)
   // 16             81           150 (0x96)
-  // 24             97           182 (0xB6)   guessed
-  if (data.size() >= 65 && data[8] >= 8 && data[8] <= 24) {
+  if (data.size() >= 44 && data[8] >= 8 && data[8] <= 16) {
     this->on_telemetry_data_(data);
     return;
   }
@@ -47,7 +46,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   7      0x01           Command group
   ESP_LOGV(TAG, "Command group: %d", data[7]);
   //   8      0x10           Number of cells                  16
-  uint8_t cells = data[8];
+  uint8_t cells = (this->override_cell_count_) ? this->override_cell_count_ : data[8];
 
   ESP_LOGV(TAG, "Number of cells: %d", cells);
   //   9      0x0C 0xD7      Cell voltage 1                   3287 * 0.001f = 3.287         V

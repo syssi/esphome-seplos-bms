@@ -8,6 +8,7 @@ CODEOWNERS = ["@syssi"]
 MULTI_CONF = True
 
 CONF_SEPLOS_BMS_ID = "seplos_bms_id"
+CONF_OVERRIDE_CELL_COUNT = "override_cell_count"
 
 DEFAULT_PROTOCOL_VERSION = 0x20
 DEFAULT_ADDRESS = 0x00
@@ -21,6 +22,9 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SeplosBms),
+            cv.Optional(CONF_OVERRIDE_CELL_COUNT, default=0): cv.int_range(
+                min=0, max=24
+            ),
         }
     )
     .extend(cv.polling_component_schema("10s"))
@@ -36,3 +40,5 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await seplos_modbus.register_seplos_modbus_device(var, config)
+
+    cg.add(var.set_override_cell_count(config[CONF_OVERRIDE_CELL_COUNT]))
