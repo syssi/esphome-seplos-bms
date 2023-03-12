@@ -27,7 +27,8 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Telemetry frame received");
+  ESP_LOGI(TAG, "Telemetry frame (%d bytes) received", data.size());
+  ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   // ->
   // 0x2000460010960001100CD70CE90CF40CD60CEF0CE50CE10CDC0CE90CF00CE80CEF0CEA0CDA0CDE0CD8060BA60BA00B970BA60BA50BA2FD5C14A0344E0A426803134650004603E8149F0000000000000000
@@ -124,11 +125,23 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   65     0x46 0x50      Rated capacity                   18000 * 0.01f = 180.00        Ah
   this->publish_state_(this->rated_capacity_sensor_, (float) seplos_get_16bit(offset + 11) * 0.01f);
 
+  if (data.size() < offset + 13 + 2) {
+    return;
+  }
+
   //   67     0x00 0x46      Number of cycles                 70
   this->publish_state_(this->charging_cycles_sensor_, (float) seplos_get_16bit(offset + 13));
 
+  if (data.size() < offset + 15 + 2) {
+    return;
+  }
+
   //   69     0x03 0xE8      State of health                  1000 * 0.1f = 100.0           %
   this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
+
+  if (data.size() < offset + 17 + 2) {
+    return;
+  }
 
   //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
   this->publish_state_(this->port_voltage_sensor_, (float) seplos_get_16bit(offset + 17) * 0.01f);

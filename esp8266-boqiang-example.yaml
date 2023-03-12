@@ -1,7 +1,7 @@
 substitutions:
   name: seplos-bms
   device_description: "Monitor a Boqiang BMS via RS485"
-  external_components_source: github://syssi/esphome-seplos-bms@boqiang-support
+  external_components_source: github://syssi/esphome-seplos-bms@main
   tx_pin: GPIO4
   rx_pin: GPIO5
 
