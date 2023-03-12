@@ -1,0 +1,21 @@
+<<: !include esp32-boqiang-bms001-example.yaml
+
+logger:
+  level: DEBUG
+
+uart:
+  id: uart0
+  # Please set the default baudrate of your Seplos BMS model here. It's sometimes 19200 baud instead of 9600.
+  baud_rate: 9600
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
+  # The increased RX buffer size is important because
+  # the full BMS response must fit into the buffer
+  rx_buffer_size: 384
+  debug:
+    dummy_receiver: false
+    direction: BOTH
+    # after:
+    #   delimiter: "\r"
+    # sequence:
+    #   - lambda: UARTDebug::log_string(direction, bytes);

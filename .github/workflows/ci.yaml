@@ -172,6 +172,9 @@ jobs:
           esphome -s external_components_source components config esp8266-boqiang-example.yaml
           esphome -s external_components_source components config esp8266-boqiang-example-debug.yaml
           esphome -s external_components_source components config esp8266-boqiang-example-faker.yaml
+          esphome -s external_components_source components config esp8266-boqiang-bms001-example.yaml
+          esphome -s external_components_source components config esp8266-boqiang-bms001-example-debug.yaml
+          esphome -s external_components_source components config esp8266-boqiang-bms001-example-faker.yaml
           esphome -s external_components_source components config esp8266-example-multiple-battery-banks.yaml
       - name: Validate esp32 example configurations
         run: |
@@ -181,6 +184,9 @@ jobs:
           esphome -s external_components_source components config esp32-boqiang-example.yaml
           esphome -s external_components_source components config esp32-boqiang-example-debug.yaml
           esphome -s external_components_source components config esp32-boqiang-example-faker.yaml
+          esphome -s external_components_source components config esp32-boqiang-bms001-example.yaml
+          esphome -s external_components_source components config esp32-boqiang-bms001-example-debug.yaml
+          esphome -s external_components_source components config esp32-boqiang-bms001-example-faker.yaml
       - name: Validate test configurations
         run: |
           esphome -s external_components_source ../components config tests/esp8266-boqiang-emulator.yaml
