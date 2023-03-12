@@ -1,6 +1,6 @@
 substitutions:
   name: seplos-bms
-  device_description: "Monitor a Seplos BMS via RS485"
+  device_description: "Monitor a Boqiang BMS via RS485"
   external_components_source: github://syssi/esphome-seplos-bms@main
   tx_pin: GPIO4
   rx_pin: GPIO5
@@ -49,7 +49,8 @@ seplos_bms:
   # off, off, off, off, off, off, off, off
   address: 0x00
   # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
-  protocol_version: 0x20
+  protocol_version: 0x26
+  override_pack: 1
   seplos_modbus_id: modbus0
   update_interval: 10s
 

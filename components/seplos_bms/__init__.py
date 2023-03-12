@@ -8,7 +8,10 @@ CODEOWNERS = ["@syssi"]
 MULTI_CONF = True
 
 CONF_SEPLOS_BMS_ID = "seplos_bms_id"
-CONF_ENABLE_FAKE_TRAFFIC = "enable_fake_traffic"
+CONF_OVERRIDE_CELL_COUNT = "override_cell_count"
+
+DEFAULT_PROTOCOL_VERSION = 0x20
+DEFAULT_ADDRESS = 0x00
 
 seplos_bms_ns = cg.esphome_ns.namespace("seplos_bms")
 SeplosBms = seplos_bms_ns.class_(
@@ -19,11 +22,17 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SeplosBms),
-            cv.Optional(CONF_ENABLE_FAKE_TRAFFIC, default=False): cv.boolean,
+            cv.Optional(CONF_OVERRIDE_CELL_COUNT, default=0): cv.int_range(
+                min=0, max=16
+            ),
         }
     )
     .extend(cv.polling_component_schema("10s"))
-    .extend(seplos_modbus.seplos_modbus_device_schema(0x00))
+    .extend(
+        seplos_modbus.seplos_modbus_device_schema(
+            DEFAULT_PROTOCOL_VERSION, DEFAULT_ADDRESS
+        )
+    )
 )
 
 
@@ -32,4 +41,4 @@ async def to_code(config):
     await cg.register_component(var, config)
     await seplos_modbus.register_seplos_modbus_device(var, config)
 
-    cg.add(var.set_enable_fake_traffic(config[CONF_ENABLE_FAKE_TRAFFIC]))
+    cg.add(var.set_override_cell_count(config[CONF_OVERRIDE_CELL_COUNT]))

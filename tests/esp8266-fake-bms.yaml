@@ -1,6 +1,6 @@
 substitutions:
   name: seplos-bms-tx
-  device_description: "Fake Seplos BMS"
+  device_description: "Fake Seplos BMS protocol version 0x20"
   tx_pin: GPIO4
   rx_pin: GPIO5
 

@@ -83,7 +83,7 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
 
   // Start of frame
   if (raw[0] != 0x7E) {
-    ESP_LOGW(TAG, "Invalid header.");
+    ESP_LOGW(TAG, "Invalid header");
 
     // return false to reset buffer
     return false;
@@ -98,7 +98,7 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
   uint16_t remote_crc = uint16_t(ascii_hex_to_byte(raw[at - 4], raw[at - 3])) << 8 |
                         (uint16_t(ascii_hex_to_byte(raw[at - 2], raw[at - 1])) << 0);
   if (computed_crc != remote_crc) {
-    ESP_LOGW(TAG, "SeplosBms CRC Check failed! %04X != %04X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "CRC Check failed! 0x%04X != 0x%04X", computed_crc, remote_crc);
     return false;
   }
 
@@ -135,19 +135,19 @@ float SeplosModbus::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SeplosModbus::send(uint8_t address, uint8_t function, uint8_t value) {
+void SeplosModbus::send(uint8_t protocol_version, uint8_t address, uint8_t function, uint8_t value) {
   if (this->flow_control_pin_ != nullptr)
     this->flow_control_pin_->digital_write(true);
 
   const uint16_t lenid = lchksum(1 * 2);
   std::vector<uint8_t> data;
-  data.push_back(0x20);        // VER
-  data.push_back(address);     // ADDR
-  data.push_back(0x46);        // CID1
-  data.push_back(function);    // CID2 (0x42)
-  data.push_back(lenid >> 8);  // LCHKSUM (0xE0)
-  data.push_back(lenid >> 0);  // LENGTH (0x02)
-  data.push_back(value);       // VALUE (0x00)
+  data.push_back(protocol_version);  // VER
+  data.push_back(address);           // ADDR
+  data.push_back(0x46);              // CID1
+  data.push_back(function);          // CID2 (0x42)
+  data.push_back(lenid >> 8);        // LCHKSUM (0xE0)
+  data.push_back(lenid >> 0);        // LENGTH (0x02)
+  data.push_back(value);             // VALUE (0x00)
 
   const uint16_t frame_len = data.size();
   std::string payload = "~";  // SOF (0x7E)

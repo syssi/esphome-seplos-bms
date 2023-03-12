@@ -49,6 +49,8 @@ seplos_bms:
     #  8    7    6    5    4    3    2   1
     # off, off, off, off, off, off, off, on
     address: 0x01
+    # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
+    protocol_version: 0x20
     seplos_modbus_id: modbus0
     update_interval: 10s
   - id: battery_bank1
@@ -56,6 +58,8 @@ seplos_bms:
     #  8    7    6    5    4    3   2    1
     # off, off, off, off, off, off, on, off
     address: 0x02
+    # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
+    protocol_version: 0x20
     seplos_modbus_id: modbus0
     update_interval: 10s
   - id: battery_bank2
@@ -63,6 +67,8 @@ seplos_bms:
     #  8    7    6    5    4    3   2   1
     # off, off, off, off, off, off, on, on
     address: 0x03
+    # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
+    protocol_version: 0x20
     seplos_modbus_id: modbus0
     update_interval: 10s
 

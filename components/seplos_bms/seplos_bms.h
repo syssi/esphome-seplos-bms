@@ -70,7 +70,8 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
 
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
 
-  void set_enable_fake_traffic(bool enable_fake_traffic) { enable_fake_traffic_ = enable_fake_traffic; }
+  void set_override_cell_count(uint8_t override_cell_count) { this->override_cell_count_ = override_cell_count; }
+
   void on_seplos_modbus_data(const std::vector<uint8_t> &data) override;
 
   void dump_config() override;
@@ -109,7 +110,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
     sensor::Sensor *temperature_sensor_{nullptr};
   } temperatures_[6];
 
-  bool enable_fake_traffic_;
+  uint8_t override_cell_count_{0};
 
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
