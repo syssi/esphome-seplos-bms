@@ -23,7 +23,7 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(SeplosBms),
             cv.Optional(CONF_OVERRIDE_CELL_COUNT, default=0): cv.int_range(
-                min=0, max=24
+                min=0, max=16
             ),
         }
     )
