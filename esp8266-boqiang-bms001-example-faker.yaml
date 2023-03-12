@@ -1,11 +1,5 @@
 <<: !include esp8266-boqiang-bms001-example-debug.yaml
 
-seplos_bms:
-  id: bms0
-  address: 0x00
-  protocol_version: 0x26
-  override_cell_count: 10
-
 # Telemetry response of a BMS001-HS01-15S
 interval:
   - interval: 2s

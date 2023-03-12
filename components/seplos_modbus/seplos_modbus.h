@@ -43,6 +43,7 @@ class SeplosModbusDevice {
  public:
   void set_parent(SeplosModbus *parent) { parent_ = parent; }
   void set_address(uint8_t address) { address_ = address; }
+  void set_pack(uint8_t pack) { pack_ = pack; }
   void set_protocol_version(uint8_t protocol_version) { protocol_version_ = protocol_version; }
   virtual void on_seplos_modbus_data(const std::vector<uint8_t> &data) = 0;
   void send(uint8_t function, uint8_t value) {
@@ -54,6 +55,7 @@ class SeplosModbusDevice {
 
   SeplosModbus *parent_;
   uint8_t address_;
+  uint8_t pack_;
   uint8_t protocol_version_;
 };
 

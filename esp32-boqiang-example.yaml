@@ -50,6 +50,7 @@ seplos_bms:
   address: 0x00
   # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
   protocol_version: 0x26
+  override_pack: 1
   seplos_modbus_id: modbus0
   update_interval: 10s
 

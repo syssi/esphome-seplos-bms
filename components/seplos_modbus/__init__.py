@@ -15,6 +15,7 @@ MULTI_CONF = True
 CONF_SEPLOS_MODBUS_ID = "seplos_modbus_id"
 CONF_RX_TIMEOUT = "rx_timeout"
 CONF_PROTOCOL_VERSION = "protocol_version"
+CONF_OVERRIDE_PACK = "override_pack"
 
 CONFIG_SCHEMA = (
     cv.Schema(
@@ -50,6 +51,7 @@ def seplos_modbus_device_schema(default_protocol_version, default_address):
         cv.Optional(
             CONF_PROTOCOL_VERSION, default=default_protocol_version
         ): cv.hex_uint8_t,
+        cv.Optional(CONF_OVERRIDE_PACK): cv.hex_uint8_t,
     }
     return cv.Schema(schema)
 
@@ -60,3 +62,8 @@ async def register_seplos_modbus_device(var, config):
     cg.add(var.set_address(config[CONF_ADDRESS]))
     cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
     cg.add(parent.register_device(var))
+
+    if CONF_OVERRIDE_PACK in config:
+        cg.add(var.set_pack(config[CONF_OVERRIDE_PACK]))
+    else:
+        cg.add(var.set_pack(config[CONF_ADDRESS]))
