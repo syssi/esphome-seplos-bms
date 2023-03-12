@@ -13,7 +13,7 @@ esphome:
   comment: ${device_description}
   project:
     name: "syssi.esphome-seplos-bms"
-    version: 1.0.0
+    version: 1.1.0
 
 esp8266:
   board: d1_mini
