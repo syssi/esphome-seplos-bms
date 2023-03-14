@@ -98,7 +98,7 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
   uint16_t remote_crc = uint16_t(ascii_hex_to_byte(raw[at - 4], raw[at - 3])) << 8 |
                         (uint16_t(ascii_hex_to_byte(raw[at - 2], raw[at - 1])) << 0);
   if (computed_crc != remote_crc) {
-    ESP_LOGW(TAG, "CRC Check failed! 0x%04X != 0x%04X", computed_crc, remote_crc);
+    ESP_LOGW(TAG, "CRC check failed! 0x%04X != 0x%04X", computed_crc, remote_crc);
     return false;
   }
 
