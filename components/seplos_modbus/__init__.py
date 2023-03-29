@@ -6,16 +6,16 @@ from esphome.const import CONF_ADDRESS, CONF_FLOW_CONTROL_PIN, CONF_ID
 from esphome.cpp_helpers import gpio_pin_expression
 
 DEPENDENCIES = ["uart"]
-
-seplos_modbus_ns = cg.esphome_ns.namespace("seplos_modbus")
-SeplosModbus = seplos_modbus_ns.class_("SeplosModbus", cg.Component, uart.UARTDevice)
-SeplosModbusDevice = seplos_modbus_ns.class_("SeplosModbusDevice")
 MULTI_CONF = True
 
 CONF_SEPLOS_MODBUS_ID = "seplos_modbus_id"
 CONF_RX_TIMEOUT = "rx_timeout"
 CONF_PROTOCOL_VERSION = "protocol_version"
 CONF_OVERRIDE_PACK = "override_pack"
+
+seplos_modbus_ns = cg.esphome_ns.namespace("seplos_modbus")
+SeplosModbus = seplos_modbus_ns.class_("SeplosModbus", cg.Component, uart.UARTDevice)
+SeplosModbusDevice = seplos_modbus_ns.class_("SeplosModbusDevice")
 
 CONFIG_SCHEMA = (
     cv.Schema(
