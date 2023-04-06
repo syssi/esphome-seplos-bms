@@ -16,6 +16,7 @@ void SeplosModbus::loop() {
   const uint32_t now = millis();
 
   if (now - this->last_seplos_modbus_byte_ > this->rx_timeout_) {
+    ESP_LOGW(TAG, "Buffer cleared");
     this->rx_buffer_.clear();
     this->last_seplos_modbus_byte_ = now;
   }
@@ -83,7 +84,7 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
 
   // Start of frame
   if (raw[0] != 0x7E) {
-    ESP_LOGW(TAG, "Invalid header");
+    ESP_LOGW(TAG, "Invalid header: 0x%02X", raw[0]);
 
     // return false to reset buffer
     return false;
