@@ -128,7 +128,7 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
 void SeplosModbus::dump_config() {
   ESP_LOGCONFIG(TAG, "SeplosModbus:");
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
-  ESP_LOGCONFIG(TAG, " RX timeout: %d ms", this->rx_timeout_);
+  ESP_LOGCONFIG(TAG, "  RX timeout: %d ms", this->rx_timeout_);
 }
 float SeplosModbus::get_setup_priority() const {
   // After UART bus
