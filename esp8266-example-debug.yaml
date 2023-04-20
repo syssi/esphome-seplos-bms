@@ -4,7 +4,7 @@ logger:
   level: DEBUG
 
 uart:
-  id: uart0
+  id: uart_0
   # Please set the default baudrate of your Seplos BMS model here. It's sometimes 19200 baud instead of 9600.
   baud_rate: 9600
   tx_pin: ${tx_pin}
