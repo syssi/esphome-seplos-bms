@@ -22,7 +22,7 @@ api:
   reboot_timeout: 0s
 
 uart:
-  id: uart0
+  id: uart_0
   baud_rate: 9600
   tx_pin: ${tx_pin}
   rx_pin: ${rx_pin}
@@ -36,15 +36,15 @@ uart:
       - lambda:
           std::string request(bytes.begin(), bytes.end());
           if(request == "~2000464F0000FD9A\r") {
-            id(uart0).write_str("~260046000000FDAE\r");
+            id(uart_0).write_str("~260046000000FDAE\r");
             return;
           }
           if(request == "~260046510000FDA8\r") {
-            id(uart0).write_str("~26004600C040424D5330372D4C44343301084A532D52696368706F77657220436F2E2C4C7464EFF7\r");
+            id(uart_0).write_str("~26004600C040424D5330372D4C44343301084A532D52696368706F77657220436F2E2C4C7464EFF7\r");
             return;
           }
           if(request == "~26004642E00201FD30\r") {
-            id(uart0).write_str("~26004600307600011000000000000000000000000000000000000000000000000000000000000000000608530853085308530BAD0B9600000000002F0213880001E6AF\r");
+            id(uart_0).write_str("~26004600307600011000000000000000000000000000000000000000000000000000000000000000000608530853085308530BAD0B9600000000002F0213880001E6AF\r");
             return;
           }
           ESP_LOGD("Lambda", "Unhandled request %s", request.c_str());

@@ -42,7 +42,7 @@ mqtt:
 # api:
 
 uart:
-  id: uart0
+  id: uart_0
   baud_rate: 9600
   tx_pin: ${tx_pin}
   rx_pin: ${rx_pin}
@@ -52,7 +52,7 @@ uart:
 
 seplos_modbus:
   id: modbus0
-  uart_id: uart0
+  uart_id: uart_0
 
 seplos_bms:
   - id: battery_bank0
