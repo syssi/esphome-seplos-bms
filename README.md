@@ -212,3 +212,4 @@ uart:
 * https://diysolarforum.com/threads/simple-seplos-bms-protocol-decode-bash-script.34993/
 * https://github.com/celsworth/lxp-pylon-utils/tree/master/lib/pylon/packet
 * https://github.com/meteosat007/solar-pylontech
+* https://github.com/BrucePerens/seplos_c
