@@ -7,6 +7,8 @@ namespace seplos_modbus {
 
 static const char *const TAG = "seplos_modbus";
 
+static const uint16_t MAX_RESPONSE_SIZE = 340;
+
 void SeplosModbus::setup() {
   if (this->flow_control_pin_ != nullptr) {
     this->flow_control_pin_->setup();
@@ -16,6 +18,8 @@ void SeplosModbus::loop() {
   const uint32_t now = millis();
 
   if (now - this->last_seplos_modbus_byte_ > this->rx_timeout_) {
+    ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
+              format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
     this->rx_buffer_.clear();
     this->last_seplos_modbus_byte_ = now;
   }
@@ -26,6 +30,8 @@ void SeplosModbus::loop() {
     if (this->parse_seplos_modbus_byte_(byte)) {
       this->last_seplos_modbus_byte_ = now;
     } else {
+      ESP_LOGVV(TAG, "Buffer cleared due to reset: %s",
+                format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
       this->rx_buffer_.clear();
     }
   }
@@ -78,20 +84,26 @@ bool SeplosModbus::parse_seplos_modbus_byte_(uint8_t byte) {
   this->rx_buffer_.push_back(byte);
   const uint8_t *raw = &this->rx_buffer_[0];
 
-  if (at == 0)
-    return true;
-
   // Start of frame
-  if (raw[0] != 0x7E) {
-    ESP_LOGW(TAG, "Invalid header");
+  if (at == 0) {
+    if (raw[0] != 0x7E) {
+      ESP_LOGW(TAG, "Invalid header: 0x%02X", raw[0]);
 
-    // return false to reset buffer
-    return false;
+      // return false to reset buffer
+      return false;
+    }
+
+    return true;
   }
 
   // End of frame '\r'
   if (raw[at] != 0x0D)
     return true;
+
+  if (at > MAX_RESPONSE_SIZE) {
+    ESP_LOGW(TAG, "Maximum response size exceeded. Flushing RX buffer...");
+    return false;
+  }
 
   uint16_t data_len = at - 4 - 1;
   uint16_t computed_crc = chksum(raw + 1, data_len);
