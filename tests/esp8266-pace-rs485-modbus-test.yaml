@@ -1,0 +1,63 @@
+substitutions:
+  name: pace-bms-tests
+  tx_pin: GPIO4
+  rx_pin: GPIO5
+
+esphome:
+  name: ${name}
+
+esp8266:
+  board: d1_mini
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+
+logger:
+  level: DEBUG
+
+api:
+  reboot_timeout: 0s
+
+uart:
+  id: uart_0
+  baud_rate: 9600
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
+  debug:
+    direction: BOTH
+    dummy_receiver: false
+
+modbus:
+  - id: modbus0
+    uart_id: uart_0
+    send_wait_time: 200ms
+
+modbus_controller:
+  - id: bms0
+    # Slave address 0x01
+    address: 0x01
+    modbus_id: modbus0
+    command_throttle: 200ms
+    update_interval: 10s
+
+sensor:
+  # 0x0001 Voltage of pack   2 byte   R/UINT16  10mV 
+  - platform: modbus_controller
+    modbus_controller_id: bms0
+    name: "${name} total voltage"
+    address: 0x0001
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 0
+
+  # 0x0002 State of charge    2 byte   R/UINT8   % (0-100%)
+  - platform: modbus_controller
+    modbus_controller_id: bms0
+    name: "${name} state of charge"
+    address: 0x0002
+    register_type: holding
+    value_type: U_WORD
+    accuracy_decimals: 0
