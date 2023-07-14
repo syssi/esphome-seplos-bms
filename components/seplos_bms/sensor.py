@@ -4,6 +4,7 @@ import esphome.config_validation as cv
 from esphome.const import (
     CONF_CURRENT,
     CONF_POWER,
+    DEVICE_CLASS_BATTERY,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_POWER,
@@ -370,7 +371,7 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_PERCENT,
             icon=ICON_STATE_OF_CHARGE,
             accuracy_decimals=1,
-            device_class=DEVICE_CLASS_EMPTY,
+            device_class=DEVICE_CLASS_BATTERY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_RESIDUAL_CAPACITY): sensor.sensor_schema(
