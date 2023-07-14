@@ -51,7 +51,12 @@ sensor:
     address: 0x0001
     register_type: holding
     value_type: U_WORD
-    accuracy_decimals: 0
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    filters:
+      - multiply: 0.01
 
   # 0x0002 State of charge    2 byte   R/UINT8   % (0-100%)
   - platform: modbus_controller
@@ -60,4 +65,7 @@ sensor:
     address: 0x0002
     register_type: holding
     value_type: U_WORD
+    unit_of_measurement: "%"
+    device_class: battery
+    state_class: measurement
     accuracy_decimals: 0
