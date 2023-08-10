@@ -189,6 +189,7 @@ jobs:
           esphome -s external_components_source components config esp32-boqiang-bms001-example.yaml
           esphome -s external_components_source components config esp32-boqiang-bms001-example-debug.yaml
           esphome -s external_components_source components config esp32-boqiang-bms001-example-faker.yaml
+          esphome -s external_components_source components config esp32-seplos-v3-example.yaml
       - name: Validate test configurations
         run: |
           esphome -s external_components_source ../components config tests/esp8266-boqiang-emulator.yaml
@@ -242,3 +243,4 @@ jobs:
         run: |
           esphome -s external_components_source components compile esp32-example-faker.yaml
           esphome -s external_components_source components compile esp32-boqiang-example-faker.yaml
+          esphome -s external_components_source components compile esp32-seplos-v3-example.yaml
