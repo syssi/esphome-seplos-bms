@@ -31,8 +31,12 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   // ->
-  // 0x2000460010960001100CD70CE90CF40CD60CEF0CE50CE10CDC0CE90CF00CE80CEF0CEA0CDA0CDE0CD8060BA60BA00B970BA60BA50BA2FD5C14A0344E0A426803134650004603E8149F0000000000000000
-  // 0x26004600307600011000000000000000000000000000000000000000000000000000000000000000000608530853085308530BAC0B9000000000002D0213880001E6B8
+  // 0x2000460010 96 0001 10
+  // 0CD70CE90CF40CD60CEF0CE50CE10CDC0CE90CF00CE80CEF0CEA0CDA0CDE0CD8060BA60BA00B970BA60BA50BA2FD5C14A0344E0A426803134650004603E8149F0000000000000000
+  // 0x25014F4280 80 0001 0E
+  // 0DD20DD20DD30DD30DCC0DCC0DCD0DCD0DCE0DCF0DCD0DCE0DCE0DCE060BE20BB10B9A0B9A0B9A0BA200001354395A005B6800005B68133A09BE3F0409
+  // 0x2600460030 76 0001 10
+  // 00000000000000000000000000000000000000000000000000000000000000000608530853085308530BAC0B9000000000002D0213880001E6B8
   //
   // *Data*
   //
@@ -119,8 +123,13 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   61     0x42 0x68      Battery capacity                 17000 * 0.01f = 170.00        Ah
   this->publish_state_(this->battery_capacity_sensor_, (float) seplos_get_16bit(offset + 7) * 0.01f);
 
-  //   63     0x03 0x13      Stage of charge                  787 * 0.1f = 78.7             %
-  this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9) * 0.1f);
+  if (data[0] == 0x25) {
+    //   71     0x03 0x13      State of charge                  787 * 0.1f = 78.7             %
+    this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9 + 8) * 0.1f);
+  } else {
+    //   63     0x03 0x13      State of charge                  787 * 0.1f = 78.7             %
+    this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9) * 0.1f);
+  }
 
   //   65     0x46 0x50      Rated capacity                   18000 * 0.01f = 180.00        Ah
   this->publish_state_(this->rated_capacity_sensor_, (float) seplos_get_16bit(offset + 11) * 0.01f);
@@ -137,14 +146,21 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   }
 
   //   69     0x03 0xE8      State of health                  1000 * 0.1f = 100.0           %
-  this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
+  if (data[0] != 0x25) {
+    this->publish_state_(this->state_of_health_sensor_, (float) seplos_get_16bit(offset + 15) * 0.1f);
+  }
 
   if (data.size() < offset + 17 + 2) {
     return;
   }
 
-  //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
-  this->publish_state_(this->port_voltage_sensor_, (float) seplos_get_16bit(offset + 17) * 0.01f);
+  if (data[0] == 0x25) {
+    //   67     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
+    this->publish_state_(this->port_voltage_sensor_, (float) seplos_get_16bit(offset + 17 - 4) * 0.01f);
+  } else {
+    //   71     0x14 0x9F      Port voltage                     5279 * 0.01f = 52.79          V
+    this->publish_state_(this->port_voltage_sensor_, (float) seplos_get_16bit(offset + 17) * 0.01f);
+  }
 
   //   73     0x00 0x00      Reserved
   //   75     0x00 0x00      Reserved
