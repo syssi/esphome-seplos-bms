@@ -124,8 +124,8 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->battery_capacity_sensor_, (float) seplos_get_16bit(offset + 7) * 0.01f);
 
   if (data[0] == 0x25) {
-    //   71     0x03 0x13      State of charge                  787 * 0.1f = 78.7             %
-    this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9 + 8) * 0.1f);
+    //   71     0x3F           State of charge                  63 * 1.0f = 63.0             %
+    this->publish_state_(this->state_of_charge_sensor_, (float) data[offset + 9 + 8] * 1.0f);
   } else {
     //   63     0x03 0x13      State of charge                  787 * 0.1f = 78.7             %
     this->publish_state_(this->state_of_charge_sensor_, (float) seplos_get_16bit(offset + 9) * 0.1f);
