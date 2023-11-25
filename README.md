@@ -24,11 +24,6 @@ ESPHome component to monitor Seplos BMS via UART or RS485
   override_pack: 1
   override_cell_count: 10
   ```
-* Anern AN-LPB-T 100AH (wall-mounted battery storage, unnamed BMS built-in, reported by [@tumbochka](https://github.com/syssi/esphome-seplos-bms/discussions/68))
-  ```
-  protocol_version: 0x26
-  override_pack: 1
-  ```
 
 ## Untested devices
 
