@@ -62,7 +62,7 @@ sensor:
     modbus_controller_id: bms0
     name: "${name} total voltage"
     address: 0x1000
-    register_type: holding
+    register_type: read
     value_type: U_WORD
     unit_of_measurement: "V"
     device_class: voltage
@@ -76,7 +76,7 @@ sensor:
     modbus_controller_id: bms0
     name: "${name} current"
     address: 0x1001
-    register_type: holding
+    register_type: read
     value_type: S_WORD
     unit_of_measurement: "A"
     device_class: current
@@ -129,7 +129,7 @@ sensor:
     modbus_controller_id: bms0
     name: "${name} state of charge"
     address: 0x1005
-    register_type: holding
+    register_type: read
     value_type: U_WORD
     unit_of_measurement: "%"
     device_class: battery
@@ -141,7 +141,7 @@ sensor:
     modbus_controller_id: bms0
     name: "${name} state of health"
     address: 0x1006
-    register_type: holding
+    register_type: read
     value_type: U_WORD
     unit_of_measurement: "%"
     state_class: measurement
