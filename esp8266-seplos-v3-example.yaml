@@ -57,6 +57,7 @@ modbus_controller:
     update_interval: 10s
 
 sensor:
+  # 1000    Pack Voltage                R    UINT16    2    10mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} total voltage"
@@ -70,6 +71,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+  # 1001    Current                     R     INT16    2    10mA
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} current"
@@ -83,6 +85,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+  # 1002    Remaining capacity          R    UINT16    2    10mAH
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} remaining capacity"
@@ -95,6 +98,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+  # 1003    Total Capacity              R    UINT16    2    10mAH
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} total capacity"
@@ -107,6 +111,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+  # 1004    Total Discharge Capacity    R    UINT16    2    10AH
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} total discharge capacity"
@@ -119,6 +124,7 @@ sensor:
     filters:
       - multiply: 0.01
 
+  # 1005    SOC                         R    UINT16    2    0.1%
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} state of charge"
@@ -130,6 +136,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 0
 
+  # 1006    SOH                         R    UINT16    2    0.1%
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} state of health"
@@ -140,6 +147,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 0
 
+  # 1007    Cycle                       R    UINT16    2    1
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cycle"
@@ -150,6 +158,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 0
 
+  # 1008    Averag of Cell Votage       R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} average cell voltage"
@@ -163,6 +172,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1009    Averag of Cell Temperature  R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} average cell temperature"
@@ -177,6 +187,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 100A    Max Cell Voltage            R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} max cell voltage"
@@ -190,6 +201,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 100B    Min Cell Voltage            R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} min cell voltage"
@@ -203,6 +215,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 100C    Max Cell Temperature        R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} max cell temperature"
@@ -217,6 +230,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 100D    Min Cell Temperature        R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} min cell temperature"
@@ -231,9 +245,12 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
-  # 0x100F Max Discharging Current
-  # 0x1010 Max Charging Current
+  # 100F    MaxDisCurt                  R    UINT16    2    1A
+  #         Max Discharging Current
+  # 1010    MaxChgCurt                  R    UINT16    2    1A
+  #         Max Charging Current
 
+  # 1100    Cell1 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 1"
@@ -247,6 +264,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1101    Cell2 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 2"
@@ -260,6 +278,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1102    Cell3 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 3"
@@ -273,6 +292,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1103    Cell4 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 4"
@@ -286,6 +306,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1104    Cell5 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 5"
@@ -299,6 +320,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1105    Cell6 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 6"
@@ -312,6 +334,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1106    Cell7 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 7"
@@ -325,6 +348,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1107    Cell8 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 8"
@@ -338,6 +362,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1108    Cell9 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 9"
@@ -351,6 +376,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 1109    Cell10 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 10"
@@ -364,6 +390,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 110A    Cell11 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 11"
@@ -377,6 +404,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 110B    Cell12 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 12"
@@ -390,6 +418,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 110C    Cell13 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 13"
@@ -403,6 +432,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 110D    Cell14 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 14"
@@ -416,6 +446,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 110E    Cell15 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 15"
@@ -429,6 +460,7 @@ sensor:
     filters:
       - multiply: 0.001
 
+  # 110F    Cell16 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell voltage 16"
@@ -442,20 +474,7 @@ sensor:
     filters:
       - multiply: 0.001
 
-  - platform: modbus_controller
-    modbus_controller_id: bms0
-    name: "${name} average cell temperature"
-    address: 0x1009
-    register_type: read
-    value_type: S_WORD
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_class: measurement
-    accuracy_decimals: 1
-    filters:
-      - offset: -27315.0
-      - multiply: 0.01
-
+  # 1110    Cell temperature 1          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell temperature 1"
@@ -470,6 +489,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 1111    Cell temperature 2          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell temperature 2"
@@ -484,6 +504,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 1112    Cell temperature 3          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell temperature 3"
@@ -498,6 +519,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 1113    Cell temperature 4          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} cell temperature 4"
@@ -512,6 +534,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 1118    Environment Temperature     R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} environment temperature"
@@ -526,6 +549,7 @@ sensor:
       - offset: -27315.0
       - multiply: 0.01
 
+  # 1119    Power temperature           R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
     name: "${name} mosfet temperature"
@@ -539,3 +563,33 @@ sensor:
     filters:
       - offset: -27315.0
       - multiply: 0.01
+
+  # Pack Info C
+  #
+  # 1200    Cells voltage 08-01low alarm state       R    HEX    1    1:alarm
+  # 1208    Cells voltage 16-09low alarm state       R    HEX    1    1:alarm
+  # 1210    Cells voltage 08-01high alarm state      R    HEX    1    1:alarm
+  # 1218    Cells voltage 16-09high alarm state      R    HEX    1    1:alarm
+  # 1220    Cell 08-01 temperature Tlow alarm state  R    HEX    1    1:alarm
+  # 1228    Cell 08-01 temperature high alarm state  R    HEX    1    1:alarm
+  # 1230    Cell 08-01 equalization event code       R    HEX    1    1:on 0:off
+  # 1238    Cell 16-09 equalization event code       R    HEX    1    1:on 0:off
+  # 1240    System state code                        R    HEX    1    See TB09
+  # 1248    Voltage event code                       R    HEX    1    See TB02
+  # 1250    Cells Temperature event code             R    HEX    1    See TB03
+  # 1258    Environment and power Temperature event code          R    HEX    1    See TB04
+  # 1260    Current event code1                      R    HEX    1    See TB05
+  # 1268    Current event code2                      R    HEX    1    See TB16
+  # 1270     The residual capacity code              R    HEX    1    See TB06
+
+  # System Parameter    reg. 1300...1367
+  # System Function     reg. 1400...1448
+  # System Control      reg. 1500...1519
+  # History Info        reg. 1600...1627
+  # Version Info        reg. 1700...1724
+  # PCS Control         reg. 1800...1823
+  # EMS Info A          reg. 2000...2019
+  # EMS Info B          reg. 2100...2115
+  # EMS Info C          reg. 2200...2248
+  #
+  # See docs/XZH BMS Modbus-RTU Protocol.pdf
