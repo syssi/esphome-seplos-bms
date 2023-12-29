@@ -172,6 +172,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -211,6 +212,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -224,6 +226,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   # 0x100F Max Discharging Current
@@ -448,6 +451,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -461,6 +465,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -474,6 +479,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -487,6 +493,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -500,6 +507,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -513,6 +521,7 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
 
   - platform: modbus_controller
@@ -526,4 +535,5 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
+      - offset: -27315.0
       - multiply: 0.01
