@@ -209,6 +209,9 @@ jobs:
           esphome -s external_components_source components config esp32-example.yaml
           esphome -s external_components_source components config esp32-example-debug.yaml
           esphome -s external_components_source components config esp32-example-faker.yaml
+          esphome -s external_components_source components config esp32-ble-example.yaml
+          esphome -s external_components_source components config esp32-ble-example-debug.yaml
+          esphome -s external_components_source components config esp32-ble-example-faker.yaml
           esphome -s external_components_source components config esp32-boqiang-example.yaml
           esphome -s external_components_source components config esp32-boqiang-example-debug.yaml
           esphome -s external_components_source components config esp32-boqiang-example-faker.yaml
@@ -269,5 +272,6 @@ jobs:
       - name: Compile esp32 example configurations
         run: |
           esphome -s external_components_source components compile esp32-example-faker.yaml
+          esphome -s external_components_source components compile esp32-ble-example-faker.yaml
           esphome -s external_components_source components compile esp32-boqiang-example-faker.yaml
           esphome -s external_components_source components compile esp32-seplos-v3-example.yaml
