@@ -1,20 +1,18 @@
 substitutions:
   name: seplos-bms
   device_description: "Monitor and control a Seplos V3 BMS via RS485 (Modbus)"
-  tx_pin: GPIO16
-  rx_pin: GPIO17
+  tx_pin: GPIO4
+  rx_pin: GPIO5
 
 esphome:
   name: ${name}
   comment: ${device_description}
   project:
     name: "syssi.esphome-seplos-bms"
-    version: 1.0.0
+    version: 1.1.0
 
-esp32:
-  board: wemos_d1_mini32
-  framework:
-    type: esp-idf
+esp8266:
+  board: d1_mini
 
 wifi:
   ssid: !secret wifi_ssid
