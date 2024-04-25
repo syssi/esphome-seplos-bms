@@ -133,6 +133,8 @@ sensor:
     device_class: battery
     state_class: measurement
     accuracy_decimals: 0
+    filters:
+      - multiply: 0.1
 
   # 1006    SOH                         R    UINT16    2    0.1%
   - platform: modbus_controller
