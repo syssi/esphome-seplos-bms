@@ -184,8 +184,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 100A    Max Cell Voltage            R    UINT16    2    1mV
   - platform: modbus_controller
@@ -227,8 +227,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 100D    Min Cell Temperature        R    UINT16    2    0.1K
   - platform: modbus_controller
@@ -242,8 +242,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 100F    MaxDisCurt                  R    UINT16    2    1A
   #         Max Discharging Current
@@ -486,8 +486,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 1111    Cell temperature 2          R    UINT16    2    0.1K
   - platform: modbus_controller
@@ -501,8 +501,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 1112    Cell temperature 3          R    UINT16    2    0.1K
   - platform: modbus_controller
@@ -516,8 +516,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 1113    Cell temperature 4          R    UINT16    2    0.1K
   - platform: modbus_controller
@@ -531,8 +531,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 1118    Environment Temperature     R    UINT16    2    0.1K
   - platform: modbus_controller
@@ -546,8 +546,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # 1119    Power temperature           R    UINT16    2    0.1K
   - platform: modbus_controller
@@ -561,8 +561,8 @@ sensor:
     state_class: measurement
     accuracy_decimals: 1
     filters:
-      - offset: -27315.0
-      - multiply: 0.01
+      - offset: -2731.5
+      - multiply: 0.1
 
   # Pack Info C
   #
