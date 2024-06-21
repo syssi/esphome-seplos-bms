@@ -63,7 +63,7 @@ Please be aware of the different RJ45 pinout colors ([T-568A vs. T-568B](images/
 
 ## Requirements
 
-* [ESPHome 2023.7.0 or higher](https://github.com/esphome/esphome/releases).
+* [ESPHome 2024.6.0 or higher](https://github.com/esphome/esphome/releases).
 * Generic ESP32 or ESP8266 board
 
 ## Installation
