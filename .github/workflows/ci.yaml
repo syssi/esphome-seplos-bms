@@ -218,6 +218,7 @@ jobs:
           esphome -s external_components_source components config esp32-boqiang-bms001-example-faker.yaml
           esphome -s external_components_source components config esp32-seplos-v3-example.yaml
           esphome -s external_components_source components config esp32-seplos-v3-example-multiple-battery-banks.yaml
+          esphome -s external_components_source components config esp32-tdt-example.yaml
       - name: Validate test configurations
         run: |
           esphome config tests/esp32-uart-sniffer.yaml
@@ -275,3 +276,4 @@ jobs:
           esphome -s external_components_source components compile esp32-example-faker.yaml
           esphome -s external_components_source components compile esp32-boqiang-example-faker.yaml
           esphome -s external_components_source components compile esp32-seplos-v3-example.yaml
+          esphome -s external_components_source components compile esp32-tdt-example.yaml
