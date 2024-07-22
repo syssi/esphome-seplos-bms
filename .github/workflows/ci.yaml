@@ -220,12 +220,13 @@ jobs:
           esphome -s external_components_source components config esp32-seplos-v3-example-multiple-battery-banks.yaml
       - name: Validate test configurations
         run: |
-          esphome -s external_components_source ../components config tests/esp8266-boqiang-emulator.yaml
-          esphome -s external_components_source ../components config tests/esp8266-boqiang-test.yaml
-          esphome -s external_components_source ../components config tests/esp8266-fake-bms.yaml
-          esphome -s external_components_source ../components config tests/esp8266-protocol-version.yaml
-          esphome -s external_components_source ../components config tests/esp8266-requests.yaml
-          esphome -s external_components_source ../components config tests/esp8266-seplos-emulator.yaml
+          esphome config tests/esp8266-boqiang-emulator.yaml
+          esphome config tests/esp8266-boqiang-test.yaml
+          esphome config tests/esp8266-fake-bms.yaml
+          esphome config tests/esp8266-protocol-version.yaml
+          esphome config tests/esp8266-requests.yaml
+          esphome config tests/esp8266-seplos-emulator.yaml
+          esphome config tests/esp8266-uart-sniffer.yaml
 
   esphome-compile:
     runs-on: ubuntu-latest
