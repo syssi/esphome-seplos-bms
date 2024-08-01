@@ -9,6 +9,9 @@ on:  # yamllint disable-line rule:truthy
   schedule:
     - cron: 0 12 * * *
 
+env:
+  FORCE_COLOR: 1
+
 jobs:
   yamllint:
     runs-on: ubuntu-latest
@@ -191,43 +194,16 @@ jobs:
       - name: Write tests/secrets.yaml
         shell: bash
         run: 'echo -e "wifi_ssid: ssid\nwifi_password: password\nmqtt_host: host\nmqtt_username: username\nmqtt_password: password" > tests/secrets.yaml'
-      - name: Validate esp8266 example configurations
+      - name: Validate example configurations
         run: |
-          esphome -s external_components_source components config esp8266-example.yaml
-          esphome -s external_components_source components config esp8266-example-debug.yaml
-          esphome -s external_components_source components config esp8266-example-faker.yaml
-          esphome -s external_components_source components config esp8266-boqiang-example.yaml
-          esphome -s external_components_source components config esp8266-boqiang-example-debug.yaml
-          esphome -s external_components_source components config esp8266-boqiang-example-faker.yaml
-          esphome -s external_components_source components config esp8266-boqiang-bms001-example.yaml
-          esphome -s external_components_source components config esp8266-boqiang-bms001-example-debug.yaml
-          esphome -s external_components_source components config esp8266-boqiang-bms001-example-faker.yaml
-          esphome -s external_components_source components config esp8266-example-multiple-battery-banks.yaml
-          esphome -s external_components_source components config esp8266-seplos-v3-example.yaml
-          esphome -s external_components_source components config esp8266-seplos-v3-example-multiple-battery-banks.yaml
-      - name: Validate esp32 example configurations
-        run: |
-          esphome -s external_components_source components config esp32-example.yaml
-          esphome -s external_components_source components config esp32-example-debug.yaml
-          esphome -s external_components_source components config esp32-example-faker.yaml
-          esphome -s external_components_source components config esp32-boqiang-example.yaml
-          esphome -s external_components_source components config esp32-boqiang-example-debug.yaml
-          esphome -s external_components_source components config esp32-boqiang-example-faker.yaml
-          esphome -s external_components_source components config esp32-boqiang-bms001-example.yaml
-          esphome -s external_components_source components config esp32-boqiang-bms001-example-debug.yaml
-          esphome -s external_components_source components config esp32-boqiang-bms001-example-faker.yaml
-          esphome -s external_components_source components config esp32-seplos-v3-example.yaml
-          esphome -s external_components_source components config esp32-seplos-v3-example-multiple-battery-banks.yaml
+          for YAML in esp*.yaml; do
+            esphome -s external_components_source components config $YAML >/dev/null
+          done
       - name: Validate test configurations
         run: |
-          esphome config tests/esp32-uart-sniffer.yaml
-          esphome config tests/esp8266-boqiang-emulator.yaml
-          esphome config tests/esp8266-boqiang-test.yaml
-          esphome config tests/esp8266-fake-bms.yaml
-          esphome config tests/esp8266-protocol-version.yaml
-          esphome config tests/esp8266-requests.yaml
-          esphome config tests/esp8266-seplos-emulator.yaml
-          esphome config tests/esp8266-uart-sniffer.yaml
+          for YAML in tests/esp*.yaml; do
+            esphome -s external_components_source ../components config $YAML >/dev/null
+          done
 
   esphome-compile:
     runs-on: ubuntu-latest
