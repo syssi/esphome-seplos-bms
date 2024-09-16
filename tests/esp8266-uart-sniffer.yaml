@@ -20,6 +20,9 @@ ota:
 logger:
   level: DEBUG
 
+api:
+  reboot_timeout: 0s
+
 uart:
   - id: uart_0
     baud_rate: 9600
