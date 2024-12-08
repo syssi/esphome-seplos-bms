@@ -18,7 +18,12 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
     return;
   }
 
-  if (data.size() == 38 && data[3] == 0x5A) {
+  if (data.size() == 6 && data[3] == 0x5A && data[5] == 0x00) {
+    ESP_LOGVV(TAG, "Intra pack communication request received");
+    return;
+  }
+
+  if (data.size() == 38 && data[3] == 0x5A && data[5] == 0x40) {
     this->on_intra_pack_data_(data);
     return;
   }
