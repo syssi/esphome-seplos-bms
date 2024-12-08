@@ -1,0 +1,104 @@
+substitutions:
+  name: seplos-bms
+  battery_bank0: "${name} bank 0"
+  battery_bank1: "${name} bank 1"
+  battery_bank2: "${name} bank 2"
+  device_description: "Monitor a Seplos BMS via RS485"
+  external_components_source: github://syssi/esphome-seplos-bms@main
+  tx_pin: GPIO4
+  rx_pin: GPIO5
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  min_version: 2024.6.0
+  project:
+    name: "syssi.esphome-seplos-bms"
+    version: 1.2.0
+
+esp8266:
+  board: d1_mini
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  platform: esphome
+
+logger:
+  level: DEBUG
+
+# If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
+# The native API has many advantages over MQTT: https://esphome.io/components/api.html#advantages-over-mqtt
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
+
+# api:
+
+uart:
+  id: uart_0
+  baud_rate: 9600
+  tx_pin: ${tx_pin}
+  rx_pin: ${rx_pin}
+  # The increased RX buffer size is important because
+  # the full BMS response must fit into the buffer
+  rx_buffer_size: 384
+
+seplos_modbus:
+  id: modbus0
+  uart_id: uart_0
+
+seplos_bms:
+  - id: battery_bank0
+    # Dip switch configuration of the first pack / address 0x01
+    #  8    7    6    5    4    3    2   1
+    # off, off, off, off, off, off, off, on
+    address: 0x01
+    # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
+    protocol_version: 0x20
+    seplos_modbus_id: modbus0
+    update_interval: never
+  - id: battery_bank1
+    # Dip switch configuration of the second pack / address 0x02
+    #  8    7    6    5    4    3   2    1
+    # off, off, off, off, off, off, on, off
+    address: 0x02
+    # Known protocol versions: 0x20 (Seplos), 0x26 (Boqiang)
+    protocol_version: 0x20
+    seplos_modbus_id: modbus0
+    update_interval: never
+
+sensor:
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank0
+    min_cell_voltage:
+      name: "${battery_bank0} min cell voltage"
+    max_cell_voltage:
+      name: "${battery_bank0} max cell voltage"
+    total_voltage:
+      name: "${battery_bank0} total voltage"
+    current:
+      name: "${battery_bank0} current"
+    state_of_charge:
+      name: "${battery_bank0} state of charge"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank1
+    min_cell_voltage:
+      name: "${battery_bank1} min cell voltage"
+    max_cell_voltage:
+      name: "${battery_bank1} max cell voltage"
+    total_voltage:
+      name: "${battery_bank1} total voltage"
+    current:
+      name: "${battery_bank1} current"
+    state_of_charge:
+      name: "${battery_bank1} state of charge"

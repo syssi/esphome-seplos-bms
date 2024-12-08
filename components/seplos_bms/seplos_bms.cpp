@@ -18,6 +18,11 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
     return;
   }
 
+  if (data.size() == 38 && data[3] == 0x5A) {
+    this->on_intra_pack_data_(data);
+    return;
+  }
+
   ESP_LOGW(TAG, "Unhandled data received (data_len: 0x%02X): %s", data[5],
            format_hex_pretty(&data.front(), data.size()).c_str());
 }
@@ -150,6 +155,79 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   75     0x00 0x00      Reserved
   //   77     0x00 0x00      Reserved
   //   79     0x00 0x00      Reserved
+}
+
+void SeplosBms::on_intra_pack_data_(const std::vector<uint8_t> &data) {
+  auto seplos_get_16bit = [&](size_t i) -> uint16_t {
+    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  };
+
+  ESP_LOGI(TAG, "Intra pack communication frame (%d bytes) received", data.size());
+  ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+
+  // <<< ~2001465A0000FD9D\r
+  // >>> ~2001465AC04000010CE10CDE0B5C0B53FFFE14983FC26D600246149A00000000000003028010EFE8\r
+  //
+  // >>> ~2002465A0000FD9C\r
+  // <<< ~2002465AC04000010CE00CDD0B620B5A0001149741236D600253149700000000000003028010F072\r
+  //
+  // *Data*
+  //
+  // Byte   Address Content: Description                      Decoded content               Coeff./Unit
+  //   0    0x20             Protocol version      VER        2.0
+  //   1    0x01             Device address        ADR
+  //   2    0x46             Device type           CID1       Lithium iron phosphate battery BMS
+  //   3    0x5A             Function code         CID2       0x00: Normal, 0x01 VER error, 0x02 Chksum error, ...
+  //   4    0xC0             Data length checksum  LCHKSUM
+  //   5    0x40             Data length           LENID      150 / 2 = 75
+  //   6      0x00           Data flag
+  //   7      0x01           Command group
+  //   8      0x0C 0xE1      Maximum Cell Voltage
+  ESP_LOGD(TAG, "Maximum Cell Voltage: %.3f V", seplos_get_16bit(8) * 0.001f);
+
+  //   10     0x0C 0xDE      Minimum Cell Voltage
+  ESP_LOGD(TAG, "Minimum Cell Voltage: %.3f V", seplos_get_16bit(10) * 0.001f);
+
+  //   12     0x0B 0x5C      Temperature 1
+  ESP_LOGD(TAG, "Temperature 1: %.1f °C", (seplos_get_16bit(12) - 2731) * 0.1f);
+
+  //   14     0x0B 0x53      Temperature 2
+  ESP_LOGD(TAG, "Temperature 2: %.1f °C", (seplos_get_16bit(14) - 2731) * 0.1f);
+
+  //   16     0xFF 0xFE      Current
+  float current = ((int16_t) seplos_get_16bit(16)) * 0.01f;
+  ESP_LOGD(TAG, "Current: %.2f A", current);
+
+  //   18     0x14 0x98      Total voltage
+  float total_voltage = seplos_get_16bit(18) * 0.01f;
+  ESP_LOGD(TAG, "Total voltage: %.2f V", total_voltage);
+
+  //   20     0x3F 0xC2      Residual capacity
+  ESP_LOGD(TAG, "Residual capacity: %.2f Ah", seplos_get_16bit(20) * 0.01f);
+
+  //   22     0x6D 0x60      Battery capacity
+  ESP_LOGD(TAG, "Battery capacity: %.2f Ah", seplos_get_16bit(22) * 0.01f);
+
+  //   24     0x02 0x46      State of charge
+  ESP_LOGD(TAG, "State of charge: %.1f %%", seplos_get_16bit(24) * 0.1f);
+
+  //   26     0x14 0x9A      Port voltage
+  ESP_LOGD(TAG, "Port voltage: %.2f V", seplos_get_16bit(26) * 0.01f);
+
+  //   28     0x00 0x00
+  ESP_LOGD(TAG, "Unknown28: 0x%02X 0x%02X (%f)", data[28], data[29], seplos_get_16bit(28) * 1.0f);
+
+  //   30     0x00 0x00
+  ESP_LOGD(TAG, "Unknown28: 0x%02X 0x%02X (%f)", data[30], data[31], seplos_get_16bit(30) * 1.0f);
+
+  //   32     0x00 0x00
+  ESP_LOGD(TAG, "Unknown28: 0x%02X 0x%02X (%f)", data[32], data[33], seplos_get_16bit(32) * 1.0f);
+
+  //   34     0x03 0x02
+  ESP_LOGD(TAG, "Unknown28: 0x%02X 0x%02X (%f)", data[34], data[35], seplos_get_16bit(34) * 1.0f);
+
+  //   36     0x80 0x10
+  ESP_LOGD(TAG, "Unknown28: 0x%02X 0x%02X (%f)", data[36], data[37], seplos_get_16bit(36) * 1.0f);
 }
 
 void SeplosBms::dump_config() {

@@ -116,6 +116,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void on_telemetry_data_(const std::vector<uint8_t> &data);
+  void on_intra_pack_data_(const std::vector<uint8_t> &data);
 };
 
 }  // namespace seplos_bms
