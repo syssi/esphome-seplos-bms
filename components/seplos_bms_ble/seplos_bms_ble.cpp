@@ -26,7 +26,7 @@ static const uint16_t SEPLOS_PKT_END = 0x0D;
 // 0x65 Set device group number and name
 
 static const uint8_t SEPLOS_COMMAND_QUEUE_SIZE = 6;
-static const uint8_t SEPLOS_COMMAND_QUEUE[SEPLOS_COMMAND_QUEUE_SIZE] = {0x47};
+static const uint8_t SEPLOS_COMMAND_QUEUE[SEPLOS_COMMAND_QUEUE_SIZE] = {0x61};
 
 void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                                        esp_ble_gattc_cb_param_t *param) {
@@ -81,7 +81,7 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
     case ESP_GATTC_REG_FOR_NOTIFY_EVT: {
       this->node_state = espbt::ClientState::ESTABLISHED;
 
-      this->send_command_(0x47, 0x00);
+      this->send_command_(0x61, 0x00);
       break;
     }
     case ESP_GATTC_NOTIFY_EVT: {
@@ -113,7 +113,7 @@ void SeplosBmsBle::update() {
   }
   this->next_command_ = 0;
   // this->send_command_(SEPLOS_COMMAND_QUEUE[this->next_command_++ % SEPLOS_COMMAND_QUEUE_SIZE]);
-  this->send_command_(0x47, 0x00);
+  this->send_command_(0x61, 0x00);
 }
 
 void SeplosBmsBle::on_seplos_bms_ble_data(const uint8_t &handle, const std::vector<uint8_t> &data) {
@@ -126,7 +126,7 @@ void SeplosBmsBle::on_seplos_bms_ble_data(const uint8_t &handle, const std::vect
   uint8_t frame_type = data[3];
 
   switch (frame_type) {
-    case 0x47:
+    case 0x61:
       this->decode_status_data_(data);
       break;
     default:
@@ -138,7 +138,7 @@ void SeplosBmsBle::on_seplos_bms_ble_data(const uint8_t &handle, const std::vect
   if (this->next_command_ < SEPLOS_COMMAND_QUEUE_SIZE) {
     this->next_command_++;
     // this->send_command_(SEPLOS_COMMAND_QUEUE[this->next_command_++ % SEPLOS_COMMAND_QUEUE_SIZE]);
-    this->send_command_(0x47, 0x00);
+    this->send_command_(0x61, 0x00);
   }
 }
 
