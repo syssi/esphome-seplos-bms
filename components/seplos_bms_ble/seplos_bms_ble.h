@@ -178,13 +178,8 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   uint8_t max_voltage_cell_{0};
   uint8_t min_voltage_cell_{0};
 
-  void decode_software_version_data_(const std::vector<uint8_t> &data);
   void decode_hardware_version_data_(const std::vector<uint8_t> &data);
   void decode_status_data_(const std::vector<uint8_t> &data);
-  void decode_general_info_data_(const std::vector<uint8_t> &data);
-  void decode_mosfet_status_data_(const std::vector<uint8_t> &data);
-  void decode_temperature_data_(const std::vector<uint8_t> &data);
-  void decode_cell_voltages_data_(const uint8_t &chunk, const std::vector<uint8_t> &data);
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
