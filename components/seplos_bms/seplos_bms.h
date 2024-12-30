@@ -112,6 +112,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
 
   uint8_t override_cell_count_{0};
 
+  bool update_interval_never_();
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);

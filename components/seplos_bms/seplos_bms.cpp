@@ -170,6 +170,11 @@ void SeplosBms::on_intra_pack_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "Intra pack communication frame (%d bytes) received", data.size());
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
+  if(!this->update_interval_never_()) {
+    ESP_LOGW(TAG, "Decoding of the intra pack communication discarded");
+    return;
+  }
+
   // <<< ~2001465A0000FD9D\r
   // >>> ~2001465AC04000010CE10CDE0B5C0B53FFFE14983FC26D600246149A00000000000003028010EFE8\r
   //
@@ -305,6 +310,10 @@ void SeplosBms::publish_state_(text_sensor::TextSensor *text_sensor, const std::
     return;
 
   text_sensor->publish_state(state);
+}
+
+bool SeplosBms::update_interval_never_() {
+  return this->get_update_interval() == SCHEDULER_DONT_RUN;
 }
 
 }  // namespace seplos_bms
