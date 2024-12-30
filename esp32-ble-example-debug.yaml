@@ -1,0 +1,18 @@
+<<: !include esp32-ble-example.yaml
+
+logger:
+  level: VERY_VERBOSE
+  logs:
+    esp32_ble: INFO
+    esp32_ble_tracker: INFO
+    seplos_bms_ble: VERY_VERBOSE
+    scheduler: INFO
+    component: DEBUG
+    sensor: DEBUG
+    mqtt: INFO
+    mqtt.idf: INFO
+    mqtt.component: INFO
+    mqtt.sensor: INFO
+    mqtt.switch: INFO
+    api.service: INFO
+    api: INFO
