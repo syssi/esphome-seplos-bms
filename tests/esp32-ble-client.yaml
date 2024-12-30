@@ -1,0 +1,48 @@
+substitutions:
+  name: seplos-bms-ble
+  device_description: "Establish a BLE client connection"
+  mac_address: A4:C1:38:27:48:9A
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  project:
+    name: "syssi.esphome-seplos-bms"
+    version: 1.0.0
+
+esp32:
+  board: wemos_d1_mini32
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  platform: esphome
+
+logger:
+  level: VERY_VERBOSE
+  logs:
+    ble_client: VERY_VERBOSE
+    esp32_ble_tracker: DEBUG
+    scheduler: DEBUG
+    component: DEBUG
+    sensor: DEBUG
+    api: DEBUG
+    api.service: DEBUG
+
+api:
+  reboot_timeout: 0s
+
+esp32_ble_tracker:
+
+ble_client:
+  - mac_address: ${mac_address}
+    id: client0
+
+switch:
+  - platform: ble_client
+    ble_client_id: client0
+    name: "${name} enable bluetooth connection"
