@@ -44,6 +44,7 @@ CONF_BATTERY_CAPACITY = "battery_capacity"
 CONF_RATED_CAPACITY = "rated_capacity"
 CONF_CHARGING_CYCLES = "charging_cycles"
 CONF_STATE_OF_HEALTH = "state_of_health"
+CONF_SAMPLING_VOLTAGE = "sampling_voltage"
 CONF_PORT_VOLTAGE = "port_voltage"
 
 CONF_CELL_VOLTAGE_1 = "cell_voltage_1"
@@ -128,6 +129,7 @@ SENSORS = [
     CONF_RATED_CAPACITY,
     CONF_CHARGING_CYCLES,
     CONF_STATE_OF_HEALTH,
+    CONF_SAMPLING_VOLTAGE,
     CONF_PORT_VOLTAGE,
 ]
 
@@ -405,6 +407,13 @@ CONFIG_SCHEMA = cv.Schema(
             icon=ICON_STATE_OF_HEALTH,
             accuracy_decimals=1,
             device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_SAMPLING_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            icon=ICON_EMPTY,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_PORT_VOLTAGE): sensor.sensor_schema(
