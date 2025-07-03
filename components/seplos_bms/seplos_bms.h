@@ -66,6 +66,9 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void set_state_of_health_sensor(sensor::Sensor *state_of_health_sensor) {
     state_of_health_sensor_ = state_of_health_sensor;
   }
+  void set_sampling_voltage_sensor(sensor::Sensor *sampling_voltage_sensor) {
+    sampling_voltage_sensor_ = sampling_voltage_sensor;
+  }
   void set_port_voltage_sensor(sensor::Sensor *port_voltage_sensor) { port_voltage_sensor_ = port_voltage_sensor; }
 
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
@@ -98,6 +101,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   sensor::Sensor *rated_capacity_sensor_;
   sensor::Sensor *charging_cycles_sensor_;
   sensor::Sensor *state_of_health_sensor_;
+  sensor::Sensor *sampling_voltage_sensor_;
   sensor::Sensor *port_voltage_sensor_;
 
   text_sensor::TextSensor *errors_text_sensor_;
