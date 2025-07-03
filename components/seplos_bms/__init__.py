@@ -10,7 +10,7 @@ MULTI_CONF = True
 CONF_SEPLOS_BMS_ID = "seplos_bms_id"
 CONF_OVERRIDE_CELL_COUNT = "override_cell_count"
 
-DEFAULT_PROTOCOL_VERSION = 0x25
+DEFAULT_PROTOCOL_VERSION = 0x20
 DEFAULT_ADDRESS = 0x00
 
 seplos_bms_ns = cg.esphome_ns.namespace("seplos_bms")
