@@ -3,7 +3,7 @@ from esphome.components import text_sensor
 import esphome.config_validation as cv
 from esphome.const import CONF_ID, ENTITY_CATEGORY_DIAGNOSTIC
 
-from . import CONF_SEPLOS_BMS_ID, SeplosBms
+from . import CONF_SEPLOS_BMS_ID, SEPLOS_BMS_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["seplos_bms"]
 
@@ -17,9 +17,8 @@ TEXT_SENSORS = [
     CONF_ERRORS,
 ]
 
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SEPLOS_BMS_ID): cv.use_id(SeplosBms),
         cv.Optional(CONF_ERRORS): text_sensor.text_sensor_schema(
             text_sensor.TextSensor,
             icon=ICON_ERRORS,

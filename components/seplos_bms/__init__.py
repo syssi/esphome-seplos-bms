@@ -18,6 +18,12 @@ SeplosBms = seplos_bms_ns.class_(
     "SeplosBms", cg.PollingComponent, seplos_modbus.SeplosModbusDevice
 )
 
+SEPLOS_BMS_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SEPLOS_BMS_ID): cv.use_id(SeplosBms),
+    }
+)
+
 CONFIG_SCHEMA = (
     cv.Schema(
         {
