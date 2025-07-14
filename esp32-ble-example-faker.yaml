@@ -64,7 +64,7 @@ interval:
           id(bms0).assemble(frame, sizeof(frame));
       - delay: 1s
 
-      # Request aggregated(?) data (0x62): 7e:10:00:46:62:00:00:a6:8a:0d
+      # Request parallel data (0x62): 7e:10:00:46:62:00:00:a6:8a:0d
       - lambda: |-
           const uint8_t frame[] = {
             0x7e, 0x14, 0x00, 0x62, 0x00, 0x00, 0x30, 0x00, 0x00, 0x10,
