@@ -583,14 +583,6 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
     ESP_LOGD(TAG, "  - Parallel external polling enabled");
   if (switch8 & 0x80)
     ESP_LOGD(TAG, "  - Standalone 1.0C charging enabled");
-
-  // Device model (10 bytes) - starting at offset 144
-  if (data.size() >= 154) {
-    std::string device_model(data.begin() + 144, data.begin() + 154);
-    device_model.erase(device_model.find_last_not_of(' ') + 1);  // Remove trailing spaces
-    ESP_LOGD(TAG, "Device model: '%s'", device_model.c_str());
-    ESP_LOGD(TAG, "Device model bytes: %s", format_hex_pretty(&data[144], 10).c_str());
-  }
 }
 
 void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
