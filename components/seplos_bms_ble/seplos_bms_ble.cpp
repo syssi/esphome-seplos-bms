@@ -349,7 +349,7 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Group number: %d", data[7]);
   ESP_LOGD(TAG, "Parameter count: %d", data[8]);
 
-  // Voltage parameters (0.001V)
+  // Voltage parameters
   ESP_LOGD(TAG, "Single high voltage alarm: %.3f V", seplos_get_16bit(9) * 0.001f);
   ESP_LOGD(TAG, "Single high pressure recovery: %.3f V", seplos_get_16bit(11) * 0.001f);
   ESP_LOGD(TAG, "Single unit low voltage alarm: %.3f V", seplos_get_16bit(13) * 0.001f);
@@ -361,7 +361,7 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Balanced turn-on voltage: %.3f V", seplos_get_16bit(25) * 0.001f);
   ESP_LOGD(TAG, "Battery cell low voltage charging is prohibited: %.3f V", seplos_get_16bit(27) * 0.001f);
 
-  // Total voltage parameters (0.01V)
+  // Total voltage parameters
   ESP_LOGD(TAG, "Total pressure high pressure alarm: %.2f V", seplos_get_16bit(29) * 0.01f);
   ESP_LOGD(TAG, "Total pressure high pressure recovery: %.2f V", seplos_get_16bit(31) * 0.01f);
   ESP_LOGD(TAG, "Low total pressure alarm: %.2f V", seplos_get_16bit(33) * 0.01f);
@@ -373,7 +373,7 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Charging overvoltage protection: %.2f V", seplos_get_16bit(45) * 0.01f);
   ESP_LOGD(TAG, "Charging overvoltage recovery: %.2f V", seplos_get_16bit(47) * 0.01f);
 
-  // Temperature parameters (0.1K, convert to °C)
+  // Temperature parameters
   ESP_LOGD(TAG, "Charging high temperature alarm: %.1f °C", seplos_get_16bit(49) * 0.1f - 273.15f);
   ESP_LOGD(TAG, "Charging high temperature recovery: %.1f °C", seplos_get_16bit(51) * 0.1f - 273.15f);
   ESP_LOGD(TAG, "Charging low temperature alarm: %.1f °C", seplos_get_16bit(53) * 0.1f - 273.15f);
