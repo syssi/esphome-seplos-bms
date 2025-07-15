@@ -851,18 +851,11 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
 
   // Reserved: 1 byte - offset + 6 (skip)
 
-  // Battery Capacity: 2 bytes (0.01Ah scale) - offset + 7
   this->publish_state_(this->battery_capacity_sensor_, seplos_get_16bit(offset + 7) * 0.01f);
-
   this->publish_state_(this->state_of_charge_sensor_, seplos_get_16bit(offset + 9) * 0.1f);
-
   this->publish_state_(this->nominal_capacity_sensor_, seplos_get_16bit(offset + 11) * 0.01f);
-
   this->publish_state_(this->charging_cycles_sensor_, seplos_get_16bit(offset + 13));
-
   this->publish_state_(this->state_of_health_sensor_, seplos_get_16bit(offset + 15) * 0.1f);
-
-  // Port voltage: 2 bytes (0.01V scale) - offset + 17
   this->publish_state_(this->port_voltage_sensor_, seplos_get_16bit(offset + 17) * 0.01f);
 
   offset = 7 + 3 + (cells * 2) + 1 + (temperatures * 2) + 19;
@@ -1052,11 +1045,6 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
         ESP_LOGD(TAG, "    - Cell %d disconnected", cell);
       }
     }
-  }
-
-  if (protection_offset + 24 < data.size()) {
-    uint16_t pack_capacity = seplos_get_16bit(protection_offset + 22);
-    ESP_LOGD(TAG, "Pack capacity: %.2f Ah", pack_capacity * 0.01f);
   }
 
   if (protection_offset + 24 < data.size()) {
