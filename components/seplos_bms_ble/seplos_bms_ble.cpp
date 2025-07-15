@@ -345,7 +345,7 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
     return;
   }
 
-  uint16_t data_len = seplos_get_16bit(5);
+  // uint16_t data_len = seplos_get_16bit(5);
   ESP_LOGD(TAG, "Group number: %d", data[7]);
   ESP_LOGD(TAG, "Parameter count: %d", data[8]);
 
@@ -598,7 +598,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
     return;
   }
 
-  uint16_t data_len = seplos_get_16bit(5);
+  // uint16_t data_len = seplos_get_16bit(5);
 
   ESP_LOGD(TAG, "Data flag: 0x%02X", data[7]);
   ESP_LOGD(TAG, "Device address: %d", data[8]);
@@ -767,7 +767,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     return;
   }
 
-  uint16_t data_len = seplos_get_16bit(5);
+  // uint16_t data_len = seplos_get_16bit(5);
   ESP_LOGD(TAG, "Device address: %d", data[7]);
   ESP_LOGD(TAG, "Reserved byte: %d", data[8]);
 
