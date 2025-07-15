@@ -852,7 +852,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   // Reserved: 1 byte - offset + 6 (skip)
 
   // Battery Capacity: 2 bytes (0.01Ah scale) - offset + 7
-  // @FIXME: Add battery capacity sensor
+  this->publish_state_(this->battery_capacity_sensor_, seplos_get_16bit(offset + 7) * 0.01f);
 
   this->publish_state_(this->state_of_charge_sensor_, seplos_get_16bit(offset + 9) * 0.1f);
 
@@ -1092,6 +1092,7 @@ void SeplosBmsBle::dump_config() {  // NOLINT(google-readability-function-size,r
   LOG_SENSOR("", "Mosfet temperature", this->mosfet_temperature_sensor_);
   LOG_SENSOR("", "State of health", this->state_of_health_sensor_);
   LOG_SENSOR("", "Port voltage", this->port_voltage_sensor_);
+  LOG_SENSOR("", "Battery capacity", this->battery_capacity_sensor_);
   LOG_SENSOR("", "Temperature 1", this->temperatures_[0].temperature_sensor_);
   LOG_SENSOR("", "Temperature 2", this->temperatures_[1].temperature_sensor_);
   LOG_SENSOR("", "Temperature 3", this->temperatures_[2].temperature_sensor_);

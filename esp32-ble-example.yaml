@@ -115,6 +115,8 @@ sensor:
       name: "${name} state of health"
     port_voltage:
       name: "${name} port voltage"
+    battery_capacity:
+      name: "${name} battery capacity"
     temperature_1:
       name: "${name} temperature 1"
     temperature_2:

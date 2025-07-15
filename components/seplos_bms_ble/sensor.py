@@ -47,6 +47,7 @@ CONF_DELTA_CELL_VOLTAGE = "delta_cell_voltage"
 CONF_AVERAGE_CELL_VOLTAGE = "average_cell_voltage"
 CONF_STATE_OF_HEALTH = "state_of_health"
 CONF_PORT_VOLTAGE = "port_voltage"
+CONF_BATTERY_CAPACITY = "battery_capacity"
 
 CONF_CELL_VOLTAGE_1 = "cell_voltage_1"
 CONF_CELL_VOLTAGE_2 = "cell_voltage_2"
@@ -166,6 +167,7 @@ SENSORS = [
     CONF_MOSFET_TEMPERATURE,
     CONF_STATE_OF_HEALTH,
     CONF_PORT_VOLTAGE,
+    CONF_BATTERY_CAPACITY,
 ]
 
 # pylint: disable=too-many-function-args
@@ -338,6 +340,13 @@ CONFIG_SCHEMA = cv.Schema(
             icon=ICON_EMPTY,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_BATTERY_CAPACITY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE_HOURS,
+            icon=ICON_NOMINAL_CAPACITY,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_TEMPERATURE_1): sensor.sensor_schema(

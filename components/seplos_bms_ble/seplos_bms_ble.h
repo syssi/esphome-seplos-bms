@@ -82,6 +82,9 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
     state_of_health_sensor_ = state_of_health_sensor;
   }
   void set_port_voltage_sensor(sensor::Sensor *port_voltage_sensor) { port_voltage_sensor_ = port_voltage_sensor; }
+  void set_battery_capacity_sensor(sensor::Sensor *battery_capacity_sensor) {
+    battery_capacity_sensor_ = battery_capacity_sensor;
+  }
 
   void set_min_cell_voltage_sensor(sensor::Sensor *min_cell_voltage_sensor) {
     min_cell_voltage_sensor_ = min_cell_voltage_sensor;
@@ -165,6 +168,7 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   sensor::Sensor *mosfet_temperature_sensor_;
   sensor::Sensor *state_of_health_sensor_;
   sensor::Sensor *port_voltage_sensor_;
+  sensor::Sensor *battery_capacity_sensor_;
 
   text_sensor::TextSensor *software_version_text_sensor_;
   text_sensor::TextSensor *device_model_text_sensor_;
