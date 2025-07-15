@@ -113,6 +113,8 @@ sensor:
       name: "${name} mosfet temperature"
     state_of_health:
       name: "${name} state of health"
+    port_voltage:
+      name: "${name} port voltage"
     temperature_1:
       name: "${name} temperature 1"
     temperature_2:
