@@ -335,266 +335,254 @@ std::string SeplosBmsBle::interpret_battery_type(uint8_t value) {
 }
 
 void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
+  auto seplos_get_16bit = [&](size_t i) -> uint16_t { return (uint16_t(data[i]) << 8) | uint16_t(data[i + 1]); };
+
   ESP_LOGI(TAG, "Settings frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
-  if (data.size() < 20) {
+  if (data.size() < 145) {
     ESP_LOGW(TAG, "Settings frame too short (%d bytes)", data.size());
     return;
   }
 
-  // Frame structure: 7E VER ADDR CID1 CID2 LEN_H LEN_L DATA... CRC_H CRC_L 0D
-  uint16_t data_len = (uint16_t(data[5]) << 8) | uint16_t(data[6]);
-  size_t frame_len = 7 + data_len + 2 + 1;  // header + payload + CRC + EOF
+  uint16_t data_len = seplos_get_16bit(5);
+  ESP_LOGD(TAG, "Group number: %d", data[7]);
+  ESP_LOGD(TAG, "Parameter count: %d", data[8]);
 
-  if (data.size() < frame_len) {
-    ESP_LOGW(TAG, "Settings frame incomplete (%d bytes, expected %d)", data.size(), frame_len);
-    return;
-  }
+  // Voltage parameters (0.001V)
+  ESP_LOGD(TAG, "Single high voltage alarm: %.3f V", seplos_get_16bit(9) * 0.001f);
+  ESP_LOGD(TAG, "Single high pressure recovery: %.3f V", seplos_get_16bit(11) * 0.001f);
+  ESP_LOGD(TAG, "Single unit low voltage alarm: %.3f V", seplos_get_16bit(13) * 0.001f);
+  ESP_LOGD(TAG, "Single unit low pressure recovery: %.3f V", seplos_get_16bit(15) * 0.001f);
+  ESP_LOGD(TAG, "Single unit overvoltage protection: %.3f V", seplos_get_16bit(17) * 0.001f);
+  ESP_LOGD(TAG, "Cell overvoltage recovery: %.3f V", seplos_get_16bit(19) * 0.001f);
+  ESP_LOGD(TAG, "Single unit under voltage protection: %.3f V", seplos_get_16bit(21) * 0.001f);
+  ESP_LOGD(TAG, "Single unit undervoltage recovery: %.3f V", seplos_get_16bit(23) * 0.001f);
+  ESP_LOGD(TAG, "Balanced turn-on voltage: %.3f V", seplos_get_16bit(25) * 0.001f);
+  ESP_LOGD(TAG, "Battery cell low voltage charging is prohibited: %.3f V", seplos_get_16bit(27) * 0.001f);
 
-  auto seplos_get_16bit = [&](size_t i) -> uint16_t { return (uint16_t(data[i]) << 8) | uint16_t(data[i + 1]); };
+  // Total voltage parameters (0.01V)
+  ESP_LOGD(TAG, "Total pressure high pressure alarm: %.2f V", seplos_get_16bit(29) * 0.01f);
+  ESP_LOGD(TAG, "Total pressure high pressure recovery: %.2f V", seplos_get_16bit(31) * 0.01f);
+  ESP_LOGD(TAG, "Low total pressure alarm: %.2f V", seplos_get_16bit(33) * 0.01f);
+  ESP_LOGD(TAG, "Total pressure low pressure recovery: %.2f V", seplos_get_16bit(35) * 0.01f);
+  ESP_LOGD(TAG, "Total voltage overvoltage protection: %.2f V", seplos_get_16bit(37) * 0.01f);
+  ESP_LOGD(TAG, "Total pressure overvoltage recovery: %.2f V", seplos_get_16bit(39) * 0.01f);
+  ESP_LOGD(TAG, "Total voltage undervoltage protection: %.2f V", seplos_get_16bit(41) * 0.01f);
+  ESP_LOGD(TAG, "Total voltage and undervoltage recovery: %.2f V", seplos_get_16bit(43) * 0.01f);
+  ESP_LOGD(TAG, "Charging overvoltage protection: %.2f V", seplos_get_16bit(45) * 0.01f);
+  ESP_LOGD(TAG, "Charging overvoltage recovery: %.2f V", seplos_get_16bit(47) * 0.01f);
 
-  if (data_len >= 2) {
-    ESP_LOGD(TAG, "Group number: %d", data[7]);
-    ESP_LOGD(TAG, "Parameter count: %d", data[8]);
+  // Temperature parameters (0.1K, convert to °C)
+  ESP_LOGD(TAG, "Charging high temperature alarm: %.1f °C", seplos_get_16bit(49) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging high temperature recovery: %.1f °C", seplos_get_16bit(51) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging low temperature alarm: %.1f °C", seplos_get_16bit(53) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging low temperature recovery: %.1f °C", seplos_get_16bit(55) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging over-temperature protection: %.1f °C", seplos_get_16bit(57) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging over-temperature recovery: %.1f °C", seplos_get_16bit(59) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging under-temperature protection: %.1f °C", seplos_get_16bit(61) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Charging under-temperature recovery: %.1f °C", seplos_get_16bit(63) * 0.1f - 273.15f);
 
-    if (data_len >= 140) {  // Full parameter set expected
-      // Voltage parameters (0.001V)
-      ESP_LOGD(TAG, "Single high voltage alarm: %.3f V", seplos_get_16bit(9) * 0.001f);
-      ESP_LOGD(TAG, "Single high pressure recovery: %.3f V", seplos_get_16bit(11) * 0.001f);
-      ESP_LOGD(TAG, "Single unit low voltage alarm: %.3f V", seplos_get_16bit(13) * 0.001f);
-      ESP_LOGD(TAG, "Single unit low pressure recovery: %.3f V", seplos_get_16bit(15) * 0.001f);
-      ESP_LOGD(TAG, "Single unit overvoltage protection: %.3f V", seplos_get_16bit(17) * 0.001f);
-      ESP_LOGD(TAG, "Cell overvoltage recovery: %.3f V", seplos_get_16bit(19) * 0.001f);
-      ESP_LOGD(TAG, "Single unit under voltage protection: %.3f V", seplos_get_16bit(21) * 0.001f);
-      ESP_LOGD(TAG, "Single unit undervoltage recovery: %.3f V", seplos_get_16bit(23) * 0.001f);
-      ESP_LOGD(TAG, "Balanced turn-on voltage: %.3f V", seplos_get_16bit(25) * 0.001f);
-      ESP_LOGD(TAG, "Battery cell low voltage charging is prohibited: %.3f V", seplos_get_16bit(27) * 0.001f);
+  ESP_LOGD(TAG, "Discharge high temperature alarm: %.1f °C", seplos_get_16bit(65) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge high temperature recovery: %.1f °C", seplos_get_16bit(67) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge low temperature alarm: %.1f °C", seplos_get_16bit(69) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge low temperature recovery: %.1f °C", seplos_get_16bit(71) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge over temperature protection: %.1f °C", seplos_get_16bit(73) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge over-temperature recovery: %.1f °C", seplos_get_16bit(75) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge under-temperature protection: %.1f °C", seplos_get_16bit(77) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Discharge under-temperature recovery: %.1f °C", seplos_get_16bit(79) * 0.1f - 273.15f);
 
-      // Total voltage parameters (0.01V)
-      ESP_LOGD(TAG, "Total pressure high pressure alarm: %.2f V", seplos_get_16bit(29) * 0.01f);
-      ESP_LOGD(TAG, "Total pressure high pressure recovery: %.2f V", seplos_get_16bit(31) * 0.01f);
-      ESP_LOGD(TAG, "Low total pressure alarm: %.2f V", seplos_get_16bit(33) * 0.01f);
-      ESP_LOGD(TAG, "Total pressure low pressure recovery: %.2f V", seplos_get_16bit(35) * 0.01f);
-      ESP_LOGD(TAG, "Total voltage overvoltage protection: %.2f V", seplos_get_16bit(37) * 0.01f);
-      ESP_LOGD(TAG, "Total pressure overvoltage recovery: %.2f V", seplos_get_16bit(39) * 0.01f);
-      ESP_LOGD(TAG, "Total voltage undervoltage protection: %.2f V", seplos_get_16bit(41) * 0.01f);
-      ESP_LOGD(TAG, "Total voltage and undervoltage recovery: %.2f V", seplos_get_16bit(43) * 0.01f);
-      ESP_LOGD(TAG, "Charging overvoltage protection: %.2f V", seplos_get_16bit(45) * 0.01f);
-      ESP_LOGD(TAG, "Charging overvoltage recovery: %.2f V", seplos_get_16bit(47) * 0.01f);
+  ESP_LOGD(TAG, "Battery core low temperature heating: %.1f °C", seplos_get_16bit(81) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Battery cell low temperature recovery: %.1f °C", seplos_get_16bit(83) * 0.1f - 273.15f);
 
-      // Temperature parameters (0.1K, convert to °C)
-      ESP_LOGD(TAG, "Charging high temperature alarm: %.1f °C", seplos_get_16bit(49) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging high temperature recovery: %.1f °C", seplos_get_16bit(51) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging low temperature alarm: %.1f °C", seplos_get_16bit(53) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging low temperature recovery: %.1f °C", seplos_get_16bit(55) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging over-temperature protection: %.1f °C", seplos_get_16bit(57) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging over-temperature recovery: %.1f °C", seplos_get_16bit(59) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging under-temperature protection: %.1f °C", seplos_get_16bit(61) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Charging under-temperature recovery: %.1f °C", seplos_get_16bit(63) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environmental high temperature alarm: %.1f °C", seplos_get_16bit(85) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environmental high temperature recovery: %.1f °C", seplos_get_16bit(87) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environmental low temperature alarm: %.1f °C", seplos_get_16bit(89) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Ambient low temperature recovery: %.1f °C", seplos_get_16bit(91) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environmental over-temperature protection: %.1f °C", seplos_get_16bit(93) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environment over-temperature recovery: %.1f °C", seplos_get_16bit(95) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environmental under-temperature protection: %.1f °C", seplos_get_16bit(97) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Environmental low temperature recovery: %.1f °C", seplos_get_16bit(99) * 0.1f - 273.15f);
 
-      ESP_LOGD(TAG, "Discharge high temperature alarm: %.1f °C", seplos_get_16bit(65) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge high temperature recovery: %.1f °C", seplos_get_16bit(67) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge low temperature alarm: %.1f °C", seplos_get_16bit(69) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge low temperature recovery: %.1f °C", seplos_get_16bit(71) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge over temperature protection: %.1f °C", seplos_get_16bit(73) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge over-temperature recovery: %.1f °C", seplos_get_16bit(75) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge under-temperature protection: %.1f °C", seplos_get_16bit(77) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Discharge under-temperature recovery: %.1f °C", seplos_get_16bit(79) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Power high temperature alarm: %.1f °C", seplos_get_16bit(101) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Power high temperature recovery: %.1f °C", seplos_get_16bit(103) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Power over temperature protection: %.1f °C", seplos_get_16bit(105) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Power over temperature recovery: %.1f °C", seplos_get_16bit(107) * 0.1f - 273.15f);
 
-      ESP_LOGD(TAG, "Battery core low temperature heating: %.1f °C", seplos_get_16bit(81) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Battery cell low temperature recovery: %.1f °C", seplos_get_16bit(83) * 0.1f - 273.15f);
+  // Current parameters (0.01A)
+  ESP_LOGD(TAG, "Charging overcurrent alarm: %.2f A", seplos_get_16bit(109) * 0.01f);
+  ESP_LOGD(TAG, "Charging overcurrent recovery: %.2f A", seplos_get_16bit(111) * 0.01f);
+  ESP_LOGD(TAG, "Discharge overcurrent alarm: %.2f A", seplos_get_16bit(113) * 0.01f);
+  ESP_LOGD(TAG, "Discharge overcurrent recovery: %.2f A", seplos_get_16bit(115) * 0.01f);
+  ESP_LOGD(TAG, "Charging overcurrent protection: %.2f A", seplos_get_16bit(117) * 0.01f);
+  ESP_LOGD(TAG, "Discharge overcurrent protection: %.2f A", seplos_get_16bit(119) * 0.01f);
+  ESP_LOGD(TAG, "Transient overcurrent protection: %.2f A", seplos_get_16bit(121) * 0.01f);
 
-      ESP_LOGD(TAG, "Environmental high temperature alarm: %.1f °C", seplos_get_16bit(85) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Environmental high temperature recovery: %.1f °C", seplos_get_16bit(87) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Environmental low temperature alarm: %.1f °C", seplos_get_16bit(89) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Ambient low temperature recovery: %.1f °C", seplos_get_16bit(91) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Environmental over-temperature protection: %.1f °C", seplos_get_16bit(93) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Environment over-temperature recovery: %.1f °C", seplos_get_16bit(95) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Environmental under-temperature protection: %.1f °C", seplos_get_16bit(97) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Environmental low temperature recovery: %.1f °C", seplos_get_16bit(99) * 0.1f - 273.15f);
+  // Timing and capacity
+  ESP_LOGD(TAG, "Output soft start delay: %d ms", seplos_get_16bit(123));
+  ESP_LOGD(TAG, "Battery rated capacity: %.2f Ah", seplos_get_16bit(125) * 0.01f);
+  ESP_LOGD(TAG, "Battery remaining capacity: %.2f Ah", seplos_get_16bit(127) * 0.01f);
 
-      ESP_LOGD(TAG, "Power high temperature alarm: %.1f °C", seplos_get_16bit(101) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Power high temperature recovery: %.1f °C", seplos_get_16bit(103) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Power over temperature protection: %.1f °C", seplos_get_16bit(105) * 0.1f - 273.15f);
-      ESP_LOGD(TAG, "Power over temperature recovery: %.1f °C", seplos_get_16bit(107) * 0.1f - 273.15f);
+  // 1-byte parameters
+  ESP_LOGD(TAG, "Cell failure voltage difference: %.2f V", data[130] * 0.01f);
+  ESP_LOGD(TAG, "Battery failure recovery: %.2f V", data[131] * 0.01f);
+  ESP_LOGD(TAG, "Equilibrium opening pressure difference: %.3f V", data[132] * 0.001f);
+  ESP_LOGD(TAG, "Equalization end pressure difference: %.3f V", data[133] * 0.001f);
+  ESP_LOGD(TAG, "Static equilibrium time: %d h", data[134]);
+  ESP_LOGD(TAG, "Number of battery cells in series: %d", data[135]);
 
-      // Current parameters (0.01A)
-      ESP_LOGD(TAG, "Charging overcurrent alarm: %.2f A", seplos_get_16bit(109) * 0.01f);
-      ESP_LOGD(TAG, "Charging overcurrent recovery: %.2f A", seplos_get_16bit(111) * 0.01f);
-      ESP_LOGD(TAG, "Discharge overcurrent alarm: %.2f A", seplos_get_16bit(113) * 0.01f);
-      ESP_LOGD(TAG, "Discharge overcurrent recovery: %.2f A", seplos_get_16bit(115) * 0.01f);
-      ESP_LOGD(TAG, "Charging overcurrent protection: %.2f A", seplos_get_16bit(117) * 0.01f);
-      ESP_LOGD(TAG, "Discharge overcurrent protection: %.2f A", seplos_get_16bit(119) * 0.01f);
-      ESP_LOGD(TAG, "Transient overcurrent protection: %.2f A", seplos_get_16bit(121) * 0.01f);
+  // Function switches with detailed bitmask interpretation
+  uint8_t switch1 = data[136];
+  ESP_LOGD(TAG, "Function switch 1: 0x%02X", switch1);
+  if (switch1 & 0x01)
+    ESP_LOGD(TAG, "  - Voltage sensing failure enabled");
+  if (switch1 & 0x02)
+    ESP_LOGD(TAG, "  - Temperature sensing failure enabled");
+  if (switch1 & 0x04)
+    ESP_LOGD(TAG, "  - Current sensing failure enabled");
+  if (switch1 & 0x08)
+    ESP_LOGD(TAG, "  - Key switch failure enabled");
+  if (switch1 & 0x10)
+    ESP_LOGD(TAG, "  - Cell voltage difference failure enabled");
+  if (switch1 & 0x20)
+    ESP_LOGD(TAG, "  - Charging switch failure enabled");
+  if (switch1 & 0x40)
+    ESP_LOGD(TAG, "  - Discharge switch failure enabled");
+  if (switch1 & 0x80)
+    ESP_LOGD(TAG, "  - Current limit switch failure enabled");
 
-      // Timing and capacity
-      ESP_LOGD(TAG, "Output soft start delay: %d ms", seplos_get_16bit(123));
-      ESP_LOGD(TAG, "Battery rated capacity: %.2f Ah", seplos_get_16bit(125) * 0.01f);
-      ESP_LOGD(TAG, "Battery remaining capacity: %.2f Ah", seplos_get_16bit(127) * 0.01f);
+  uint8_t switch2 = data[137];
+  ESP_LOGD(TAG, "Function switch 2: 0x%02X", switch2);
+  if (switch2 & 0x01)
+    ESP_LOGD(TAG, "  - Single high voltage alarm enabled");
+  if (switch2 & 0x02)
+    ESP_LOGD(TAG, "  - Single overvoltage protection enabled");
+  if (switch2 & 0x04)
+    ESP_LOGD(TAG, "  - Single unit low voltage alarm enabled");
+  if (switch2 & 0x08)
+    ESP_LOGD(TAG, "  - Single unit undervoltage protection enabled");
+  if (switch2 & 0x10)
+    ESP_LOGD(TAG, "  - Total pressure high voltage alarm enabled");
+  if (switch2 & 0x20)
+    ESP_LOGD(TAG, "  - Total voltage overvoltage protection enabled");
+  if (switch2 & 0x40)
+    ESP_LOGD(TAG, "  - Total pressure low pressure alarm enabled");
+  if (switch2 & 0x80)
+    ESP_LOGD(TAG, "  - Total voltage undervoltage protection enabled");
 
-      // 1-byte parameters
-      ESP_LOGD(TAG, "Cell failure voltage difference: %.2f V", data[130] * 0.01f);
-      ESP_LOGD(TAG, "Battery failure recovery: %.2f V", data[131] * 0.01f);
-      ESP_LOGD(TAG, "Equilibrium opening pressure difference: %.3f V", data[132] * 0.001f);
-      ESP_LOGD(TAG, "Equalization end pressure difference: %.3f V", data[133] * 0.001f);
-      ESP_LOGD(TAG, "Static equilibrium time: %d h", data[134]);
-      ESP_LOGD(TAG, "Number of battery cells in series: %d", data[135]);
+  uint8_t switch3 = data[138];
+  ESP_LOGD(TAG, "Function switch 3: 0x%02X", switch3);
+  if (switch3 & 0x01)
+    ESP_LOGD(TAG, "  - Charging high temperature alarm enabled");
+  if (switch3 & 0x02)
+    ESP_LOGD(TAG, "  - Charging over-temperature protection enabled");
+  if (switch3 & 0x04)
+    ESP_LOGD(TAG, "  - Charging low temperature alarm enabled");
+  if (switch3 & 0x08)
+    ESP_LOGD(TAG, "  - Charging under-temperature protection enabled");
+  if (switch3 & 0x10)
+    ESP_LOGD(TAG, "  - Discharge high temperature alarm enabled");
+  if (switch3 & 0x20)
+    ESP_LOGD(TAG, "  - Discharge over-temperature protection enabled");
+  if (switch3 & 0x40)
+    ESP_LOGD(TAG, "  - Discharge low temperature alarm enabled");
+  if (switch3 & 0x80)
+    ESP_LOGD(TAG, "  - Discharge under-temperature protection enabled");
 
-      // Function switches with detailed bitmask interpretation
-      uint8_t switch1 = data[136];
-      ESP_LOGD(TAG, "Function switch 1: 0x%02X", switch1);
-      if (switch1 & 0x01)
-        ESP_LOGD(TAG, "  - Voltage sensing failure enabled");
-      if (switch1 & 0x02)
-        ESP_LOGD(TAG, "  - Temperature sensing failure enabled");
-      if (switch1 & 0x04)
-        ESP_LOGD(TAG, "  - Current sensing failure enabled");
-      if (switch1 & 0x08)
-        ESP_LOGD(TAG, "  - Key switch failure enabled");
-      if (switch1 & 0x10)
-        ESP_LOGD(TAG, "  - Cell voltage difference failure enabled");
-      if (switch1 & 0x20)
-        ESP_LOGD(TAG, "  - Charging switch failure enabled");
-      if (switch1 & 0x40)
-        ESP_LOGD(TAG, "  - Discharge switch failure enabled");
-      if (switch1 & 0x80)
-        ESP_LOGD(TAG, "  - Current limit switch failure enabled");
+  uint8_t switch4 = data[139];
+  ESP_LOGD(TAG, "Function switch 4: 0x%02X", switch4);
+  if (switch4 & 0x01)
+    ESP_LOGD(TAG, "  - Ambient high temperature alarm enabled");
+  if (switch4 & 0x02)
+    ESP_LOGD(TAG, "  - Environmental over-temperature protection enabled");
+  if (switch4 & 0x04)
+    ESP_LOGD(TAG, "  - Ambient low temperature alarm enabled");
+  if (switch4 & 0x08)
+    ESP_LOGD(TAG, "  - Environmental under-temperature protection enabled");
+  if (switch4 & 0x10)
+    ESP_LOGD(TAG, "  - Power over-temperature protection enabled");
+  if (switch4 & 0x20)
+    ESP_LOGD(TAG, "  - Power high temperature alarm enabled");
+  if (switch4 & 0x40)
+    ESP_LOGD(TAG, "  - Battery core low-temperature heating enabled");
+  if (switch4 & 0x80)
+    ESP_LOGD(TAG, "  - Secondary trip protection enabled");
 
-      uint8_t switch2 = data[137];
-      ESP_LOGD(TAG, "Function switch 2: 0x%02X", switch2);
-      if (switch2 & 0x01)
-        ESP_LOGD(TAG, "  - Single high voltage alarm enabled");
-      if (switch2 & 0x02)
-        ESP_LOGD(TAG, "  - Single overvoltage protection enabled");
-      if (switch2 & 0x04)
-        ESP_LOGD(TAG, "  - Single unit low voltage alarm enabled");
-      if (switch2 & 0x08)
-        ESP_LOGD(TAG, "  - Single unit undervoltage protection enabled");
-      if (switch2 & 0x10)
-        ESP_LOGD(TAG, "  - Total pressure high voltage alarm enabled");
-      if (switch2 & 0x20)
-        ESP_LOGD(TAG, "  - Total voltage overvoltage protection enabled");
-      if (switch2 & 0x40)
-        ESP_LOGD(TAG, "  - Total pressure low pressure alarm enabled");
-      if (switch2 & 0x80)
-        ESP_LOGD(TAG, "  - Total voltage undervoltage protection enabled");
+  uint8_t switch5 = data[140];
+  ESP_LOGD(TAG, "Function switch 5: 0x%02X", switch5);
+  if (switch5 & 0x01)
+    ESP_LOGD(TAG, "  - Charging overcurrent alarm enabled");
+  if (switch5 & 0x02)
+    ESP_LOGD(TAG, "  - Charging overcurrent protection enabled");
+  if (switch5 & 0x04)
+    ESP_LOGD(TAG, "  - Discharge overcurrent alarm enabled");
+  if (switch5 & 0x08)
+    ESP_LOGD(TAG, "  - Discharge overcurrent protection enabled");
+  if (switch5 & 0x10)
+    ESP_LOGD(TAG, "  - Transient overcurrent protection enabled");
+  if (switch5 & 0x20)
+    ESP_LOGD(TAG, "  - Output short circuit protection enabled");
+  if (switch5 & 0x40)
+    ESP_LOGD(TAG, "  - Transient overcurrent lockout enabled");
+  if (switch5 & 0x80)
+    ESP_LOGD(TAG, "  - Output short circuit lockout enabled");
 
-      uint8_t switch3 = data[138];
-      ESP_LOGD(TAG, "Function switch 3: 0x%02X", switch3);
-      if (switch3 & 0x01)
-        ESP_LOGD(TAG, "  - Charging high temperature alarm enabled");
-      if (switch3 & 0x02)
-        ESP_LOGD(TAG, "  - Charging over-temperature protection enabled");
-      if (switch3 & 0x04)
-        ESP_LOGD(TAG, "  - Charging low temperature alarm enabled");
-      if (switch3 & 0x08)
-        ESP_LOGD(TAG, "  - Charging under-temperature protection enabled");
-      if (switch3 & 0x10)
-        ESP_LOGD(TAG, "  - Discharge high temperature alarm enabled");
-      if (switch3 & 0x20)
-        ESP_LOGD(TAG, "  - Discharge over-temperature protection enabled");
-      if (switch3 & 0x40)
-        ESP_LOGD(TAG, "  - Discharge low temperature alarm enabled");
-      if (switch3 & 0x80)
-        ESP_LOGD(TAG, "  - Discharge under-temperature protection enabled");
+  uint8_t switch6 = data[141];
+  ESP_LOGD(TAG, "Function switch 6: 0x%02X", switch6);
+  if (switch6 & 0x01)
+    ESP_LOGD(TAG, "  - Charging high voltage protection enabled");
+  if (switch6 & 0x02)
+    ESP_LOGD(TAG, "  - Intermittent power supply function enabled");
+  if (switch6 & 0x04)
+    ESP_LOGD(TAG, "  - Remaining capacity alarm enabled");
+  if (switch6 & 0x08)
+    ESP_LOGD(TAG, "  - Remaining capacity protection enabled");
+  if (switch6 & 0x10)
+    ESP_LOGD(TAG, "  - Battery cell low voltage charging prohibited enabled");
+  if (switch6 & 0x20)
+    ESP_LOGD(TAG, "  - Output reverse polarity protection enabled");
+  if (switch6 & 0x40)
+    ESP_LOGD(TAG, "  - Output connection failure enabled");
+  if (switch6 & 0x80)
+    ESP_LOGD(TAG, "  - Output soft start function enabled");
 
-      uint8_t switch4 = data[139];
-      ESP_LOGD(TAG, "Function switch 4: 0x%02X", switch4);
-      if (switch4 & 0x01)
-        ESP_LOGD(TAG, "  - Ambient high temperature alarm enabled");
-      if (switch4 & 0x02)
-        ESP_LOGD(TAG, "  - Environmental over-temperature protection enabled");
-      if (switch4 & 0x04)
-        ESP_LOGD(TAG, "  - Ambient low temperature alarm enabled");
-      if (switch4 & 0x08)
-        ESP_LOGD(TAG, "  - Environmental under-temperature protection enabled");
-      if (switch4 & 0x10)
-        ESP_LOGD(TAG, "  - Power over-temperature protection enabled");
-      if (switch4 & 0x20)
-        ESP_LOGD(TAG, "  - Power high temperature alarm enabled");
-      if (switch4 & 0x40)
-        ESP_LOGD(TAG, "  - Battery core low-temperature heating enabled");
-      if (switch4 & 0x80)
-        ESP_LOGD(TAG, "  - Secondary trip protection enabled");
+  uint8_t switch7 = data[142];
+  ESP_LOGD(TAG, "Function switch 7: 0x%02X", switch7);
+  if (switch7 & 0x01)
+    ESP_LOGD(TAG, "  - Charge balancing function enabled");
+  if (switch7 & 0x02)
+    ESP_LOGD(TAG, "  - Static equalization function enabled");
+  if (switch7 & 0x04)
+    ESP_LOGD(TAG, "  - Timeout prohibits equalization enabled");
+  if (switch7 & 0x08)
+    ESP_LOGD(TAG, "  - Over-temperature prohibition equalization enabled");
+  if (switch7 & 0x10)
+    ESP_LOGD(TAG, "  - Automatic activation of charging enabled");
+  if (switch7 & 0x20)
+    ESP_LOGD(TAG, "  - Manual activation of charging enabled");
+  if (switch7 & 0x40)
+    ESP_LOGD(TAG, "  - Active current limiting charging enabled");
+  if (switch7 & 0x80)
+    ESP_LOGD(TAG, "  - Passive current limiting charging enabled");
 
-      uint8_t switch5 = data[140];
-      ESP_LOGD(TAG, "Function switch 5: 0x%02X", switch5);
-      if (switch5 & 0x01)
-        ESP_LOGD(TAG, "  - Charging overcurrent alarm enabled");
-      if (switch5 & 0x02)
-        ESP_LOGD(TAG, "  - Charging overcurrent protection enabled");
-      if (switch5 & 0x04)
-        ESP_LOGD(TAG, "  - Discharge overcurrent alarm enabled");
-      if (switch5 & 0x08)
-        ESP_LOGD(TAG, "  - Discharge overcurrent protection enabled");
-      if (switch5 & 0x10)
-        ESP_LOGD(TAG, "  - Transient overcurrent protection enabled");
-      if (switch5 & 0x20)
-        ESP_LOGD(TAG, "  - Output short circuit protection enabled");
-      if (switch5 & 0x40)
-        ESP_LOGD(TAG, "  - Transient overcurrent lockout enabled");
-      if (switch5 & 0x80)
-        ESP_LOGD(TAG, "  - Output short circuit lockout enabled");
-
-      uint8_t switch6 = data[141];
-      ESP_LOGD(TAG, "Function switch 6: 0x%02X", switch6);
-      if (switch6 & 0x01)
-        ESP_LOGD(TAG, "  - Charging high voltage protection enabled");
-      if (switch6 & 0x02)
-        ESP_LOGD(TAG, "  - Intermittent power supply function enabled");
-      if (switch6 & 0x04)
-        ESP_LOGD(TAG, "  - Remaining capacity alarm enabled");
-      if (switch6 & 0x08)
-        ESP_LOGD(TAG, "  - Remaining capacity protection enabled");
-      if (switch6 & 0x10)
-        ESP_LOGD(TAG, "  - Battery cell low voltage charging prohibited enabled");
-      if (switch6 & 0x20)
-        ESP_LOGD(TAG, "  - Output reverse polarity protection enabled");
-      if (switch6 & 0x40)
-        ESP_LOGD(TAG, "  - Output connection failure enabled");
-      if (switch6 & 0x80)
-        ESP_LOGD(TAG, "  - Output soft start function enabled");
-
-      uint8_t switch7 = data[142];
-      ESP_LOGD(TAG, "Function switch 7: 0x%02X", switch7);
-      if (switch7 & 0x01)
-        ESP_LOGD(TAG, "  - Charge balancing function enabled");
-      if (switch7 & 0x02)
-        ESP_LOGD(TAG, "  - Static equalization function enabled");
-      if (switch7 & 0x04)
-        ESP_LOGD(TAG, "  - Timeout prohibits equalization enabled");
-      if (switch7 & 0x08)
-        ESP_LOGD(TAG, "  - Over-temperature prohibition equalization enabled");
-      if (switch7 & 0x10)
-        ESP_LOGD(TAG, "  - Automatic activation of charging enabled");
-      if (switch7 & 0x20)
-        ESP_LOGD(TAG, "  - Manual activation of charging enabled");
-      if (switch7 & 0x40)
-        ESP_LOGD(TAG, "  - Active current limiting charging enabled");
-      if (switch7 & 0x80)
-        ESP_LOGD(TAG, "  - Passive current limiting charging enabled");
-
-      uint8_t switch8 = data[143];
-      ESP_LOGD(TAG, "Function switch 8: 0x%02X", switch8);
-      if (switch8 & 0x01)
-        ESP_LOGD(TAG, "  - Switch shutdown function enabled");
-      if (switch8 & 0x02)
-        ESP_LOGD(TAG, "  - Standby power-off function enabled");
-      if (switch8 & 0x04)
-        ESP_LOGD(TAG, "  - History function enabled");
-      if (switch8 & 0x08)
-        ESP_LOGD(TAG, "  - LCD display function enabled");
-      if (switch8 & 0x10)
-        ESP_LOGD(TAG, "  - Bluetooth communication function enabled");
-      if (switch8 & 0x20)
-        ESP_LOGD(TAG, "  - Automatic address encoding enabled");
-      if (switch8 & 0x40)
-        ESP_LOGD(TAG, "  - Parallel external polling enabled");
-      if (switch8 & 0x80)
-        ESP_LOGD(TAG, "  - Standalone 1.0C charging enabled");
-    }
-  }
+  uint8_t switch8 = data[143];
+  ESP_LOGD(TAG, "Function switch 8: 0x%02X", switch8);
+  if (switch8 & 0x01)
+    ESP_LOGD(TAG, "  - Switch shutdown function enabled");
+  if (switch8 & 0x02)
+    ESP_LOGD(TAG, "  - Standby power-off function enabled");
+  if (switch8 & 0x04)
+    ESP_LOGD(TAG, "  - History function enabled");
+  if (switch8 & 0x08)
+    ESP_LOGD(TAG, "  - LCD display function enabled");
+  if (switch8 & 0x10)
+    ESP_LOGD(TAG, "  - Bluetooth communication function enabled");
+  if (switch8 & 0x20)
+    ESP_LOGD(TAG, "  - Automatic address encoding enabled");
+  if (switch8 & 0x40)
+    ESP_LOGD(TAG, "  - Parallel external polling enabled");
+  if (switch8 & 0x80)
+    ESP_LOGD(TAG, "  - Standalone 1.0C charging enabled");
 }
 
 void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
@@ -605,178 +593,169 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "Parallel data frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
-  if (data.size() < 15) {
+  if (data.size() < 58) {
     ESP_LOGW(TAG, "Parallel data frame too short (%d bytes)", data.size());
     return;
   }
 
-  // Frame structure: 7E VER ADDR CID1 CID2 LEN_H LEN_L DATA... CRC_H CRC_L 0D
-  uint16_t data_len = (uint16_t(data[5]) << 8) | uint16_t(data[6]);
-  size_t frame_len = 7 + data_len + 2 + 1;  // header + payload + CRC + EOF
-
-  if (data.size() < frame_len) {
-    ESP_LOGW(TAG, "Parallel data frame incomplete (%d bytes, expected %d)", data.size(), frame_len);
-    return;
-  }
+  uint16_t data_len = seplos_get_16bit(5);
 
   size_t offset = 7;
 
-  if (data_len >= 10) {
-    ESP_LOGD(TAG, "Data flag: 0x%02X", data[offset + 0]);
-    ESP_LOGD(TAG, "Device address: %d", data[offset + 1]);
-    ESP_LOGD(TAG, "Number of cells: %d", data[offset + 2]);
-    ESP_LOGD(TAG, "Max cell voltage: %.3f V", seplos_get_16bit(offset + 3) * 0.001f);
-    ESP_LOGD(TAG, "Min cell voltage: %.3f V", seplos_get_16bit(offset + 5) * 0.001f);
-    ESP_LOGD(TAG, "Temperature quantity: %d", data[offset + 7]);
-    ESP_LOGD(TAG, "Max cell temperature: %.1f °C", seplos_get_16bit(offset + 8) * 0.1f - 273.15f);
-    ESP_LOGD(TAG, "Min cell temperature: %.1f °C", seplos_get_16bit(offset + 10) * 0.1f - 273.15f);
-    ESP_LOGD(TAG, "Ambient temperature: %.1f °C", seplos_get_16bit(offset + 12) * 0.1f - 273.15f);
-    ESP_LOGD(TAG, "Power temperature: %.1f °C", seplos_get_16bit(offset + 14) * 0.1f - 273.15f);
-    ESP_LOGD(TAG, "Current: %.1f A", (int16_t) seplos_get_16bit(offset + 16) * 0.1f);
-    ESP_LOGD(TAG, "Total voltage: %.2f V", seplos_get_16bit(offset + 18) * 0.01f);
-    ESP_LOGD(TAG, "Remaining capacity: %.1f Ah", seplos_get_16bit(offset + 20) * 0.1f);
-    ESP_LOGD(TAG, "Custom amount K: %d", data[offset + 22]);
-    ESP_LOGD(TAG, "Battery capacity: %.1f Ah", seplos_get_16bit(offset + 23) * 0.1f);
-    ESP_LOGD(TAG, "State of charge: %.1f %%", seplos_get_16bit(offset + 25) * 0.1f);
-    ESP_LOGD(TAG, "Rated capacity: %.1f Ah", seplos_get_16bit(offset + 27) * 0.1f);
-    ESP_LOGD(TAG, "Cycles: %d", seplos_get_16bit(offset + 29));
-    ESP_LOGD(TAG, "State of health: %.1f %%", seplos_get_16bit(offset + 31) * 0.1f);
-    ESP_LOGD(TAG, "Port voltage: %.2f V", seplos_get_16bit(offset + 33) * 0.01f);
-    ESP_LOGD(TAG, "Parallel connection status: 0x%04X", seplos_get_16bit(offset + 35));
+  ESP_LOGD(TAG, "Data flag: 0x%02X", data[offset + 0]);
+  ESP_LOGD(TAG, "Device address: %d", data[offset + 1]);
+  ESP_LOGD(TAG, "Number of cells: %d", data[offset + 2]);
+  ESP_LOGD(TAG, "Max cell voltage: %.3f V", seplos_get_16bit(offset + 3) * 0.001f);
+  ESP_LOGD(TAG, "Min cell voltage: %.3f V", seplos_get_16bit(offset + 5) * 0.001f);
+  ESP_LOGD(TAG, "Temperature quantity: %d", data[offset + 7]);
+  ESP_LOGD(TAG, "Max cell temperature: %.1f °C", seplos_get_16bit(offset + 8) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Min cell temperature: %.1f °C", seplos_get_16bit(offset + 10) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Ambient temperature: %.1f °C", seplos_get_16bit(offset + 12) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Power temperature: %.1f °C", seplos_get_16bit(offset + 14) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Current: %.1f A", (int16_t) seplos_get_16bit(offset + 16) * 0.1f);
+  ESP_LOGD(TAG, "Total voltage: %.2f V", seplos_get_16bit(offset + 18) * 0.01f);
+  ESP_LOGD(TAG, "Remaining capacity: %.1f Ah", seplos_get_16bit(offset + 20) * 0.1f);
+  ESP_LOGD(TAG, "Custom amount K: %d", data[offset + 22]);
+  ESP_LOGD(TAG, "Battery capacity: %.1f Ah", seplos_get_16bit(offset + 23) * 0.1f);
+  ESP_LOGD(TAG, "State of charge: %.1f %%", seplos_get_16bit(offset + 25) * 0.1f);
+  ESP_LOGD(TAG, "Rated capacity: %.1f Ah", seplos_get_16bit(offset + 27) * 0.1f);
+  ESP_LOGD(TAG, "Cycles: %d", seplos_get_16bit(offset + 29));
+  ESP_LOGD(TAG, "State of health: %.1f %%", seplos_get_16bit(offset + 31) * 0.1f);
+  ESP_LOGD(TAG, "Port voltage: %.2f V", seplos_get_16bit(offset + 33) * 0.01f);
+  ESP_LOGD(TAG, "Parallel connection status: 0x%04X", seplos_get_16bit(offset + 35));
 
-    size_t protection_offset = offset + 37;
+  size_t protection_offset = offset + 37;
 
-    // System status - see details13
-    uint8_t system_status = data[protection_offset + 0];
-    ESP_LOGD(TAG, "System status: 0x%02X", system_status);
-    ESP_LOGD(TAG, "  Bit0 Discharge: %s", ONOFF(system_status & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Charge: %s", ONOFF(system_status & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Float charge: %s", ONOFF(system_status & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Reserved: %s", ONOFF(system_status & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Standby: %s", ONOFF(system_status & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Shutdown: %s", ONOFF(system_status & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(system_status & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(system_status & 0x80));
+  // System status - see details13
+  uint8_t system_status = data[protection_offset + 0];
+  ESP_LOGD(TAG, "System status: 0x%02X", system_status);
+  ESP_LOGD(TAG, "  Bit0 Discharge: %s", ONOFF(system_status & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Charge: %s", ONOFF(system_status & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Float charge: %s", ONOFF(system_status & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Reserved: %s", ONOFF(system_status & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Standby: %s", ONOFF(system_status & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Shutdown: %s", ONOFF(system_status & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(system_status & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(system_status & 0x80));
 
-    // Switch status - see details14
-    uint8_t switch_status = data[protection_offset + 1];
-    ESP_LOGD(TAG, "Switch status: 0x%02X", switch_status);
-    ESP_LOGD(TAG, "  Bit0 Discharge switch: %s", ONOFF(switch_status & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Charging switch: %s", ONOFF(switch_status & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Current limit switch: %s", ONOFF(switch_status & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Heating switch: %s", ONOFF(switch_status & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Reserved: %s", ONOFF(switch_status & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Reserved: %s", ONOFF(switch_status & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(switch_status & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(switch_status & 0x80));
+  // Switch status - see details14
+  uint8_t switch_status = data[protection_offset + 1];
+  ESP_LOGD(TAG, "Switch status: 0x%02X", switch_status);
+  ESP_LOGD(TAG, "  Bit0 Discharge switch: %s", ONOFF(switch_status & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Charging switch: %s", ONOFF(switch_status & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Current limit switch: %s", ONOFF(switch_status & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Heating switch: %s", ONOFF(switch_status & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Reserved: %s", ONOFF(switch_status & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Reserved: %s", ONOFF(switch_status & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(switch_status & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(switch_status & 0x80));
 
-    // Custom alarm volume P
-    uint8_t custom_alarm_volume = data[protection_offset + 2];
-    ESP_LOGD(TAG, "Custom alarm volume P: %d", custom_alarm_volume);
+  // Custom alarm volume P
+  uint8_t custom_alarm_volume = data[protection_offset + 2];
+  ESP_LOGD(TAG, "Custom alarm volume P: %d", custom_alarm_volume);
 
-    size_t alarm_offset = protection_offset + 3;
+  size_t alarm_offset = protection_offset + 3;
 
-    // Alarm event1 - Hardware failures
-    uint8_t alarm_event1 = data[alarm_offset + 0];
-    ESP_LOGD(TAG, "Alarm event 1: 0x%02X", alarm_event1);
-    ESP_LOGD(TAG, "  Bit0 Voltage sensing failure: %s", ONOFF(alarm_event1 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Temperature sensing failure: %s", ONOFF(alarm_event1 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Current sensing failure: %s", ONOFF(alarm_event1 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Key switch failure: %s", ONOFF(alarm_event1 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Cell voltage difference failure: %s", ONOFF(alarm_event1 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Charging switch failed: %s", ONOFF(alarm_event1 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Discharge switch failure: %s", ONOFF(alarm_event1 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Current limit switch failure: %s", ONOFF(alarm_event1 & 0x80));
+  // Alarm event1 - Hardware failures
+  uint8_t alarm_event1 = data[alarm_offset + 0];
+  ESP_LOGD(TAG, "Alarm event 1: 0x%02X", alarm_event1);
+  ESP_LOGD(TAG, "  Bit0 Voltage sensing failure: %s", ONOFF(alarm_event1 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Temperature sensing failure: %s", ONOFF(alarm_event1 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Current sensing failure: %s", ONOFF(alarm_event1 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Key switch failure: %s", ONOFF(alarm_event1 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Cell voltage difference failure: %s", ONOFF(alarm_event1 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Charging switch failed: %s", ONOFF(alarm_event1 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Discharge switch failure: %s", ONOFF(alarm_event1 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Current limit switch failure: %s", ONOFF(alarm_event1 & 0x80));
 
-    // Alarm event2 - Voltage alarms
-    uint8_t alarm_event2 = data[alarm_offset + 1];
-    ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
-    ESP_LOGD(TAG, "  Bit0 Single high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Single unit overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Single unit low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Single unit under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Total pressure high pressure alarm: %s", ONOFF(alarm_event2 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Total voltage overvoltage protection: %s", ONOFF(alarm_event2 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Low total pressure alarm: %s", ONOFF(alarm_event2 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Total voltage undervoltage protection: %s", ONOFF(alarm_event2 & 0x80));
+  // Alarm event2 - Voltage alarms
+  uint8_t alarm_event2 = data[alarm_offset + 1];
+  ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
+  ESP_LOGD(TAG, "  Bit0 Single high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Single unit overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Single unit low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Single unit under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Total pressure high pressure alarm: %s", ONOFF(alarm_event2 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Total voltage overvoltage protection: %s", ONOFF(alarm_event2 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Low total pressure alarm: %s", ONOFF(alarm_event2 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Total voltage undervoltage protection: %s", ONOFF(alarm_event2 & 0x80));
 
-    // Alarm event3 - Cell temperature
-    uint8_t alarm_event3 = data[alarm_offset + 2];
-    ESP_LOGD(TAG, "Alarm event 3: 0x%02X", alarm_event3);
-    ESP_LOGD(TAG, "  Bit0 Charging high temperature alarm: %s", ONOFF(alarm_event3 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Charging over-temperature protection: %s", ONOFF(alarm_event3 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Charging low temperature alarm: %s", ONOFF(alarm_event3 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Charging under-temperature protection: %s", ONOFF(alarm_event3 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Discharge high temperature alarm: %s", ONOFF(alarm_event3 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Discharge over temperature protection: %s", ONOFF(alarm_event3 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Discharge low temperature alarm: %s", ONOFF(alarm_event3 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Discharge under-temperature protection: %s", ONOFF(alarm_event3 & 0x80));
+  // Alarm event3 - Cell temperature
+  uint8_t alarm_event3 = data[alarm_offset + 2];
+  ESP_LOGD(TAG, "Alarm event 3: 0x%02X", alarm_event3);
+  ESP_LOGD(TAG, "  Bit0 Charging high temperature alarm: %s", ONOFF(alarm_event3 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Charging over-temperature protection: %s", ONOFF(alarm_event3 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Charging low temperature alarm: %s", ONOFF(alarm_event3 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Charging under-temperature protection: %s", ONOFF(alarm_event3 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Discharge high temperature alarm: %s", ONOFF(alarm_event3 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Discharge over temperature protection: %s", ONOFF(alarm_event3 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Discharge low temperature alarm: %s", ONOFF(alarm_event3 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Discharge under-temperature protection: %s", ONOFF(alarm_event3 & 0x80));
 
-    // Alarm event4 - Environmental/power temperature
-    uint8_t alarm_event4 = data[alarm_offset + 3];
-    ESP_LOGD(TAG, "Alarm event 4: 0x%02X", alarm_event4);
-    ESP_LOGD(TAG, "  Bit0 Environmental high temperature alarm: %s", ONOFF(alarm_event4 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Environmental over-temperature protection: %s", ONOFF(alarm_event4 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Environmental low temperature alarm: %s", ONOFF(alarm_event4 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Environmental under-temperature protection: %s", ONOFF(alarm_event4 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Power over temperature protection: %s", ONOFF(alarm_event4 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Power high temperature alarm: %s", ONOFF(alarm_event4 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Battery core low temperature heating: %s", ONOFF(alarm_event4 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Secondary trip protection: %s", ONOFF(alarm_event4 & 0x80));
+  // Alarm event4 - Environmental/power temperature
+  uint8_t alarm_event4 = data[alarm_offset + 3];
+  ESP_LOGD(TAG, "Alarm event 4: 0x%02X", alarm_event4);
+  ESP_LOGD(TAG, "  Bit0 Environmental high temperature alarm: %s", ONOFF(alarm_event4 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Environmental over-temperature protection: %s", ONOFF(alarm_event4 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Environmental low temperature alarm: %s", ONOFF(alarm_event4 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Environmental under-temperature protection: %s", ONOFF(alarm_event4 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Power over temperature protection: %s", ONOFF(alarm_event4 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Power high temperature alarm: %s", ONOFF(alarm_event4 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Battery core low temperature heating: %s", ONOFF(alarm_event4 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Secondary trip protection: %s", ONOFF(alarm_event4 & 0x80));
 
-    // Alarm event5 - Current protection
-    uint8_t alarm_event5 = data[alarm_offset + 4];
-    ESP_LOGD(TAG, "Alarm event 5: 0x%02X", alarm_event5);
-    ESP_LOGD(TAG, "  Bit0 Charging overcurrent alarm: %s", ONOFF(alarm_event5 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Charging overcurrent protection: %s", ONOFF(alarm_event5 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Discharge overcurrent alarm: %s", ONOFF(alarm_event5 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Discharge overcurrent protection: %s", ONOFF(alarm_event5 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Transient overcurrent protection: %s", ONOFF(alarm_event5 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Output short circuit protection: %s", ONOFF(alarm_event5 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Transient overcurrent lockout: %s", ONOFF(alarm_event5 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Output short circuit lockout: %s", ONOFF(alarm_event5 & 0x80));
+  // Alarm event5 - Current protection
+  uint8_t alarm_event5 = data[alarm_offset + 4];
+  ESP_LOGD(TAG, "Alarm event 5: 0x%02X", alarm_event5);
+  ESP_LOGD(TAG, "  Bit0 Charging overcurrent alarm: %s", ONOFF(alarm_event5 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Charging overcurrent protection: %s", ONOFF(alarm_event5 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Discharge overcurrent alarm: %s", ONOFF(alarm_event5 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Discharge overcurrent protection: %s", ONOFF(alarm_event5 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Transient overcurrent protection: %s", ONOFF(alarm_event5 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Output short circuit protection: %s", ONOFF(alarm_event5 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Transient overcurrent lockout: %s", ONOFF(alarm_event5 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Output short circuit lockout: %s", ONOFF(alarm_event5 & 0x80));
 
-    // Alarm event6 - Charging/output protection
-    uint8_t alarm_event6 = data[alarm_offset + 5];
-    ESP_LOGD(TAG, "Alarm event 6: 0x%02X", alarm_event6);
-    ESP_LOGD(TAG, "  Bit0 Charging high voltage protection: %s", ONOFF(alarm_event6 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Waiting for intermittent power replenishment: %s", ONOFF(alarm_event6 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Remaining capacity alarm: %s", ONOFF(alarm_event6 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Remaining capacity protection: %s", ONOFF(alarm_event6 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Battery cell low voltage charging is prohibited: %s", ONOFF(alarm_event6 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Output reverse polarity protection: %s", ONOFF(alarm_event6 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Output connection failure: %s", ONOFF(alarm_event6 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Internal alarm: %s", ONOFF(alarm_event6 & 0x80));
+  // Alarm event6 - Charging/output protection
+  uint8_t alarm_event6 = data[alarm_offset + 5];
+  ESP_LOGD(TAG, "Alarm event 6: 0x%02X", alarm_event6);
+  ESP_LOGD(TAG, "  Bit0 Charging high voltage protection: %s", ONOFF(alarm_event6 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Waiting for intermittent power replenishment: %s", ONOFF(alarm_event6 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Remaining capacity alarm: %s", ONOFF(alarm_event6 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Remaining capacity protection: %s", ONOFF(alarm_event6 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Battery cell low voltage charging is prohibited: %s", ONOFF(alarm_event6 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Output reverse polarity protection: %s", ONOFF(alarm_event6 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Output connection failure: %s", ONOFF(alarm_event6 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Internal alarm: %s", ONOFF(alarm_event6 & 0x80));
 
-    // Alarm event7 - Internal/charging waiting
-    uint8_t alarm_event7 = data[alarm_offset + 6];
-    ESP_LOGD(TAG, "Alarm event 7: 0x%02X", alarm_event7);
-    ESP_LOGD(TAG, "  Bit0 Internal: %s", ONOFF(alarm_event7 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 Internal: %s", ONOFF(alarm_event7 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Internal: %s", ONOFF(alarm_event7 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Internal: %s", ONOFF(alarm_event7 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Automatic charging waiting: %s", ONOFF(alarm_event7 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Manual charging waiting: %s", ONOFF(alarm_event7 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Internal: %s", ONOFF(alarm_event7 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event7 & 0x80));
+  // Alarm event7 - Internal/charging waiting
+  uint8_t alarm_event7 = data[alarm_offset + 6];
+  ESP_LOGD(TAG, "Alarm event 7: 0x%02X", alarm_event7);
+  ESP_LOGD(TAG, "  Bit0 Internal: %s", ONOFF(alarm_event7 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Internal: %s", ONOFF(alarm_event7 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Internal: %s", ONOFF(alarm_event7 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Internal: %s", ONOFF(alarm_event7 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Automatic charging waiting: %s", ONOFF(alarm_event7 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Manual charging waiting: %s", ONOFF(alarm_event7 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Internal: %s", ONOFF(alarm_event7 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event7 & 0x80));
 
-    // Alarm event8 - System/calibration failures
-    uint8_t alarm_event8 = data[alarm_offset + 7];
-    ESP_LOGD(TAG, "Alarm event 8: 0x%02X", alarm_event8);
-    ESP_LOGD(TAG, "  Bit0 EEP storage failure: %s", ONOFF(alarm_event8 & 0x01));
-    ESP_LOGD(TAG, "  Bit1 RTC clock failure: %s", ONOFF(alarm_event8 & 0x02));
-    ESP_LOGD(TAG, "  Bit2 Voltage calibration not done: %s", ONOFF(alarm_event8 & 0x04));
-    ESP_LOGD(TAG, "  Bit3 Current calibration not done: %s", ONOFF(alarm_event8 & 0x08));
-    ESP_LOGD(TAG, "  Bit4 Zero point calibration not done: %s", ONOFF(alarm_event8 & 0x10));
-    ESP_LOGD(TAG, "  Bit5 Perpetual calendar not synchronized: %s", ONOFF(alarm_event8 & 0x20));
-    ESP_LOGD(TAG, "  Bit6 Internal: %s", ONOFF(alarm_event8 & 0x40));
-    ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event8 & 0x80));
+  // Alarm event8 - System/calibration failures
+  uint8_t alarm_event8 = data[alarm_offset + 7];
+  ESP_LOGD(TAG, "Alarm event 8: 0x%02X", alarm_event8);
+  ESP_LOGD(TAG, "  Bit0 EEP storage failure: %s", ONOFF(alarm_event8 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 RTC clock failure: %s", ONOFF(alarm_event8 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Voltage calibration not done: %s", ONOFF(alarm_event8 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Current calibration not done: %s", ONOFF(alarm_event8 & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Zero point calibration not done: %s", ONOFF(alarm_event8 & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Perpetual calendar not synchronized: %s", ONOFF(alarm_event8 & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Internal: %s", ONOFF(alarm_event8 & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event8 & 0x80));
 
-    // Process additional custom alarm events if any (beyond the standard 8)
-    if (custom_alarm_volume > 8) {
-      for (int i = 8; i < custom_alarm_volume && (alarm_offset + i) < data.size(); i++) {
-        ESP_LOGD(TAG, "Custom alarm event %d: 0x%02X", i + 1, data[alarm_offset + i]);
-      }
+  // Process additional custom alarm events if any (beyond the standard 8)
+  if (custom_alarm_volume > 8 && data.size() > alarm_offset + custom_alarm_volume - 8) {
+    for (int i = 8; i < custom_alarm_volume && (alarm_offset + i) < data.size(); i++) {
+      ESP_LOGD(TAG, "Custom alarm event %d: 0x%02X", i + 1, data[alarm_offset + i]);
     }
   }
 }
@@ -789,34 +768,30 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   ESP_LOGI(TAG, "Status frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
-  if (data.size() < 10) {
+  if (data.size() < 60) {
     ESP_LOGW(TAG, "Status frame too short (%d bytes)", data.size());
     return;
   }
 
-  // Frame structure: 7E VER ADDR CID1 CID2 LEN_H LEN_L DATA... CRC_H CRC_L 0D
-  uint16_t data_len = (uint16_t(data[5]) << 8) | uint16_t(data[6]);
-  size_t frame_len = 7 + data_len + 2 + 1;  // header + payload + CRC + EOF
+  uint16_t data_len = seplos_get_16bit(5);
+  ESP_LOGD(TAG, "Device address: %d", data[7]);
+  ESP_LOGD(TAG, "Reserved byte: %d", data[8]);
 
-  if (data.size() < frame_len) {
-    ESP_LOGW(TAG, "Status frame incomplete (%d bytes, expected %d)", data.size(), frame_len);
+  uint8_t cells = data[9];
+  uint8_t temperatures = data[7 + 3 + (cells * 2)];
+  ESP_LOGD(TAG, "Number of cells: %d", cells);
+
+  if (data.size() < 7 + 3 + (cells * 2) + 1 + (temperatures * 2) + 58 + 2 + 1) {
+    ESP_LOGW(TAG, "Status frame too short (%d bytes)", data.size());
     return;
   }
-
-  size_t offset = 7;
-
-  ESP_LOGD(TAG, "Device address: %d", data[offset + 0]);
-  ESP_LOGD(TAG, "Reserved byte: %d", data[offset + 1]);
-
-  uint8_t cells = data[offset + 2];
-  ESP_LOGD(TAG, "Number of cells: %d", cells);
 
   this->min_cell_voltage_ = 100.0f;
   this->max_cell_voltage_ = -100.0f;
   float total_cell_voltage = 0.0f;
 
   for (uint8_t i = 0; i < cells && i < 24; i++) {
-    float cell_voltage = seplos_get_16bit(offset + 3 + (i * 2)) * 0.001f;
+    float cell_voltage = seplos_get_16bit(7 + 3 + (i * 2)) * 0.001f;
     this->publish_state_(this->cells_[i].cell_voltage_sensor_, cell_voltage);
 
     total_cell_voltage += cell_voltage;
@@ -839,9 +814,8 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     this->publish_state_(this->average_cell_voltage_sensor_, total_cell_voltage / cells);
   }
 
-  offset = 7 + 3 + (cells * 2);  // 7 (header) + 3 (device_addr + reserved + cells) + cells
+  size_t offset = 7 + 3 + (cells * 2);  // 7 (header) + 3 (device_addr + reserved + cells) + cells
 
-  uint8_t temperatures = data[offset + 0];
   ESP_LOGD(TAG, "Temperature sensor count: %d", temperatures);
 
   uint8_t cell_temperatures = temperatures > 2 ? temperatures - 2 : 0;
