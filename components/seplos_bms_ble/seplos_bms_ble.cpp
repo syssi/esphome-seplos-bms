@@ -1020,32 +1020,36 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     }
   }
 
-  // Equilibrium states (M/8 bytes where M is number of cells)
-  size_t equilibrium_offset = alarm_offset + custom_alarm_volume;
-  uint8_t equilibrium_bytes = (cells + 7) / 8;  // Round up to next byte
-  ESP_LOGD(TAG, "Equilibrium states (%d bytes):", equilibrium_bytes);
-  for (int i = 0; i < equilibrium_bytes && (equilibrium_offset + i) < data.size(); i++) {
-    uint8_t eq_state = data[equilibrium_offset + i];
-    ESP_LOGD(TAG, "  Equilibrium state %d: 0x%02X", i + 1, eq_state);
-    for (int bit = 0; bit < 8; bit++) {
-      int cell_num = i * 8 + bit + 1;
-      if (cell_num <= cells && (eq_state & (1 << bit))) {
-        ESP_LOGD(TAG, "    - Cell %d balanced", cell_num);
+  // Balancing states (M/8 bytes where M is number of cells)
+  size_t balancing_offset = alarm_offset + custom_alarm_volume;
+  uint8_t balancing_bytes = (cells + 7) / 8;  // Round up to next byte
+  ESP_LOGD(TAG, "Balancing states (%d bytes):", balancing_bytes);
+
+  for (uint8_t i = 0; i < balancing_bytes; i++) {
+    uint8_t balancing_state = data[balancing_offset + i];
+    ESP_LOGD(TAG, "  Balancing state byte %d: 0x%02X", i + 1, balancing_state);
+
+    for (uint8_t bit = 0; bit < 8; bit++) {
+      uint8_t cell = i * 8 + bit + 1;
+      if (cell <= cells && (balancing_state & (1 << bit))) {
+        ESP_LOGD(TAG, "    - Cell %d balancing", cell);
       }
     }
   }
 
   // Disconnected states (M/8 bytes where M is number of cells)
-  size_t disconnected_offset = equilibrium_offset + equilibrium_bytes;
+  size_t disconnected_offset = balancing_offset + balancing_bytes;
   uint8_t disconnected_bytes = (cells + 7) / 8;  // Round up to next byte
   ESP_LOGD(TAG, "Disconnected states (%d bytes):", disconnected_bytes);
-  for (int i = 0; i < disconnected_bytes && (disconnected_offset + i) < data.size(); i++) {
-    uint8_t disc_state = data[disconnected_offset + i];
-    ESP_LOGD(TAG, "  Disconnected state %d: 0x%02X", i + 1, disc_state);
-    for (int bit = 0; bit < 8; bit++) {
-      int cell_num = i * 8 + bit + 1;
-      if (cell_num <= cells && (disc_state & (1 << bit))) {
-        ESP_LOGD(TAG, "    - Cell %d disconnected", cell_num);
+
+  for (uint8_t i = 0; i < disconnected_bytes; i++) {
+    uint8_t disconnected_state = data[disconnected_offset + i];
+    ESP_LOGD(TAG, "  Disconnected state byte %d: 0x%02X", i + 1, disconnected_state);
+
+    for (uint8_t bit = 0; bit < 8; bit++) {
+      uint8_t cell = i * 8 + bit + 1;
+      if (cell <= cells && (disconnected_state & (1 << bit))) {
+        ESP_LOGD(TAG, "    - Cell %d disconnected", cell);
       }
     }
   }
