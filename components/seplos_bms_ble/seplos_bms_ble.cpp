@@ -854,7 +854,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   // Reserved: 1 byte - offset + 6 (skip)
 
   // Battery Capacity: 2 bytes (0.01Ah scale) - offset + 7
-  // Note: This might be used for a different purpose than nominal_capacity
+  // @FIXME: Add battery capacity sensor
 
   this->publish_state_(this->state_of_charge_sensor_, seplos_get_16bit(offset + 9) * 0.1f);
 
@@ -865,7 +865,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   this->publish_state_(this->state_of_health_sensor_, seplos_get_16bit(offset + 15) * 0.1f);
 
   // Port voltage: 2 bytes (0.01V scale) - offset + 17
-  // Note: Could be used for a specific port voltage sensor if available
+  // @FIXME: Add port voltage sensor
 
   offset = 7 + 3 + (cells * 2) + 1 + (temperatures * 2) + 19;
 
