@@ -1,7 +1,7 @@
 substitutions:
   name: seplos-bms-ble
   device_description: "Monitor a Seplos Battery Management System via BLE"
-  external_components_source: github://syssi/esphome-seplos-bms@add-bluetooth-support
+  external_components_source: github://syssi/esphome-seplos-bms@main
   mac_address: 90:A6:BF:93:A0:69
 
 esphome:
