@@ -650,10 +650,8 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   uint8_t custom_alarm_volume = data[46];
   ESP_LOGD(TAG, "Custom alarm volume P: %d", custom_alarm_volume);
 
-  size_t alarm_offset = protection_offset + 3;
-
   // Alarm event1 - Hardware failures
-  uint8_t alarm_event1 = data[alarm_offset + 0];
+  uint8_t alarm_event1 = data[47];
   ESP_LOGD(TAG, "Alarm event 1: 0x%02X", alarm_event1);
   ESP_LOGD(TAG, "  Bit0 Voltage sensing failure: %s", ONOFF(alarm_event1 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Temperature sensing failure: %s", ONOFF(alarm_event1 & 0x02));
@@ -665,7 +663,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Current limit switch failure: %s", ONOFF(alarm_event1 & 0x80));
 
   // Alarm event2 - Voltage alarms
-  uint8_t alarm_event2 = data[alarm_offset + 1];
+  uint8_t alarm_event2 = data[48];
   ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
   ESP_LOGD(TAG, "  Bit0 Single high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Single unit overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
@@ -677,7 +675,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Total voltage undervoltage protection: %s", ONOFF(alarm_event2 & 0x80));
 
   // Alarm event3 - Cell temperature
-  uint8_t alarm_event3 = data[alarm_offset + 2];
+  uint8_t alarm_event3 = data[49];
   ESP_LOGD(TAG, "Alarm event 3: 0x%02X", alarm_event3);
   ESP_LOGD(TAG, "  Bit0 Charging high temperature alarm: %s", ONOFF(alarm_event3 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Charging over-temperature protection: %s", ONOFF(alarm_event3 & 0x02));
@@ -689,7 +687,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Discharge under-temperature protection: %s", ONOFF(alarm_event3 & 0x80));
 
   // Alarm event4 - Environmental/power temperature
-  uint8_t alarm_event4 = data[alarm_offset + 3];
+  uint8_t alarm_event4 = data[50];
   ESP_LOGD(TAG, "Alarm event 4: 0x%02X", alarm_event4);
   ESP_LOGD(TAG, "  Bit0 Environmental high temperature alarm: %s", ONOFF(alarm_event4 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Environmental over-temperature protection: %s", ONOFF(alarm_event4 & 0x02));
@@ -701,7 +699,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Secondary trip protection: %s", ONOFF(alarm_event4 & 0x80));
 
   // Alarm event5 - Current protection
-  uint8_t alarm_event5 = data[alarm_offset + 4];
+  uint8_t alarm_event5 = data[51];
   ESP_LOGD(TAG, "Alarm event 5: 0x%02X", alarm_event5);
   ESP_LOGD(TAG, "  Bit0 Charging overcurrent alarm: %s", ONOFF(alarm_event5 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Charging overcurrent protection: %s", ONOFF(alarm_event5 & 0x02));
@@ -713,7 +711,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Output short circuit lockout: %s", ONOFF(alarm_event5 & 0x80));
 
   // Alarm event6 - Charging/output protection
-  uint8_t alarm_event6 = data[alarm_offset + 5];
+  uint8_t alarm_event6 = data[52];
   ESP_LOGD(TAG, "Alarm event 6: 0x%02X", alarm_event6);
   ESP_LOGD(TAG, "  Bit0 Charging high voltage protection: %s", ONOFF(alarm_event6 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Waiting for intermittent power replenishment: %s", ONOFF(alarm_event6 & 0x02));
@@ -725,7 +723,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Internal alarm: %s", ONOFF(alarm_event6 & 0x80));
 
   // Alarm event7 - Internal/charging waiting
-  uint8_t alarm_event7 = data[alarm_offset + 6];
+  uint8_t alarm_event7 = data[53];
   ESP_LOGD(TAG, "Alarm event 7: 0x%02X", alarm_event7);
   ESP_LOGD(TAG, "  Bit0 Internal: %s", ONOFF(alarm_event7 & 0x01));
   ESP_LOGD(TAG, "  Bit1 Internal: %s", ONOFF(alarm_event7 & 0x02));
@@ -737,7 +735,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event7 & 0x80));
 
   // Alarm event8 - System/calibration failures
-  uint8_t alarm_event8 = data[alarm_offset + 7];
+  uint8_t alarm_event8 = data[54];
   ESP_LOGD(TAG, "Alarm event 8: 0x%02X", alarm_event8);
   ESP_LOGD(TAG, "  Bit0 EEP storage failure: %s", ONOFF(alarm_event8 & 0x01));
   ESP_LOGD(TAG, "  Bit1 RTC clock failure: %s", ONOFF(alarm_event8 & 0x02));
@@ -749,9 +747,9 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event8 & 0x80));
 
   // Process additional custom alarm events if any (beyond the standard 8)
-  if (custom_alarm_volume > 8 && data.size() > alarm_offset + custom_alarm_volume - 8) {
-    for (int i = 8; i < custom_alarm_volume && (alarm_offset + i) < data.size(); i++) {
-      ESP_LOGD(TAG, "Custom alarm event %d: 0x%02X", i + 1, data[alarm_offset + i]);
+  if (custom_alarm_volume > 8 && data.size() > 47 + custom_alarm_volume) {
+    for (int i = 8; i < custom_alarm_volume && (47 + i) < data.size(); i++) {
+      ESP_LOGD(TAG, "Custom alarm event %d: 0x%02X", i + 1, data[47 + i]);
     }
   }
 }
