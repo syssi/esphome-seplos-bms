@@ -209,19 +209,19 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
       this->decode_parallel_data_(data);
       break;
     case SEPLOS_CMD_PROTOCOL_SWITCH_CAN:
-      ESP_LOGI(TAG, "Protocol switch CAN frame received");
+      ESP_LOGI(TAG, "Protocol switch CAN frame (%zu bytes) received", data.size());
       ESP_LOGD(TAG, "  Decoding not implemented yet");
       break;
     case SEPLOS_CMD_PROTOCOL_SWITCH_RS485:
-      ESP_LOGI(TAG, "Protocol switch RS485 frame received");
+      ESP_LOGI(TAG, "Protocol switch RS485 frame (%zu bytes) received", data.size());
       ESP_LOGD(TAG, "  Decoding not implemented yet");
       break;
     case SEPLOS_CMD_SET_BMS_PARAMETER:
-      ESP_LOGI(TAG, "BMS parameter frame received");
+      ESP_LOGI(TAG, "BMS parameter frame (%zu bytes) received", data.size());
       ESP_LOGD(TAG, "  Decoding not implemented yet");
       break;
     case SEPLOS_CMD_SET_DEVICE_GROUP_NUMBER_NAME:
-      ESP_LOGI(TAG, "Device group number name frame received");
+      ESP_LOGI(TAG, "Device group number name frame (%zu bytes) received", data.size());
       ESP_LOGD(TAG, "  Decoding not implemented yet");
       break;
     default:
@@ -238,7 +238,7 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsBle::decode_manufacturer_info_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGI(TAG, "Hardware version frame received");
+  ESP_LOGI(TAG, "Hardware version frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   // Expected frame size: 7 (header) + 35 (data) + 2 (CRC) + 1 (EOF) = 45 bytes
@@ -335,7 +335,7 @@ std::string SeplosBmsBle::interpret_battery_type(uint8_t value) {
 }
 
 void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGI(TAG, "Settings frame received");
+  ESP_LOGI(TAG, "Settings frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   if (data.size() < 20) {
@@ -602,7 +602,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Parallel data frame received");
+  ESP_LOGI(TAG, "Parallel data frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   if (data.size() < 15) {
@@ -786,7 +786,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGI(TAG, "Status frame received");
+  ESP_LOGI(TAG, "Status frame (%zu bytes) received", data.size());
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
   if (data.size() < 10) {
