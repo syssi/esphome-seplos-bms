@@ -600,34 +600,30 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
 
   uint16_t data_len = seplos_get_16bit(5);
 
-  size_t offset = 7;
-
-  ESP_LOGD(TAG, "Data flag: 0x%02X", data[offset + 0]);
-  ESP_LOGD(TAG, "Device address: %d", data[offset + 1]);
-  ESP_LOGD(TAG, "Number of cells: %d", data[offset + 2]);
-  ESP_LOGD(TAG, "Max cell voltage: %.3f V", seplos_get_16bit(offset + 3) * 0.001f);
-  ESP_LOGD(TAG, "Min cell voltage: %.3f V", seplos_get_16bit(offset + 5) * 0.001f);
-  ESP_LOGD(TAG, "Temperature quantity: %d", data[offset + 7]);
-  ESP_LOGD(TAG, "Max cell temperature: %.1f °C", seplos_get_16bit(offset + 8) * 0.1f - 273.15f);
-  ESP_LOGD(TAG, "Min cell temperature: %.1f °C", seplos_get_16bit(offset + 10) * 0.1f - 273.15f);
-  ESP_LOGD(TAG, "Ambient temperature: %.1f °C", seplos_get_16bit(offset + 12) * 0.1f - 273.15f);
-  ESP_LOGD(TAG, "Power temperature: %.1f °C", seplos_get_16bit(offset + 14) * 0.1f - 273.15f);
-  ESP_LOGD(TAG, "Current: %.1f A", (int16_t) seplos_get_16bit(offset + 16) * 0.1f);
-  ESP_LOGD(TAG, "Total voltage: %.2f V", seplos_get_16bit(offset + 18) * 0.01f);
-  ESP_LOGD(TAG, "Remaining capacity: %.1f Ah", seplos_get_16bit(offset + 20) * 0.1f);
-  ESP_LOGD(TAG, "Custom amount K: %d", data[offset + 22]);
-  ESP_LOGD(TAG, "Battery capacity: %.1f Ah", seplos_get_16bit(offset + 23) * 0.1f);
-  ESP_LOGD(TAG, "State of charge: %.1f %%", seplos_get_16bit(offset + 25) * 0.1f);
-  ESP_LOGD(TAG, "Rated capacity: %.1f Ah", seplos_get_16bit(offset + 27) * 0.1f);
-  ESP_LOGD(TAG, "Cycles: %d", seplos_get_16bit(offset + 29));
-  ESP_LOGD(TAG, "State of health: %.1f %%", seplos_get_16bit(offset + 31) * 0.1f);
-  ESP_LOGD(TAG, "Port voltage: %.2f V", seplos_get_16bit(offset + 33) * 0.01f);
-  ESP_LOGD(TAG, "Parallel connection status: 0x%04X", seplos_get_16bit(offset + 35));
-
-  size_t protection_offset = offset + 37;
+  ESP_LOGD(TAG, "Data flag: 0x%02X", data[7]);
+  ESP_LOGD(TAG, "Device address: %d", data[8]);
+  ESP_LOGD(TAG, "Number of cells: %d", data[9]);
+  ESP_LOGD(TAG, "Max cell voltage: %.3f V", seplos_get_16bit(10) * 0.001f);
+  ESP_LOGD(TAG, "Min cell voltage: %.3f V", seplos_get_16bit(12) * 0.001f);
+  ESP_LOGD(TAG, "Temperature quantity: %d", data[14]);
+  ESP_LOGD(TAG, "Max cell temperature: %.1f °C", seplos_get_16bit(15) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Min cell temperature: %.1f °C", seplos_get_16bit(17) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Ambient temperature: %.1f °C", seplos_get_16bit(19) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Power temperature: %.1f °C", seplos_get_16bit(21) * 0.1f - 273.15f);
+  ESP_LOGD(TAG, "Current: %.1f A", (int16_t) seplos_get_16bit(23) * 0.1f);
+  ESP_LOGD(TAG, "Total voltage: %.2f V", seplos_get_16bit(25) * 0.01f);
+  ESP_LOGD(TAG, "Remaining capacity: %.1f Ah", seplos_get_16bit(27) * 0.1f);
+  ESP_LOGD(TAG, "Custom amount K: %d", data[29]);
+  ESP_LOGD(TAG, "Battery capacity: %.1f Ah", seplos_get_16bit(30) * 0.1f);
+  ESP_LOGD(TAG, "State of charge: %.1f %%", seplos_get_16bit(32) * 0.1f);
+  ESP_LOGD(TAG, "Rated capacity: %.1f Ah", seplos_get_16bit(34) * 0.1f);
+  ESP_LOGD(TAG, "Cycles: %d", seplos_get_16bit(36));
+  ESP_LOGD(TAG, "State of health: %.1f %%", seplos_get_16bit(38) * 0.1f);
+  ESP_LOGD(TAG, "Port voltage: %.2f V", seplos_get_16bit(40) * 0.01f);
+  ESP_LOGD(TAG, "Parallel connection status: 0x%04X", seplos_get_16bit(42));
 
   // System status - see details13
-  uint8_t system_status = data[protection_offset + 0];
+  uint8_t system_status = data[44];
   ESP_LOGD(TAG, "System status: 0x%02X", system_status);
   ESP_LOGD(TAG, "  Bit0 Discharge: %s", ONOFF(system_status & 0x01));
   ESP_LOGD(TAG, "  Bit1 Charge: %s", ONOFF(system_status & 0x02));
@@ -639,7 +635,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(system_status & 0x80));
 
   // Switch status - see details14
-  uint8_t switch_status = data[protection_offset + 1];
+  uint8_t switch_status = data[45];
   ESP_LOGD(TAG, "Switch status: 0x%02X", switch_status);
   ESP_LOGD(TAG, "  Bit0 Discharge switch: %s", ONOFF(switch_status & 0x01));
   ESP_LOGD(TAG, "  Bit1 Charging switch: %s", ONOFF(switch_status & 0x02));
@@ -651,7 +647,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(switch_status & 0x80));
 
   // Custom alarm volume P
-  uint8_t custom_alarm_volume = data[protection_offset + 2];
+  uint8_t custom_alarm_volume = data[46];
   ESP_LOGD(TAG, "Custom alarm volume P: %d", custom_alarm_volume);
 
   size_t alarm_offset = protection_offset + 3;
