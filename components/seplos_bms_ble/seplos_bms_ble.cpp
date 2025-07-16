@@ -83,7 +83,7 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
       auto *char_notify =
           this->parent_->get_characteristic(SEPLOS_BMS_SERVICE_UUID, SEPLOS_BMS_NOTIFY_CHARACTERISTIC_UUID);
       if (char_notify == nullptr) {
-        ESP_LOGE(TAG, "[%s] No notify service found at device, not an Seplos BMS..?",
+        ESP_LOGE(TAG, "[%s] No notify service found at device, not an Seplos v2 BMS..?",
                  this->parent_->address_str().c_str());
         break;
       }
