@@ -1,6 +1,6 @@
 # esphome-seplos-bms
 
-ESPHome component to monitor Seplos BMS via UART or RS485
+ESPHome component to monitor a Seplos BMS via UART, RS485 or BLE
 
 ## Supported devices
 
