@@ -22,6 +22,23 @@ namespace seplos_bms_v3_ble {
 
 namespace espbt = esphome::esp32_ble_tracker;
 
+class SeplosBmsV3Ble;  // Forward declaration
+
+class SeplosBmsV3BlePack {
+ public:
+  void set_parent(SeplosBmsV3Ble *parent) { parent_ = parent; }
+  void set_address(uint8_t address) { address_ = address; }
+  virtual void on_pack_pia_data(const std::vector<uint8_t> &data) = 0;
+  virtual void on_pack_pib_data(const std::vector<uint8_t> &data) = 0;
+  virtual void on_pack_pic_data(const std::vector<uint8_t> &data) = 0;
+  uint8_t get_address() const { return address_; }
+
+ protected:
+  friend SeplosBmsV3Ble;
+  SeplosBmsV3Ble *parent_;
+  uint8_t address_;
+};
+
 struct SeplosV3Command {
   uint8_t device;
   uint8_t function;
@@ -178,8 +195,8 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
     pack_serial_number_text_sensor_ = pack_serial_number_text_sensor;
   }
 
-  void register_pack_component(seplos_bms_v3_ble_pack::SeplosBmsV3BlePack *pack_sensor) {
-    pack_sensors_.push_back(pack_sensor);
+  void register_pack_component(SeplosBmsV3BlePack *pack_device) {
+    pack_devices_.push_back(pack_device);
     // Note: Command queue will be built during setup/connection to include commands for registered packs
   }
 
@@ -255,7 +272,7 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   uint16_t char_command_handle_;
   uint8_t next_command_{0};
   uint8_t pack_count_{0};
-  std::vector<seplos_bms_v3_ble_pack::SeplosBmsV3BlePack *> pack_sensors_;
+  std::vector<SeplosBmsV3BlePack *> pack_devices_;
   std::vector<SeplosV3Command> dynamic_command_queue_;
 
   // Min/Max statistics are now provided by EIB register data

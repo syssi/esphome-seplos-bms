@@ -7,14 +7,11 @@
 namespace esphome {
 namespace seplos_bms_v3_ble_pack {
 
-class SeplosBmsV3BlePack : public Component {
+class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBmsV3BlePack {
  public:
   void setup() override;
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
-
-  void set_address(uint8_t address) { address_ = address; }
-  void set_parent(seplos_bms_v3_ble::SeplosBmsV3Ble *parent) { parent_ = parent; }
 
   // Pack-spezifische Sensoren
   void set_pack_voltage_sensor(sensor::Sensor *sensor) { pack_voltage_sensor_ = sensor; }
@@ -44,17 +41,17 @@ class SeplosBmsV3BlePack : public Component {
   void update_pack_cell_voltage(uint8_t index, float voltage);
   void update_pack_temperature(uint8_t index, float temperature);
 
-  // Pack-specific data decoding methods
-  void decode_pia_data(const std::vector<uint8_t> &data);
-  void decode_pib_data(const std::vector<uint8_t> &data);
-  void decode_pic_data(const std::vector<uint8_t> &data);
+  // Pack-specific data decoding methods (override virtual methods from SeplosBlePack)
+  void on_pack_pia_data(const std::vector<uint8_t> &data) override;
+  void on_pack_pib_data(const std::vector<uint8_t> &data) override;
+  void on_pack_pic_data(const std::vector<uint8_t> &data) override;
 
-  uint8_t get_address() const { return address_; }
+  // Legacy methods (for backward compatibility)
+  void decode_pia_data(const std::vector<uint8_t> &data) { on_pack_pia_data(data); }
+  void decode_pib_data(const std::vector<uint8_t> &data) { on_pack_pib_data(data); }
+  void decode_pic_data(const std::vector<uint8_t> &data) { on_pack_pic_data(data); }
 
  protected:
-  uint8_t address_;
-  seplos_bms_v3_ble::SeplosBmsV3Ble *parent_;
-
   sensor::Sensor *pack_voltage_sensor_{nullptr};
   sensor::Sensor *pack_current_sensor_{nullptr};
   sensor::Sensor *pack_battery_level_sensor_{nullptr};

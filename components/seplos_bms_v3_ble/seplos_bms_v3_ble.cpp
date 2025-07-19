@@ -202,8 +202,8 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
     // First try the new sub-platform architecture
     bool handled_by_sub_platform = false;
 
-    for (auto *pack_sensor : this->pack_sensors_) {
-      if (pack_sensor->get_address() == device) {
+    for (auto *pack_device : this->pack_devices_) {
+      if (pack_device->get_address() == device) {
         handled_by_sub_platform = true;
         if (data_length == SEPLOS_V3_PIA_LENGTH * 2) {
           this->update_pack_pia_data(device, payload);
@@ -510,8 +510,8 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
 
   // Add pack-specific commands only for registered pack sensors
   // This ensures commands are only sent to addresses that have corresponding pack components
-  for (const auto *pack_sensor : this->pack_sensors_) {
-    uint8_t pack_address = pack_sensor->get_address();
+  for (const auto *pack_device : this->pack_devices_) {
+    uint8_t pack_address = pack_device->get_address();
     ESP_LOGD(TAG, "Adding pack commands for registered address: 0x%02X", pack_address);
 
     for (const auto &pack_cmd : SEPLOS_V3_PACK_COMMANDS) {
@@ -522,12 +522,12 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
   }
 
   ESP_LOGD(TAG, "Built dynamic command queue with %d commands for %d registered packs",
-           this->dynamic_command_queue_.size(), this->pack_sensors_.size());
+           this->dynamic_command_queue_.size(), this->pack_devices_.size());
 }
 
 int SeplosBmsV3Ble::find_pack_index_by_address_(uint8_t address) {
-  for (size_t i = 0; i < this->pack_sensors_.size(); i++) {
-    if (this->pack_sensors_[i]->get_address() == address) {
+  for (size_t i = 0; i < this->pack_devices_.size(); i++) {
+    if (this->pack_devices_[i]->get_address() == address) {
       return i;
     }
   }
@@ -536,20 +536,20 @@ int SeplosBmsV3Ble::find_pack_index_by_address_(uint8_t address) {
 
 void SeplosBmsV3Ble::update_pack_data(uint8_t address, const std::vector<uint8_t> &data) {
   // Find the corresponding pack sensor
-  for (auto *pack_sensor : this->pack_sensors_) {
-    if (pack_sensor->get_address() == address) {
+  for (auto *pack_device : this->pack_devices_) {
+    if (pack_device->get_address() == address) {
       ESP_LOGD(TAG, "Updating pack data for address: 0x%02X", address);
 
       // Determine data type based on data length and pass to pack sensor
       if (data.size() == SEPLOS_V3_PIA_LENGTH * 2) {
         // PIA data (Pack Information A)
-        pack_sensor->decode_pia_data(data);
+        pack_device->on_pack_pia_data(data);
       } else if (data.size() == SEPLOS_V3_PIB_LENGTH * 2) {
         // PIB data (Pack Information B)
-        pack_sensor->decode_pib_data(data);
+        pack_device->on_pack_pib_data(data);
       } else if (data.size() == SEPLOS_V3_PIC_LENGTH * 2) {
         // PIC data (Pack Information C)
-        pack_sensor->decode_pic_data(data);
+        pack_device->on_pack_pic_data(data);
       } else {
         ESP_LOGW(TAG, "Unknown data format for pack 0x%02X, size: %d", address, data.size());
       }
@@ -560,27 +560,27 @@ void SeplosBmsV3Ble::update_pack_data(uint8_t address, const std::vector<uint8_t
 }
 
 void SeplosBmsV3Ble::update_pack_pia_data(uint8_t address, const std::vector<uint8_t> &data) {
-  for (auto *pack_sensor : this->pack_sensors_) {
-    if (pack_sensor->get_address() == address) {
-      pack_sensor->decode_pia_data(data);
+  for (auto *pack_device : this->pack_devices_) {
+    if (pack_device->get_address() == address) {
+      pack_device->on_pack_pia_data(data);
       break;
     }
   }
 }
 
 void SeplosBmsV3Ble::update_pack_pib_data(uint8_t address, const std::vector<uint8_t> &data) {
-  for (auto *pack_sensor : this->pack_sensors_) {
-    if (pack_sensor->get_address() == address) {
-      pack_sensor->decode_pib_data(data);
+  for (auto *pack_device : this->pack_devices_) {
+    if (pack_device->get_address() == address) {
+      pack_device->on_pack_pib_data(data);
       break;
     }
   }
 }
 
 void SeplosBmsV3Ble::update_pack_pic_data(uint8_t address, const std::vector<uint8_t> &data) {
-  for (auto *pack_sensor : this->pack_sensors_) {
-    if (pack_sensor->get_address() == address) {
-      pack_sensor->decode_pic_data(data);
+  for (auto *pack_device : this->pack_devices_) {
+    if (pack_device->get_address() == address) {
+      pack_device->on_pack_pic_data(data);
       break;
     }
   }

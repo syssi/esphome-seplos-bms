@@ -14,7 +14,7 @@ seplos_bms_v3_ble_ns = cg.esphome_ns.namespace("seplos_bms_v3_ble")
 SeplosBmsV3Ble = seplos_bms_v3_ble_ns.class_(
     "SeplosBmsV3Ble", ble_client.BLEClientNode, cg.PollingComponent
 )
-SeplosBmsV3BleDevice = seplos_bms_v3_ble_ns.class_("SeplosBmsV3BleDevice")
+SeplosBmsV3BlePackBase = seplos_bms_v3_ble_ns.class_("SeplosBmsV3BlePack")
 
 CONFIG_SCHEMA = (
     cv.Schema(

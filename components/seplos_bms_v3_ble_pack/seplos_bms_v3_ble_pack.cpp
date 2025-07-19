@@ -84,7 +84,7 @@ void SeplosBmsV3BlePack::update_pack_temperature(uint8_t index, float temperatur
   }
 }
 
-void SeplosBmsV3BlePack::decode_pia_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::on_pack_pia_data(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -109,7 +109,7 @@ void SeplosBmsV3BlePack::decode_pia_data(const std::vector<uint8_t> &data) {
   this->update_pack_cycle((float) seplos_get_16bit(14));
 }
 
-void SeplosBmsV3BlePack::decode_pib_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -132,7 +132,7 @@ void SeplosBmsV3BlePack::decode_pib_data(const std::vector<uint8_t> &data) {
   }
 }
 
-void SeplosBmsV3BlePack::decode_pic_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Decoding PIC data for pack 0x%02X (%d bytes)", this->address_, data.size());
 
   if (data.size() < 8) {

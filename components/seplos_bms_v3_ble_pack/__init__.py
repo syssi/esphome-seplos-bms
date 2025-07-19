@@ -15,7 +15,7 @@ DEFAULT_ADDRESS = 0x00
 
 seplos_bms_v3_ble_pack_ns = cg.esphome_ns.namespace("seplos_bms_v3_ble_pack")
 SeplosBmsV3BlePack = seplos_bms_v3_ble_pack_ns.class_(
-    "SeplosBmsV3BlePack", cg.Component, seplos_bms_v3_ble.SeplosBmsV3BleDevice
+    "SeplosBmsV3BlePack", cg.Component, seplos_bms_v3_ble.SeplosBmsV3BlePackBase
 )
 
 SEPLOS_BMS_V3_BLE_PACK_COMPONENT_SCHEMA = cv.Schema(
