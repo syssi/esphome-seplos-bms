@@ -27,8 +27,8 @@ void SeplosBmsV3BlePack::dump_config() {
 
   // Count configured cell sensors
   int cell_count = 0;
-  for (int i = 0; i < 32; i++) {
-    if (this->pack_cell_voltage_sensors_[i] != nullptr) {
+  for (auto &pack_cell_voltage_sensor : this->pack_cell_voltage_sensors_) {
+    if (pack_cell_voltage_sensor != nullptr) {
       cell_count++;
     }
   }
@@ -38,8 +38,8 @@ void SeplosBmsV3BlePack::dump_config() {
 
   // Count configured temperature sensors
   int temp_count = 0;
-  for (int i = 0; i < 16; i++) {
-    if (this->pack_temperature_sensors_[i] != nullptr) {
+  for (auto &pack_temperature_sensor : this->pack_temperature_sensors_) {
+    if (pack_temperature_sensor != nullptr) {
       temp_count++;
     }
   }
