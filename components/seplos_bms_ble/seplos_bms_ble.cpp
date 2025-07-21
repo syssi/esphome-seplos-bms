@@ -39,6 +39,7 @@ static const uint8_t SEPLOS_CMD_PROTOCOL_SWITCH_CAN = 0x63;
 static const uint8_t SEPLOS_CMD_PROTOCOL_SWITCH_RS485 = 0x64;
 static const uint8_t SEPLOS_CMD_SET_BMS_PARAMETER = 0xA1;
 static const uint8_t SEPLOS_CMD_SET_DEVICE_GROUP_NUMBER_NAME = 0x65;
+static const uint8_t SEPLOS_CMD_SET_MOSFET_CONTROL = 0xAA;
 
 struct SeplosCommand {
   uint8_t function;
@@ -108,7 +109,7 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
     case ESP_GATTC_REG_FOR_NOTIFY_EVT: {
       this->node_state = espbt::ClientState::ESTABLISHED;
       this->publish_state_(this->online_status_binary_sensor_, true);
-      this->send_command_(SEPLOS_COMMAND_QUEUE[0].function, SEPLOS_COMMAND_QUEUE[0].payload);
+      this->send_command(SEPLOS_COMMAND_QUEUE[0].function, SEPLOS_COMMAND_QUEUE[0].payload);
       break;
     }
     case ESP_GATTC_NOTIFY_EVT: {
@@ -137,8 +138,8 @@ void SeplosBmsBle::update() {
              this->next_command_, SEPLOS_COMMAND_QUEUE_SIZE);
   }
   this->next_command_ = 0;
-  this->send_command_(SEPLOS_COMMAND_QUEUE[this->next_command_].function,
-                      SEPLOS_COMMAND_QUEUE[this->next_command_].payload);
+  this->send_command(SEPLOS_COMMAND_QUEUE[this->next_command_].function,
+                     SEPLOS_COMMAND_QUEUE[this->next_command_].payload);
   this->next_command_++;
 }
 
@@ -224,6 +225,14 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
       ESP_LOGI(TAG, "Device group number name frame (%zu bytes) received", data.size());
       ESP_LOGD(TAG, "  Decoding not implemented yet");
       break;
+    case SEPLOS_CMD_SET_MOSFET_CONTROL:
+      ESP_LOGI(TAG, "Switch control response (%zu bytes) received", data.size());
+      ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      if (data.size() >= 9) {
+        uint8_t result = data[7];
+        ESP_LOGI(TAG, "Switch control result: %s", result == 0x00 ? "SUCCESS" : "FAILED");
+      }
+      break;
     default:
       ESP_LOGW(TAG, "Unhandled response received (function 0x%02X): %s", function,
                format_hex_pretty(&data.front(), data.size()).c_str());
@@ -231,8 +240,8 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
 
   // Send next command after each received frame
   if (this->next_command_ < SEPLOS_COMMAND_QUEUE_SIZE) {
-    this->send_command_(SEPLOS_COMMAND_QUEUE[this->next_command_].function,
-                        SEPLOS_COMMAND_QUEUE[this->next_command_].payload);
+    this->send_command(SEPLOS_COMMAND_QUEUE[this->next_command_].function,
+                       SEPLOS_COMMAND_QUEUE[this->next_command_].payload);
     this->next_command_++;
   }
 }
@@ -904,6 +913,11 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(switch_status & 0x40));
   ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(switch_status & 0x80));
 
+  this->publish_state_(this->discharging_switch_, switch_status & 0x01);
+  this->publish_state_(this->charging_switch_, switch_status & 0x02);
+  this->publish_state_(this->current_limit_switch_, switch_status & 0x04);
+  this->publish_state_(this->heating_switch_, switch_status & 0x08);
+
   // Custom alarm volume P (1 byte)
   uint8_t custom_alarm_volume = data[protection_offset + 4];
   ESP_LOGD(TAG, "Custom alarm volume P: %d", custom_alarm_volume);
@@ -1148,11 +1162,14 @@ void SeplosBmsBle::publish_state_(text_sensor::TextSensor *text_sensor, const st
   text_sensor->publish_state(state);
 }
 
-void SeplosBmsBle::write_register(uint8_t address, uint16_t value) {
-  // this->send_command_(SEPLOS_CMD_WRITE, SEPLOS_CMD_MOS);  // @TODO: Pass value
+void SeplosBmsBle::publish_state_(switch_::Switch *obj, const bool &state) {
+  if (obj == nullptr)
+    return;
+
+  obj->publish_state(state);
 }
 
-bool SeplosBmsBle::send_command_(uint8_t function, const std::vector<uint8_t> &payload) {
+bool SeplosBmsBle::send_command(uint8_t function, const std::vector<uint8_t> &payload) {
   std::vector<uint8_t> data;
   data.push_back(0x10);      // VER
   data.push_back(0x00);      // ADDR

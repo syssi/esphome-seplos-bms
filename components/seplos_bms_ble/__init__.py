@@ -5,7 +5,8 @@ from esphome.const import CONF_ID
 
 CODEOWNERS = ["@syssi"]
 
-AUTO_LOAD = ["binary_sensor", "sensor", "text_sensor"]
+AUTO_LOAD = ["binary_sensor", "sensor", "switch", "text_sensor"]
+
 MULTI_CONF = True
 
 CONF_SEPLOS_BMS_BLE_ID = "seplos_bms_ble_id"
@@ -13,6 +14,12 @@ CONF_SEPLOS_BMS_BLE_ID = "seplos_bms_ble_id"
 seplos_bms_ble_ns = cg.esphome_ns.namespace("seplos_bms_ble")
 SeplosBmsBle = seplos_bms_ble_ns.class_(
     "SeplosBmsBle", ble_client.BLEClientNode, cg.PollingComponent
+)
+
+SEPLOS_BMS_BLE_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SEPLOS_BMS_BLE_ID): cv.use_id(SeplosBmsBle),
+    }
 )
 
 CONFIG_SCHEMA = (

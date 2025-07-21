@@ -175,3 +175,15 @@ text_sensor:
       name: "${name} temperature protection"
     errors:
       name: "${name} errors"
+
+switch:
+  - platform: seplos_bms_ble
+    seplos_bms_ble_id: bms0
+    discharging:
+      name: "${name} discharging"
+    charging:
+      name: "${name} charging"
+    current_limit:
+      name: "${name} current limit"
+    heating:
+      name: "${name} heating"
