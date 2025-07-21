@@ -13,39 +13,9 @@ void SeplosBmsV3BlePack::dump_config() {
   ESP_LOGCONFIG(TAG, "  Pack Address: 0x%02X", this->get_address());
 }
 
-void SeplosBmsV3BlePack::update_pack_voltage(float voltage) {
-  if (this->pack_voltage_sensor_ != nullptr) {
-    this->pack_voltage_sensor_->publish_state(voltage);
-  }
-}
-
-void SeplosBmsV3BlePack::update_pack_current(float current) {
-  if (this->pack_current_sensor_ != nullptr) {
-    this->pack_current_sensor_->publish_state(current);
-  }
-}
-
-void SeplosBmsV3BlePack::update_pack_battery_level(float level) {
-  if (this->pack_battery_level_sensor_ != nullptr) {
-    this->pack_battery_level_sensor_->publish_state(level);
-  }
-}
-
-void SeplosBmsV3BlePack::update_pack_cycle(float cycle) {
-  if (this->pack_cycle_sensor_ != nullptr) {
-    this->pack_cycle_sensor_->publish_state(cycle);
-  }
-}
-
-void SeplosBmsV3BlePack::update_pack_cell_voltage(uint8_t index, float voltage) {
-  if (index < 16 && this->pack_cell_voltage_sensors_[index] != nullptr) {
-    this->pack_cell_voltage_sensors_[index]->publish_state(voltage);
-  }
-}
-
-void SeplosBmsV3BlePack::update_pack_temperature(uint8_t index, float temperature) {
-  if (index < 4 && this->pack_temperature_sensors_[index] != nullptr) {
-    this->pack_temperature_sensors_[index]->publish_state(temperature);
+void SeplosBmsV3BlePack::publish_state_(sensor::Sensor *sensor, float value) {
+  if (sensor != nullptr) {
+    sensor->publish_state(value);
   }
 }
 
@@ -61,10 +31,10 @@ void SeplosBmsV3BlePack::on_pack_pia_data(const std::vector<uint8_t> &data) {
     return;
   }
 
-  this->update_pack_voltage(seplos_get_16bit(0) * 0.01f);
-  this->update_pack_current((int16_t) seplos_get_16bit(2) * 0.01f);
-  this->update_pack_battery_level(seplos_get_16bit(10) * 0.1f);
-  this->update_pack_cycle((float) seplos_get_16bit(14));
+  this->publish_state_(this->pack_voltage_sensor_, seplos_get_16bit(0) * 0.01f);
+  this->publish_state_(this->pack_current_sensor_, (int16_t) seplos_get_16bit(2) * 0.01f);
+  this->publish_state_(this->pack_battery_level_sensor_, seplos_get_16bit(10) * 0.1f);
+  this->publish_state_(this->pack_cycle_sensor_, (float) seplos_get_16bit(14));
 }
 
 void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
@@ -84,7 +54,7 @@ void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
     uint16_t voltage_raw = seplos_get_16bit(i * 2);
     float voltage = voltage_raw * 0.001f;
     ESP_LOGD(TAG, "  Cell %d voltage: %d mV (%.3f V)", i + 1, voltage_raw, voltage);
-    this->update_pack_cell_voltage(i, voltage);
+    this->publish_state_(this->pack_cell_voltage_sensors_[i], voltage);
   }
 
   // Cell temperatures (32-39, 4 sensors * 2 bytes each)
@@ -92,7 +62,7 @@ void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
     uint16_t temperature_raw = seplos_get_16bit(32 + i * 2);
     float temperature_celsius = (temperature_raw - 2731.5f) * 0.1f;
     ESP_LOGD(TAG, "  Cell %d temperature: %d (%.1f °C)", i + 1, temperature_raw, temperature_celsius);
-    this->update_pack_temperature(i, temperature_celsius);
+    this->publish_state_(this->pack_temperature_sensors_[i], temperature_celsius);
   }
 
   // Environment temperature (bytes 40-41) if available
