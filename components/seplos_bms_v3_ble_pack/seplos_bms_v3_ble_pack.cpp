@@ -11,6 +11,36 @@ void SeplosBmsV3BlePack::setup() { ESP_LOGCONFIG(TAG, "Setting up Pack Sensor 0x
 void SeplosBmsV3BlePack::dump_config() {
   ESP_LOGCONFIG(TAG, "Pack Sensor:");
   ESP_LOGCONFIG(TAG, "  Pack Address: 0x%02X", this->get_address());
+
+  LOG_SENSOR("", "Pack Voltage", this->pack_voltage_sensor_);
+  LOG_SENSOR("", "Pack Current", this->pack_current_sensor_);
+  LOG_SENSOR("", "Pack Battery Level", this->pack_battery_level_sensor_);
+  LOG_SENSOR("", "Pack Cycle", this->pack_cycle_sensor_);
+
+  LOG_SENSOR("", "Cell Voltage 1", this->pack_cell_voltage_sensors_[0]);
+  LOG_SENSOR("", "Cell Voltage 2", this->pack_cell_voltage_sensors_[1]);
+  LOG_SENSOR("", "Cell Voltage 3", this->pack_cell_voltage_sensors_[2]);
+  LOG_SENSOR("", "Cell Voltage 4", this->pack_cell_voltage_sensors_[3]);
+  LOG_SENSOR("", "Cell Voltage 5", this->pack_cell_voltage_sensors_[4]);
+  LOG_SENSOR("", "Cell Voltage 6", this->pack_cell_voltage_sensors_[5]);
+  LOG_SENSOR("", "Cell Voltage 7", this->pack_cell_voltage_sensors_[6]);
+  LOG_SENSOR("", "Cell Voltage 8", this->pack_cell_voltage_sensors_[7]);
+  LOG_SENSOR("", "Cell Voltage 9", this->pack_cell_voltage_sensors_[8]);
+  LOG_SENSOR("", "Cell Voltage 10", this->pack_cell_voltage_sensors_[9]);
+  LOG_SENSOR("", "Cell Voltage 11", this->pack_cell_voltage_sensors_[10]);
+  LOG_SENSOR("", "Cell Voltage 12", this->pack_cell_voltage_sensors_[11]);
+  LOG_SENSOR("", "Cell Voltage 13", this->pack_cell_voltage_sensors_[12]);
+  LOG_SENSOR("", "Cell Voltage 14", this->pack_cell_voltage_sensors_[13]);
+  LOG_SENSOR("", "Cell Voltage 15", this->pack_cell_voltage_sensors_[14]);
+  LOG_SENSOR("", "Cell Voltage 16", this->pack_cell_voltage_sensors_[15]);
+
+  LOG_SENSOR("", "Pack Temperature 1", this->pack_temperature_sensors_[0]);
+  LOG_SENSOR("", "Pack Temperature 2", this->pack_temperature_sensors_[1]);
+  LOG_SENSOR("", "Pack Temperature 3", this->pack_temperature_sensors_[2]);
+  LOG_SENSOR("", "Pack Temperature 4", this->pack_temperature_sensors_[3]);
+
+  LOG_SENSOR("", "Ambient Temperature", this->ambient_temperature_sensor_);
+  LOG_SENSOR("", "Mosfet Temperature", this->mosfet_temperature_sensor_);
 }
 
 void SeplosBmsV3BlePack::publish_state_(sensor::Sensor *sensor, float value) {
