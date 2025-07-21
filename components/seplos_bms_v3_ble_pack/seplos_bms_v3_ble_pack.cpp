@@ -106,19 +106,7 @@ void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
     return;
   }
 
-  // PIC data contains pack-specific status codes and protection information
-  // Based on the protocol, PIC data contains:
-  // Byte 0: System state code
-  // Byte 1: Voltage event code
-  // Byte 2: Temperature event code
-  // Byte 4: Current event code
-
   uint8_t system_state = data[0];
-  uint8_t voltage_event = data[1];
-  uint8_t temperature_event = data[2];
-  uint8_t current_event = data[4];
-
-  // System State (TB09) - Pack 0x%02X: 0x%02X
   ESP_LOGD(TAG, "System State (TB09) - Pack 0x%02X: 0x%02X", this->get_address(), system_state);
   if (system_state & 0x01)
     ESP_LOGD(TAG, "  - Discharging active");
@@ -133,7 +121,7 @@ void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
   if (system_state & 0x20)
     ESP_LOGW(TAG, "  - System turned off");
 
-  // Voltage Events (TB02) - Pack 0x%02X: 0x%02X
+  uint8_t voltage_event = data[1];
   ESP_LOGD(TAG, "Voltage Events (TB02) - Pack 0x%02X: 0x%02X", this->get_address(), voltage_event);
   if (voltage_event & 0x01)
     ESP_LOGW(TAG, "  - Cell high voltage alarm");
@@ -152,7 +140,7 @@ void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
   if (voltage_event & 0x80)
     ESP_LOGE(TAG, "  - Pack undervoltage protection!");
 
-  // Temperature Events (TB03) - Pack 0x%02X: 0x%02X
+  uint8_t temperature_event = data[2];
   ESP_LOGD(TAG, "Temperature Events (TB03) - Pack 0x%02X: 0x%02X", this->get_address(), temperature_event);
   if (temperature_event & 0x01)
     ESP_LOGW(TAG, "  - Charge high temperature alarm");
@@ -171,7 +159,7 @@ void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
   if (temperature_event & 0x80)
     ESP_LOGE(TAG, "  - Discharge undertemperature protection!");
 
-  // Current Events (TB05) - Pack 0x%02X: 0x%02X
+  uint8_t current_event = data[4];
   ESP_LOGD(TAG, "Current Events (TB05) - Pack 0x%02X: 0x%02X", this->get_address(), current_event);
   if (current_event & 0x01)
     ESP_LOGW(TAG, "  - Charge current alarm");
@@ -186,7 +174,7 @@ void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
   if (current_event & 0x20)
     ESP_LOGE(TAG, "  - Discharge secondary overcurrent protection!");
   if (current_event & 0x40)
-    ESP_LOGE(TAG, "  - SHORT CIRCUIT PROTECTION!");
+    ESP_LOGE(TAG, "  - Short circuit protection!");
 }
 
 }  // namespace seplos_bms_v3_ble_pack
