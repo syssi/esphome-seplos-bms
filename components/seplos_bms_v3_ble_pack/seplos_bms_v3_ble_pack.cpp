@@ -81,18 +81,12 @@ void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
 
   // Cell voltages (0-31, 16 cells * 2 bytes each)
   for (uint8_t i = 0; i < 16; i++) {
-    uint16_t voltage_raw = seplos_get_16bit(i * 2);
-    float voltage = voltage_raw * 0.001f;
-    ESP_LOGD(TAG, "  Cell %d voltage: %d mV (%.3f V)", i + 1, voltage_raw, voltage);
-    this->publish_state_(this->pack_cell_voltage_sensors_[i], voltage);
+    this->publish_state_(this->pack_cell_voltage_sensors_[i], seplos_get_16bit(i * 2) * 0.001f);
   }
 
   // Cell temperatures (32-39, 4 sensors * 2 bytes each)
   for (uint8_t i = 0; i < 4; i++) {
-    uint16_t temperature_raw = seplos_get_16bit(32 + i * 2);
-    float temperature_celsius = (temperature_raw - 2731.5f) * 0.1f;
-    ESP_LOGD(TAG, "  Cell %d temperature: %d (%.1f °C)", i + 1, temperature_raw, temperature_celsius);
-    this->publish_state_(this->pack_temperature_sensors_[i], temperature_celsius);
+    this->publish_state_(this->pack_temperature_sensors_[i], (seplos_get_16bit(32 + i * 2) - 2731.5f) * 0.1f);
   }
 
   // Environment temperature (bytes 40-41) if available
