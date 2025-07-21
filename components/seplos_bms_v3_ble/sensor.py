@@ -26,7 +26,6 @@ DEPENDENCIES = ["seplos_bms_v3_ble"]
 
 CODEOWNERS = ["@syssi"]
 
-# Global sensor configuration
 CONF_TOTAL_VOLTAGE = "total_voltage"
 CONF_CHARGING_POWER = "charging_power"
 CONF_DISCHARGING_POWER = "discharging_power"
@@ -47,7 +46,6 @@ CONF_STATE_OF_HEALTH = "state_of_health"
 CONF_CAPACITY_REMAINING = "capacity_remaining"
 CONF_TOTAL_CAPACITY = "total_capacity"
 CONF_RATED_CAPACITY = "rated_capacity"
-# CONF_AMBIENT_TEMPERATURE and CONF_MOSFET_TEMPERATURE moved to pack subplatform (PIB registers 1118-1119)
 CONF_MIN_CELL_TEMPERATURE = "min_cell_temperature"
 CONF_MAX_CELL_TEMPERATURE = "max_cell_temperature"
 CONF_MIN_TEMPERATURE_CELL = "min_temperature_cell"
@@ -62,7 +60,6 @@ CONF_TEMPERATURE_EVENT_CODE = "temperature_event_code"
 CONF_CURRENT_EVENT_CODE = "current_event_code"
 CONF_MAX_DISCHARGE_CURRENT = "max_discharge_current"
 CONF_MAX_CHARGE_CURRENT = "max_charge_current"
-
 
 SENSORS = [
     CONF_TOTAL_VOLTAGE,
@@ -230,9 +227,6 @@ CONFIG_SCHEMA = cv.Schema(
     }
 )
 
-# Individual cell voltages and temperatures are pack-specific (PIB register 1100-1119)
-# and belong to seplos_bms_v3_ble_pack subplatform, not here
-
 
 async def to_code(config):
     hub = await cg.get_variable(config[CONF_SEPLOS_BMS_V3_BLE_ID])
@@ -243,5 +237,3 @@ async def to_code(config):
             conf = config[key]
             sens = await sensor.new_sensor(conf)
             cg.add(getattr(hub, f"set_{key}_sensor")(sens))
-
-    # Individual cell voltages and temperatures are handled by seplos_bms_v3_ble_pack subplatform

@@ -13,7 +13,6 @@
 
 namespace esphome {
 
-// Forward declarations
 namespace seplos_bms_v3_ble_pack {
 class SeplosBmsV3BlePack;
 }
@@ -22,7 +21,7 @@ namespace seplos_bms_v3_ble {
 
 namespace espbt = esphome::esp32_ble_tracker;
 
-class SeplosBmsV3Ble;  // Forward declaration
+class SeplosBmsV3Ble;
 
 class SeplosBmsV3BlePack {
  public:
@@ -200,14 +199,6 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
     // Note: Command queue will be built during setup/connection to include commands for registered packs
   }
 
-  // Pack-specific sensor registration by ID (deprecated - use SeplosBmsV3BlePack instead)
-  void update_pack_data(uint8_t address, const std::vector<uint8_t> &data);
-
-  // Pack data update methods for different data types
-  void update_pack_pia_data(uint8_t address, const std::vector<uint8_t> &data);
-  void update_pack_pib_data(uint8_t address, const std::vector<uint8_t> &data);
-  void update_pack_pic_data(uint8_t address, const std::vector<uint8_t> &data);
-
   void assemble(const uint8_t *data, uint16_t length);
   void decode(const std::vector<uint8_t> &data);
 
@@ -274,15 +265,13 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   uint8_t pack_count_{0};
   std::vector<SeplosBmsV3BlePack *> pack_devices_;
   std::vector<SeplosV3Command> dynamic_command_queue_;
-
-  // Min/Max statistics are now provided by EIB register data
+  std::vector<uint8_t> build_modbus_payload_(const SeplosV3Command &cmd);
+  uint16_t crc16_(const uint8_t *data, uint16_t length);
 
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   bool send_command_(uint8_t function, const std::vector<uint8_t> &payload);
-  std::vector<uint8_t> build_modbus_payload_(const SeplosV3Command &cmd);
-  uint16_t crc16_(const uint8_t *data, uint16_t length);
   void decode_eia_data_(const std::vector<uint8_t> &data);
   void decode_eib_data_(const std::vector<uint8_t> &data);
   void decode_eic_data_(const std::vector<uint8_t> &data);
@@ -290,7 +279,6 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   void decode_sfa_data_(const std::vector<uint8_t> &data);
   void decode_spa_data_(const std::vector<uint8_t> &data);
   void build_dynamic_command_queue_();
-  int8_t find_pack_index_by_address_(uint8_t address);
 };
 
 }  // namespace seplos_bms_v3_ble

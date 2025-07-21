@@ -645,40 +645,6 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
            this->dynamic_command_queue_.size(), this->pack_devices_.size());
 }
 
-int8_t SeplosBmsV3Ble::find_pack_index_by_address_(uint8_t address) {
-  for (size_t i = 0; i < this->pack_devices_.size(); i++) {
-    if (this->pack_devices_[i]->get_address() == address) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-void SeplosBmsV3Ble::update_pack_data(uint8_t address, const std::vector<uint8_t> &data) {
-  // Find the corresponding pack sensor
-  for (auto *pack_device : this->pack_devices_) {
-    if (pack_device->get_address() == address) {
-      ESP_LOGD(TAG, "Updating pack data for address: 0x%02X", address);
-
-      // Determine data type based on data length and pass to pack sensor
-      if (data.size() == SEPLOS_V3_PIA_LENGTH * 2) {
-        // PIA data (Pack Information A)
-        pack_device->on_pack_pia_data(data);
-      } else if (data.size() == SEPLOS_V3_PIB_LENGTH * 2) {
-        // PIB data (Pack Information B)
-        pack_device->on_pack_pib_data(data);
-      } else if (data.size() == SEPLOS_V3_PIC_LENGTH * 2) {
-        // PIC data (Pack Information C)
-        pack_device->on_pack_pic_data(data);
-      } else {
-        ESP_LOGW(TAG, "Unknown data format for pack 0x%02X, size: %d", address, data.size());
-      }
-
-      break;
-    }
-  }
-}
-
 void SeplosBmsV3Ble::update_pack_pia_data(uint8_t address, const std::vector<uint8_t> &data) {
   for (auto *pack_device : this->pack_devices_) {
     if (pack_device->get_address() == address) {

@@ -11,41 +11,6 @@ void SeplosBmsV3BlePack::setup() { ESP_LOGCONFIG(TAG, "Setting up Pack Sensor 0x
 void SeplosBmsV3BlePack::dump_config() {
   ESP_LOGCONFIG(TAG, "Pack Sensor:");
   ESP_LOGCONFIG(TAG, "  Pack Address: 0x%02X", this->get_address());
-
-  if (this->pack_voltage_sensor_ != nullptr) {
-    ESP_LOGCONFIG(TAG, "  Pack Voltage Sensor configured");
-  }
-  if (this->pack_current_sensor_ != nullptr) {
-    ESP_LOGCONFIG(TAG, "  Pack Current Sensor configured");
-  }
-  if (this->pack_battery_level_sensor_ != nullptr) {
-    ESP_LOGCONFIG(TAG, "  Pack Battery Level Sensor configured");
-  }
-  if (this->pack_cycle_sensor_ != nullptr) {
-    ESP_LOGCONFIG(TAG, "  Pack Cycle Sensor configured");
-  }
-
-  // Count configured cell sensors
-  uint8_t cell_count = 0;
-  for (auto &pack_cell_voltage_sensor : this->pack_cell_voltage_sensors_) {
-    if (pack_cell_voltage_sensor != nullptr) {
-      cell_count++;
-    }
-  }
-  if (cell_count > 0) {
-    ESP_LOGCONFIG(TAG, "  Pack Cell Voltage Sensors: %d configured", cell_count);
-  }
-
-  // Count configured temperature sensors
-  uint8_t temp_count = 0;
-  for (auto &pack_temperature_sensor : this->pack_temperature_sensors_) {
-    if (pack_temperature_sensor != nullptr) {
-      temp_count++;
-    }
-  }
-  if (temp_count > 0) {
-    ESP_LOGCONFIG(TAG, "  Pack Temperature Sensors: %d configured", temp_count);
-  }
 }
 
 void SeplosBmsV3BlePack::update_pack_voltage(float voltage) {
@@ -96,16 +61,9 @@ void SeplosBmsV3BlePack::on_pack_pia_data(const std::vector<uint8_t> &data) {
     return;
   }
 
-  // Pack voltage
   this->update_pack_voltage(seplos_get_16bit(0) * 0.01f);
-
-  // Pack current
   this->update_pack_current((int16_t) seplos_get_16bit(2) * 0.01f);
-
-  // Pack battery level
   this->update_pack_battery_level(seplos_get_16bit(10) * 0.1f);
-
-  // Pack cycles
   this->update_pack_cycle((float) seplos_get_16bit(14));
 }
 
