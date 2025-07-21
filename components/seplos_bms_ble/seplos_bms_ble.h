@@ -6,6 +6,7 @@
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
+#include "esphome/components/switch/switch.h"
 
 #ifdef USE_ESP32
 
@@ -131,7 +132,12 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   }
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
 
-  void write_register(uint8_t address, uint16_t value);
+  void set_discharging_switch(switch_::Switch *discharging_switch) { discharging_switch_ = discharging_switch; }
+  void set_charging_switch(switch_::Switch *charging_switch) { charging_switch_ = charging_switch; }
+  void set_current_limit_switch(switch_::Switch *current_limit_switch) { current_limit_switch_ = current_limit_switch; }
+  void set_heating_switch(switch_::Switch *heating_switch) { heating_switch_ = heating_switch; }
+
+  bool send_command(uint8_t function, const std::vector<uint8_t> &payload = {});
   void assemble(const uint8_t *data, uint16_t length);
   void decode(const std::vector<uint8_t> &data);
   std::string interpret_can_protocol(uint8_t value);
@@ -178,6 +184,11 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   text_sensor::TextSensor *temperature_protection_text_sensor_;
   text_sensor::TextSensor *errors_text_sensor_;
 
+  switch_::Switch *discharging_switch_;
+  switch_::Switch *charging_switch_;
+  switch_::Switch *current_limit_switch_;
+  switch_::Switch *heating_switch_;
+
   struct Cell {
     sensor::Sensor *cell_voltage_sensor_{nullptr};
   } cells_[24];
@@ -203,7 +214,7 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
-  bool send_command_(uint8_t function, const std::vector<uint8_t> &payload = {});
+  void publish_state_(switch_::Switch *obj, const bool &state);
   std::string bitmask_to_string_(const char *const messages[], const uint8_t &messages_size, const uint16_t &mask);
 
   bool check_bit_(uint16_t mask, uint16_t flag) { return (mask & flag) == flag; }
