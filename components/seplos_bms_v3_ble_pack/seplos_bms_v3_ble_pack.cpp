@@ -118,75 +118,22 @@ void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
   uint8_t temperature_event = data[2];
   uint8_t current_event = data[4];
 
-  // System State (TB09) - Pack 0x%02X: 0x%02X
-  ESP_LOGD(TAG, "System State (TB09) - Pack 0x%02X: 0x%02X", this->get_address(), system_state);
-  if (system_state & 0x01)
-    ESP_LOGD(TAG, "  - Discharging active");
-  if (system_state & 0x02)
-    ESP_LOGD(TAG, "  - Charging active");
-  if (system_state & 0x04)
-    ESP_LOGD(TAG, "  - Floating charge");
-  if (system_state & 0x08)
-    ESP_LOGD(TAG, "  - Full charge");
-  if (system_state & 0x10)
-    ESP_LOGD(TAG, "  - Standby mode");
-  if (system_state & 0x20)
-    ESP_LOGW(TAG, "  - System turned off");
+  ESP_LOGD(TAG, "Pack 0x%02X status - System: 0x%02X, Voltage: 0x%02X, Temperature: 0x%02X, Current: 0x%02X",
+           this->get_address(), system_state, voltage_event, temperature_event, current_event);
 
-  // Voltage Events (TB02) - Pack 0x%02X: 0x%02X
-  ESP_LOGD(TAG, "Voltage Events (TB02) - Pack 0x%02X: 0x%02X", this->get_address(), voltage_event);
-  if (voltage_event & 0x01)
-    ESP_LOGW(TAG, "  - Cell high voltage alarm");
-  if (voltage_event & 0x02)
-    ESP_LOGE(TAG, "  - Cell overvoltage protection!");
-  if (voltage_event & 0x04)
-    ESP_LOGW(TAG, "  - Cell low voltage alarm");
-  if (voltage_event & 0x08)
-    ESP_LOGE(TAG, "  - Cell undervoltage protection!");
-  if (voltage_event & 0x10)
-    ESP_LOGW(TAG, "  - Pack high voltage alarm");
-  if (voltage_event & 0x20)
-    ESP_LOGE(TAG, "  - Pack overvoltage protection!");
-  if (voltage_event & 0x40)
-    ESP_LOGW(TAG, "  - Pack low voltage alarm");
-  if (voltage_event & 0x80)
-    ESP_LOGE(TAG, "  - Pack undervoltage protection!");
-
-  // Temperature Events (TB03) - Pack 0x%02X: 0x%02X
-  ESP_LOGD(TAG, "Temperature Events (TB03) - Pack 0x%02X: 0x%02X", this->get_address(), temperature_event);
-  if (temperature_event & 0x01)
-    ESP_LOGW(TAG, "  - Charge high temperature alarm");
-  if (temperature_event & 0x02)
-    ESP_LOGE(TAG, "  - Charge overtemperature protection!");
-  if (temperature_event & 0x04)
-    ESP_LOGW(TAG, "  - Charge low temperature alarm");
-  if (temperature_event & 0x08)
-    ESP_LOGE(TAG, "  - Charge undertemperature protection!");
-  if (temperature_event & 0x10)
-    ESP_LOGW(TAG, "  - Discharge high temperature alarm");
-  if (temperature_event & 0x20)
-    ESP_LOGE(TAG, "  - Discharge overtemperature protection!");
-  if (temperature_event & 0x40)
-    ESP_LOGW(TAG, "  - Discharge low temperature alarm");
-  if (temperature_event & 0x80)
-    ESP_LOGE(TAG, "  - Discharge undertemperature protection!");
-
-  // Current Events (TB05) - Pack 0x%02X: 0x%02X
-  ESP_LOGD(TAG, "Current Events (TB05) - Pack 0x%02X: 0x%02X", this->get_address(), current_event);
-  if (current_event & 0x01)
-    ESP_LOGW(TAG, "  - Charge current alarm");
-  if (current_event & 0x02)
-    ESP_LOGE(TAG, "  - Charge overcurrent protection!");
-  if (current_event & 0x04)
-    ESP_LOGE(TAG, "  - Charge secondary overcurrent protection!");
-  if (current_event & 0x08)
-    ESP_LOGW(TAG, "  - Discharge current alarm");
-  if (current_event & 0x10)
-    ESP_LOGE(TAG, "  - Discharge overcurrent protection!");
-  if (current_event & 0x20)
-    ESP_LOGE(TAG, "  - Discharge secondary overcurrent protection!");
-  if (current_event & 0x40)
-    ESP_LOGE(TAG, "  - SHORT CIRCUIT PROTECTION!");
+  // Log any active alarms/protections
+  if (voltage_event != 0) {
+    ESP_LOGW(TAG, "Pack 0x%02X voltage protection active: 0x%02X", this->get_address(), voltage_event);
+  }
+  if (temperature_event != 0) {
+    ESP_LOGW(TAG, "Pack 0x%02X temperature protection active: 0x%02X", this->get_address(), temperature_event);
+  }
+  if (current_event != 0) {
+    ESP_LOGW(TAG, "Pack 0x%02X current protection active: 0x%02X", this->get_address(), current_event);
+  }
+  if (system_state & 0x20) {  // Bit 5 = Turn off state
+    ESP_LOGW(TAG, "Pack 0x%02X system fault - turn off state active", this->get_address());
+  }
 }
 
 }  // namespace seplos_bms_v3_ble_pack
