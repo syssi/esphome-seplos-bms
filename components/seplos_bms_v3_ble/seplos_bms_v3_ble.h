@@ -27,9 +27,7 @@ class SeplosBmsV3BlePack {
  public:
   void set_parent(SeplosBmsV3Ble *parent) { parent_ = parent; }
   void set_address(uint8_t address) { address_ = address; }
-  virtual void on_pack_pia_data(const std::vector<uint8_t> &data) = 0;
-  virtual void on_pack_pib_data(const std::vector<uint8_t> &data) = 0;
-  virtual void on_pack_pic_data(const std::vector<uint8_t> &data) = 0;
+  virtual void on_frame_data(const std::vector<uint8_t> &frame) = 0;
   uint8_t get_address() const { return address_; }
 
  protected:
@@ -199,9 +197,6 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
     // Note: Command queue will be built during setup/connection to include commands for registered packs
   }
 
-  void update_pack_pia_data(uint8_t address, const std::vector<uint8_t> &data);
-  void update_pack_pib_data(uint8_t address, const std::vector<uint8_t> &data);
-  void update_pack_pic_data(uint8_t address, const std::vector<uint8_t> &data);
   void assemble(const uint8_t *data, uint16_t length);
   void decode(const std::vector<uint8_t> &data);
 

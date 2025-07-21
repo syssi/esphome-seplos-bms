@@ -28,9 +28,12 @@ class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBms
   void set_ambient_temperature_sensor(sensor::Sensor *sensor) { ambient_temperature_sensor_ = sensor; }
   void set_mosfet_temperature_sensor(sensor::Sensor *sensor) { mosfet_temperature_sensor_ = sensor; }
 
-  void on_pack_pia_data(const std::vector<uint8_t> &data) override;
-  void on_pack_pib_data(const std::vector<uint8_t> &data) override;
-  void on_pack_pic_data(const std::vector<uint8_t> &data) override;
+  void on_frame_data(const std::vector<uint8_t> &frame) override;
+
+ protected:
+  void decode_pack_pia_data(const std::vector<uint8_t> &data);
+  void decode_pack_pib_data(const std::vector<uint8_t> &data);
+  void decode_pack_pic_data(const std::vector<uint8_t> &data);
 
  protected:
   void publish_state_(sensor::Sensor *sensor, float value);
