@@ -73,8 +73,22 @@ sensor:
       name: "${name} current protection bitmask"
     temperature_protection_bitmask:
       name: "${name} temperature protection bitmask"
-    error_bitmask:
-      name: "${name} error bitmask"
+    alarm_event1_bitmask:
+      name: "${name} alarm event 1 bitmask"
+    alarm_event2_bitmask:
+      name: "${name} alarm event 2 bitmask"
+    alarm_event3_bitmask:
+      name: "${name} alarm event 3 bitmask"
+    alarm_event4_bitmask:
+      name: "${name} alarm event 4 bitmask"
+    alarm_event5_bitmask:
+      name: "${name} alarm event 5 bitmask"
+    alarm_event6_bitmask:
+      name: "${name} alarm event 6 bitmask"
+    alarm_event7_bitmask:
+      name: "${name} alarm event 7 bitmask"
+    alarm_event8_bitmask:
+      name: "${name} alarm event 8 bitmask"
     total_voltage:
       name: "${name} total voltage"
     current:
@@ -173,8 +187,8 @@ text_sensor:
       name: "${name} current protection"
     temperature_protection:
       name: "${name} temperature protection"
-    errors:
-      name: "${name} errors"
+    alarms:
+      name: "${name} alarms"
 
 switch:
   - platform: seplos_bms_ble

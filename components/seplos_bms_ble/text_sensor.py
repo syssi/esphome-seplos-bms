@@ -15,7 +15,9 @@ CONF_HARDWARE_VERSION = "hardware_version"
 CONF_VOLTAGE_PROTECTION = "voltage_protection"
 CONF_CURRENT_PROTECTION = "current_protection"
 CONF_TEMPERATURE_PROTECTION = "temperature_protection"
-CONF_ERRORS = "errors"
+
+# Consolidated alarms text sensor
+CONF_ALARMS = "alarms"
 
 ICON_DEVICE_MODEL = "mdi:chip"
 ICON_SOFTWARE_VERSION = "mdi:numeric"
@@ -23,7 +25,9 @@ ICON_HARDWARE_VERSION = "mdi:developer-board"
 ICON_VOLTAGE_PROTECTION = "mdi:alert-circle-outline"
 ICON_CURRENT_PROTECTION = "mdi:alert-circle-outline"
 ICON_TEMPERATURE_PROTECTION = "mdi:alert-circle-outline"
-ICON_ERRORS = "mdi:alert-circle-outline"
+
+# Alarms text sensor icon
+ICON_ALARMS = "mdi:alert-circle-multiple-outline"
 
 TEXT_SENSORS = [
     CONF_SOFTWARE_VERSION,
@@ -32,7 +36,7 @@ TEXT_SENSORS = [
     CONF_VOLTAGE_PROTECTION,
     CONF_CURRENT_PROTECTION,
     CONF_TEMPERATURE_PROTECTION,
-    CONF_ERRORS,
+    CONF_ALARMS,
 ]
 
 CONFIG_SCHEMA = cv.Schema(
@@ -62,9 +66,9 @@ CONFIG_SCHEMA = cv.Schema(
             text_sensor.TextSensor,
             icon=ICON_TEMPERATURE_PROTECTION,
         ),
-        cv.Optional(CONF_ERRORS): text_sensor.text_sensor_schema(
+        cv.Optional(CONF_ALARMS): text_sensor.text_sensor_schema(
             text_sensor.TextSensor,
-            icon=ICON_ERRORS,
+            icon=ICON_ALARMS,
         ),
     }
 )
