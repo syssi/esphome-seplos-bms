@@ -14,6 +14,7 @@ from esphome.const import (
     UNIT_AMPERE,
     UNIT_CELSIUS,
     UNIT_EMPTY,
+    UNIT_HOUR,
     UNIT_PERCENT,
     UNIT_VOLT,
     UNIT_WATT,
@@ -111,11 +112,9 @@ def sensor_schema(unit, icon, accuracy_decimals=1, device_class=DEVICE_CLASS_EMP
     )
 
 
-# Schema for global (system-wide) sensors only
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
-        # System-wide sensors
         cv.Optional(CONF_TOTAL_VOLTAGE): sensor_schema(
             UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE
         ),
@@ -155,7 +154,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CYCLE_CAPACITY): sensor_schema(
             UNIT_WATT_HOURS, "mdi:battery-50", 2
         ),
-        cv.Optional(CONF_RUNTIME): sensor_schema("h", "mdi:timer", 1),
+        cv.Optional(CONF_RUNTIME): sensor_schema(UNIT_HOUR, "mdi:timer", 1),
         cv.Optional(CONF_STATE_OF_HEALTH): sensor_schema(
             UNIT_PERCENT, "mdi:battery-heart", 1
         ),
@@ -165,7 +164,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_RATED_CAPACITY): sensor_schema(
             UNIT_WATT_HOURS, "mdi:battery-check", 1
         ),
-        # CONF_AMBIENT_TEMPERATURE and CONF_MOSFET_TEMPERATURE moved to pack subplatform
         cv.Optional(CONF_MIN_CELL_TEMPERATURE): sensor_schema(
             UNIT_CELSIUS, "mdi:thermometer-minus", 1, DEVICE_CLASS_TEMPERATURE
         ),
@@ -208,7 +206,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_MAX_CHARGE_CURRENT): sensor_schema(
             UNIT_AMPERE, "mdi:battery-arrow-up", 1, DEVICE_CLASS_CURRENT
         ),
-        # Global cell voltage statistics
         cv.Optional(CONF_MIN_CELL_VOLTAGE): sensor_schema(
             UNIT_VOLT, "mdi:battery-minus-outline", 3, DEVICE_CLASS_VOLTAGE
         ),
@@ -231,7 +228,6 @@ CONFIG_SCHEMA = cv.Schema(
 async def to_code(config):
     hub = await cg.get_variable(config[CONF_SEPLOS_BMS_V3_BLE_ID])
 
-    # Global sensors with elegant loop
     for key in SENSORS:
         if key in config:
             conf = config[key]

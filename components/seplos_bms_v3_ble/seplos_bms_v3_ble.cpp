@@ -213,7 +213,6 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
       ESP_LOGW(TAG, "Unknown system data length: %d", data_length);
     }
   } else if (device >= 1 && device <= 16) {
-    // First try the new sub-platform architecture
     bool handled_by_sub_platform = false;
 
     for (auto *pack_device : this->pack_devices_) {
@@ -230,7 +229,6 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
       }
     }
 
-    // If no sub-platform pack sensor found, log warning
     if (!handled_by_sub_platform) {
       ESP_LOGW(TAG, "No pack sensor found for address: 0x%02X", device);
     }
@@ -426,7 +424,6 @@ void SeplosBmsV3Ble::decode_eic_data_(const std::vector<uint8_t> &data) {
     problem_code = (problem_code << 8) | data[i];
   }
 
-  // Apply mask as per Python implementation
   problem_code = problem_code & 0xFFFF00FF00FF0000ULL;
 
   this->publish_state_(this->problem_code_sensor_, (float) problem_code);

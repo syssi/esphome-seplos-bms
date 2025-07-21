@@ -6,6 +6,7 @@ from esphome.const import CONF_ADDRESS, CONF_ID
 CODEOWNERS = ["@syssi"]
 
 AUTO_LOAD = ["binary_sensor", "sensor", "text_sensor"]
+
 MULTI_CONF = True
 
 CONF_SEPLOS_BMS_V3_BLE_ID = "seplos_bms_v3_ble_id"
