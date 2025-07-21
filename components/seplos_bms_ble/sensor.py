@@ -35,7 +35,16 @@ CONF_CAPACITY_REMAINING = "capacity_remaining"
 CONF_VOLTAGE_PROTECTION_BITMASK = "voltage_protection_bitmask"
 CONF_CURRENT_PROTECTION_BITMASK = "current_protection_bitmask"
 CONF_TEMPERATURE_PROTECTION_BITMASK = "temperature_protection_bitmask"
-CONF_ERROR_BITMASK = "error_bitmask"
+
+CONF_ALARM_EVENT1_BITMASK = "alarm_event1_bitmask"
+CONF_ALARM_EVENT2_BITMASK = "alarm_event2_bitmask"
+CONF_ALARM_EVENT3_BITMASK = "alarm_event3_bitmask"
+CONF_ALARM_EVENT4_BITMASK = "alarm_event4_bitmask"
+CONF_ALARM_EVENT5_BITMASK = "alarm_event5_bitmask"
+CONF_ALARM_EVENT6_BITMASK = "alarm_event6_bitmask"
+CONF_ALARM_EVENT7_BITMASK = "alarm_event7_bitmask"
+CONF_ALARM_EVENT8_BITMASK = "alarm_event8_bitmask"
+
 CONF_STATE_OF_CHARGE = "state_of_charge"
 CONF_NOMINAL_CAPACITY = "nominal_capacity"
 CONF_CHARGING_CYCLES = "charging_cycles"
@@ -99,8 +108,16 @@ ICON_MAX_VOLTAGE_CELL = "mdi:battery-plus-outline"
 ICON_VOLTAGE_PROTECTION_BITMASK = "mdi:alert-circle-outline"
 ICON_CURRENT_PROTECTION_BITMASK = "mdi:alert-circle-outline"
 ICON_TEMPERATURE_PROTECTION_BITMASK = "mdi:alert-circle-outline"
-ICON_ERROR_BITMASK = "mdi:alert-circle-outline"
 ICON_STATE_OF_HEALTH = "mdi:heart-flash"
+
+ICON_ALARM_EVENT1_BITMASK = "mdi:alert-octagon-outline"
+ICON_ALARM_EVENT2_BITMASK = "mdi:alert-octagon-outline"
+ICON_ALARM_EVENT3_BITMASK = "mdi:thermometer-alert"
+ICON_ALARM_EVENT4_BITMASK = "mdi:thermometer-alert"
+ICON_ALARM_EVENT5_BITMASK = "mdi:current-ac"
+ICON_ALARM_EVENT6_BITMASK = "mdi:battery-alert"
+ICON_ALARM_EVENT7_BITMASK = "mdi:alert-circle-outline"
+ICON_ALARM_EVENT8_BITMASK = "mdi:alert-circle-outline"
 
 UNIT_AMPERE_HOURS = "Ah"
 
@@ -152,7 +169,14 @@ SENSORS = [
     CONF_VOLTAGE_PROTECTION_BITMASK,
     CONF_CURRENT_PROTECTION_BITMASK,
     CONF_TEMPERATURE_PROTECTION_BITMASK,
-    CONF_ERROR_BITMASK,
+    CONF_ALARM_EVENT1_BITMASK,
+    CONF_ALARM_EVENT2_BITMASK,
+    CONF_ALARM_EVENT3_BITMASK,
+    CONF_ALARM_EVENT4_BITMASK,
+    CONF_ALARM_EVENT5_BITMASK,
+    CONF_ALARM_EVENT6_BITMASK,
+    CONF_ALARM_EVENT7_BITMASK,
+    CONF_ALARM_EVENT8_BITMASK,
     CONF_STATE_OF_CHARGE,
     CONF_NOMINAL_CAPACITY,
     CONF_CHARGING_CYCLES,
@@ -237,9 +261,58 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-        cv.Optional(CONF_ERROR_BITMASK): sensor.sensor_schema(
+        cv.Optional(CONF_ALARM_EVENT1_BITMASK): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,
-            icon=ICON_ERROR_BITMASK,
+            icon=ICON_ALARM_EVENT1_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT2_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT2_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT3_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT3_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT4_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT4_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT5_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT5_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT6_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT6_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT7_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT7_BITMASK,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT8_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon=ICON_ALARM_EVENT8_BITMASK,
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
