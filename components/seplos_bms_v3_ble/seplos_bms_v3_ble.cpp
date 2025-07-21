@@ -99,8 +99,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       this->node_state = espbt::ClientState::ESTABLISHED;
       this->publish_state_(this->online_status_binary_sensor_, true);
 
-      // Build dynamic command queue and send first command
-      this->build_dynamic_command_queue_();
+      // Send first command from pre-built queue
       if (!this->dynamic_command_queue_.empty()) {
         this->send_command_(this->dynamic_command_queue_[0].function,
                             this->build_modbus_payload_(this->dynamic_command_queue_[0]));
@@ -129,13 +128,15 @@ void SeplosBmsV3Ble::update() {
     return;
   }
 
+  // Build command queue once when first update is called (all pack devices are registered by then)
+  this->build_dynamic_command_queue_();
+
   if (this->next_command_ != 0) {
     ESP_LOGW(TAG, "Command queue (%d of %d) was not completely processed", this->next_command_,
              this->dynamic_command_queue_.size());
   }
 
   this->next_command_ = 0;
-  this->build_dynamic_command_queue_();
   if (!this->dynamic_command_queue_.empty()) {
     this->send_command_(this->dynamic_command_queue_[this->next_command_].function,
                         this->build_modbus_payload_(this->dynamic_command_queue_[this->next_command_]));
@@ -618,7 +619,11 @@ void SeplosBmsV3Ble::publish_state_(text_sensor::TextSensor *text_sensor, const 
 }
 
 void SeplosBmsV3Ble::build_dynamic_command_queue_() {
-  this->dynamic_command_queue_.clear();
+  if (!this->dynamic_command_queue_.empty()) {
+    ESP_LOGD(TAG, "Command queue already built with %d commands, skipping rebuild",
+             this->dynamic_command_queue_.size());
+    return;  // Queue already built, don't rebuild
+  }
 
   // Add system commands (always present)
   for (const auto &cmd : SEPLOS_V3_SYSTEM_COMMANDS) {
