@@ -606,7 +606,7 @@ void SeplosBmsV3Ble::publish_state_(binary_sensor::BinarySensor *binary_sensor, 
 }
 
 void SeplosBmsV3Ble::publish_state_(sensor::Sensor *sensor, float value) {
-  if (sensor != nullptr && !std::isnan(value)) {
+  if (sensor != nullptr) {
     sensor->publish_state(value);
   }
 }
