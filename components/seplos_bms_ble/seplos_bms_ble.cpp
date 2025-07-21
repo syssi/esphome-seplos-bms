@@ -845,7 +845,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
 
   // Process additional custom alarm events if any (beyond the standard 8)
   if (custom_alarm_volume > 8 && data.size() > 47 + custom_alarm_volume) {
-    for (int i = 8; i < custom_alarm_volume && (47 + i) < data.size(); i++) {
+    for (uint8_t i = 8; i < custom_alarm_volume && (47 + i) < data.size(); i++) {
       ESP_LOGD(TAG, "Custom alarm event %d: 0x%02X", i + 1, data[47 + i]);
     }
   }
@@ -1122,7 +1122,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
 
   // Process additional custom alarm events if any (beyond the standard 8)
   if (custom_alarm_volume > 8) {
-    for (int i = 8; i < custom_alarm_volume && (alarm_offset + i) < data.size(); i++) {
+    for (uint8_t i = 8; i < custom_alarm_volume && (alarm_offset + i) < data.size(); i++) {
       ESP_LOGD(TAG, "Custom alarm event %d: 0x%02X", i + 1, data[alarm_offset + i]);
     }
   }
@@ -1316,7 +1316,7 @@ std::string SeplosBmsBle::bitmask_to_string_(const char *const messages[], const
                                              const uint8_t &mask) {
   std::string values = "";
   if (mask) {
-    for (int i = 0; i < messages_size; i++) {
+    for (uint8_t i = 0; i < messages_size; i++) {
       if (mask & (1 << i)) {
         values.append(messages[i]);
         values.append(";");
