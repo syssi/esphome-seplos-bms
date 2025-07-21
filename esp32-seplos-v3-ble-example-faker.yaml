@@ -19,6 +19,7 @@ interval:
 
       - delay: 1s
 
+      # @FIXME: This frame is probably garbage and needs to be replaced
       # Request EIB (0x2100): Temperature and additional data
       - lambda: |-
           const uint8_t frame[] = {
