@@ -154,9 +154,9 @@ void SeplosBmsV3Ble::assemble(const uint8_t *data, uint16_t length) {
 
   // Check if we have a complete ModBus frame
   if (this->frame_buffer_.size() >= 5) {
-    uint16_t data_length = this->frame_buffer_[2];
+    uint16_t data_len = this->frame_buffer_[2];
 
-    uint16_t expected_length = 3 + data_length + 2;  // header + data + CRC
+    uint16_t expected_length = 3 + data_len + 2;  // header + data + CRC
 
     if (this->frame_buffer_.size() >= expected_length) {
       // Verify CRC
@@ -185,9 +185,9 @@ void SeplosBmsV3Ble::assemble(const uint8_t *data, uint16_t length) {
 void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
   uint8_t device = data[0];
   uint8_t function = data[1];
-  uint16_t data_length = data[2];
+  uint16_t data_len = data[2];
 
-  ESP_LOGD(TAG, "Decoding frame: device=0x%02X, function=0x%02X, length=%d", device, function, data_length);
+  ESP_LOGD(TAG, "Decoding frame: device=0x%02X, function=0x%02X, length=%d", device, function, data_len);
 
   if (function & 0x80) {
     ESP_LOGW(TAG, "Error response from device 0x%02X, error code: 0x%02X", device, data[2]);
@@ -197,41 +197,37 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
   std::vector<uint8_t> payload(data.begin() + 3, data.end() - 2);
 
   if (device == 0x00 || device == 0xE0) {
-    if (data_length == SEPLOS_V3_EIA_LENGTH * 2) {
-      this->decode_eia_data_(payload);
-    } else if (data_length == SEPLOS_V3_EIB_LENGTH * 2) {
-      this->decode_eib_data_(payload);
-    } else if (data_length == SEPLOS_V3_EIC_LENGTH * 2) {
-      this->decode_eic_data_(payload);
-    } else if (data_length == SEPLOS_V3_PCT_LENGTH * 2) {
-      this->decode_pct_data_(payload);
-    } else if (data_length == SEPLOS_V3_SFA_LENGTH * 2) {
-      this->decode_sfa_data_(payload);
-    } else if (data_length == SEPLOS_V3_SPA_LENGTH * 2) {
-      this->decode_spa_data_(payload);
-    } else {
-      ESP_LOGW(TAG, "Unknown system data length: %d", data_length);
+    switch (data_len) {
+      case SEPLOS_V3_EIA_LENGTH * 2:
+        this->decode_eia_data_(payload);
+        break;
+      case SEPLOS_V3_EIB_LENGTH * 2:
+        this->decode_eib_data_(payload);
+        break;
+      case SEPLOS_V3_EIC_LENGTH * 2:
+        this->decode_eic_data_(payload);
+        break;
+      case SEPLOS_V3_PCT_LENGTH * 2:
+        this->decode_pct_data_(payload);
+        break;
+      case SEPLOS_V3_SFA_LENGTH * 2:
+        this->decode_sfa_data_(payload);
+        break;
+      case SEPLOS_V3_SPA_LENGTH * 2:
+        this->decode_spa_data_(payload);
+        break;
+      default:
+        ESP_LOGW(TAG, "Unknown system data length: %d", data_len);
+        break;
     }
   } else if (device >= 1 && device <= 16) {
-    bool handled_by_sub_platform = false;
-
     for (auto *pack_device : this->pack_devices_) {
       if (pack_device->get_address() == device) {
-        handled_by_sub_platform = true;
-        if (data_length == SEPLOS_V3_PIA_LENGTH * 2) {
-          this->update_pack_pia_data(device, payload);
-        } else if (data_length == SEPLOS_V3_PIB_LENGTH * 2) {
-          this->update_pack_pib_data(device, payload);
-        } else if (data_length == SEPLOS_V3_PIC_LENGTH * 2) {
-          this->update_pack_pic_data(device, payload);
-        }
-        break;
+        pack_device->on_frame_data(data);
+        return;
       }
     }
-
-    if (!handled_by_sub_platform) {
-      ESP_LOGW(TAG, "No pack sensor found for address: 0x%02X", device);
-    }
+    ESP_LOGW(TAG, "No pack sensor found for address: 0x%02X", device);
   }
 }
 
@@ -644,33 +640,6 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
 
   ESP_LOGD(TAG, "Built dynamic command queue with %d commands for %d registered packs",
            this->dynamic_command_queue_.size(), this->pack_devices_.size());
-}
-
-void SeplosBmsV3Ble::update_pack_pia_data(uint8_t address, const std::vector<uint8_t> &data) {
-  for (auto *pack_device : this->pack_devices_) {
-    if (pack_device->get_address() == address) {
-      pack_device->on_pack_pia_data(data);
-      break;
-    }
-  }
-}
-
-void SeplosBmsV3Ble::update_pack_pib_data(uint8_t address, const std::vector<uint8_t> &data) {
-  for (auto *pack_device : this->pack_devices_) {
-    if (pack_device->get_address() == address) {
-      pack_device->on_pack_pib_data(data);
-      break;
-    }
-  }
-}
-
-void SeplosBmsV3Ble::update_pack_pic_data(uint8_t address, const std::vector<uint8_t> &data) {
-  for (auto *pack_device : this->pack_devices_) {
-    if (pack_device->get_address() == address) {
-      pack_device->on_pack_pic_data(data);
-      break;
-    }
-  }
 }
 
 }  // namespace seplos_bms_v3_ble

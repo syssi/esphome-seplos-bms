@@ -6,6 +6,10 @@ namespace seplos_bms_v3_ble_pack {
 
 static const char *const TAG = "seplos_bms_v3_ble_pack";
 
+static const uint16_t SEPLOS_V3_PIA_LENGTH = 0x11;
+static const uint16_t SEPLOS_V3_PIB_LENGTH = 0x1A;
+static const uint16_t SEPLOS_V3_PIC_LENGTH = 0x90;
+
 void SeplosBmsV3BlePack::setup() { ESP_LOGCONFIG(TAG, "Setting up Pack Sensor 0x%02X", this->get_address()); }
 
 void SeplosBmsV3BlePack::dump_config() {
@@ -49,7 +53,29 @@ void SeplosBmsV3BlePack::publish_state_(sensor::Sensor *sensor, float value) {
   }
 }
 
-void SeplosBmsV3BlePack::on_pack_pia_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::on_frame_data(const std::vector<uint8_t> &frame) {
+  uint16_t data_len = frame[2];
+  std::vector<uint8_t> payload(frame.begin() + 3, frame.end() - 2);
+
+  ESP_LOGD(TAG, "Received frame for pack 0x%02X: function=0x%02X, length=%d", frame[0], frame[1], data_len);
+
+  switch (data_len) {
+    case SEPLOS_V3_PIA_LENGTH * 2:
+      this->decode_pack_pia_data_(payload);
+      break;
+    case SEPLOS_V3_PIB_LENGTH * 2:
+      this->decode_pack_pib_data_(payload);
+      break;
+    case SEPLOS_V3_PIC_LENGTH * 2:
+      this->decode_pack_pic_data_(payload);
+      break;
+    default:
+      ESP_LOGW(TAG, "Unknown pack frame type for pack 0x%02X: length=%d", frame[0], data_len);
+      break;
+  }
+}
+
+void SeplosBmsV3BlePack::decode_pack_pia_data_(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -67,7 +93,7 @@ void SeplosBmsV3BlePack::on_pack_pia_data(const std::vector<uint8_t> &data) {
   this->publish_state_(this->pack_cycle_sensor_, (float) seplos_get_16bit(14));
 }
 
-void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -98,7 +124,7 @@ void SeplosBmsV3BlePack::on_pack_pib_data(const std::vector<uint8_t> &data) {
   }
 }
 
-void SeplosBmsV3BlePack::on_pack_pic_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Decoding PIC data for pack 0x%02X (%d bytes)", this->get_address(), data.size());
 
   if (data.size() < 288) {  // 0x90 * 2 = 288 bytes
