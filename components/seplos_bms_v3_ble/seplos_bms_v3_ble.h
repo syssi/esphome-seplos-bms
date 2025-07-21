@@ -199,6 +199,9 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
     // Note: Command queue will be built during setup/connection to include commands for registered packs
   }
 
+  void update_pack_pia_data(uint8_t address, const std::vector<uint8_t> &data);
+  void update_pack_pib_data(uint8_t address, const std::vector<uint8_t> &data);
+  void update_pack_pic_data(uint8_t address, const std::vector<uint8_t> &data);
   void assemble(const uint8_t *data, uint16_t length);
   void decode(const std::vector<uint8_t> &data);
 
