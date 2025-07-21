@@ -61,13 +61,13 @@ void SeplosBmsV3BlePack::on_frame_data(const std::vector<uint8_t> &frame) {
 
   switch (data_len) {
     case SEPLOS_V3_PIA_LENGTH * 2:
-      this->decode_pack_pia_data(payload);
+      this->decode_pack_pia_data_(payload);
       break;
     case SEPLOS_V3_PIB_LENGTH * 2:
-      this->decode_pack_pib_data(payload);
+      this->decode_pack_pib_data_(payload);
       break;
     case SEPLOS_V3_PIC_LENGTH * 2:
-      this->decode_pack_pic_data(payload);
+      this->decode_pack_pic_data_(payload);
       break;
     default:
       ESP_LOGW(TAG, "Unknown pack frame type for pack 0x%02X: length=%d", frame[0], data_len);
@@ -75,7 +75,7 @@ void SeplosBmsV3BlePack::on_frame_data(const std::vector<uint8_t> &frame) {
   }
 }
 
-void SeplosBmsV3BlePack::decode_pack_pia_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::decode_pack_pia_data_(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -93,7 +93,7 @@ void SeplosBmsV3BlePack::decode_pack_pia_data(const std::vector<uint8_t> &data) 
   this->publish_state_(this->pack_cycle_sensor_, (float) seplos_get_16bit(14));
 }
 
-void SeplosBmsV3BlePack::decode_pack_pib_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -124,7 +124,7 @@ void SeplosBmsV3BlePack::decode_pack_pib_data(const std::vector<uint8_t> &data) 
   }
 }
 
-void SeplosBmsV3BlePack::decode_pack_pic_data(const std::vector<uint8_t> &data) {
+void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Decoding PIC data for pack 0x%02X (%d bytes)", this->get_address(), data.size());
 
   if (data.size() < 288) {  // 0x90 * 2 = 288 bytes

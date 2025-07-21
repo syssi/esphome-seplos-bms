@@ -31,11 +31,9 @@ class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBms
   void on_frame_data(const std::vector<uint8_t> &frame) override;
 
  protected:
-  void decode_pack_pia_data(const std::vector<uint8_t> &data);
-  void decode_pack_pib_data(const std::vector<uint8_t> &data);
-  void decode_pack_pic_data(const std::vector<uint8_t> &data);
-
- protected:
+  void decode_pack_pia_data_(const std::vector<uint8_t> &data);
+  void decode_pack_pib_data_(const std::vector<uint8_t> &data);
+  void decode_pack_pic_data_(const std::vector<uint8_t> &data);
   void publish_state_(sensor::Sensor *sensor, float value);
 
   sensor::Sensor *pack_voltage_sensor_{nullptr};
