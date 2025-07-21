@@ -99,7 +99,6 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       this->node_state = espbt::ClientState::ESTABLISHED;
       this->publish_state_(this->online_status_binary_sensor_, true);
 
-      // Send first command from pre-built queue
       if (!this->dynamic_command_queue_.empty()) {
         this->send_command_(this->dynamic_command_queue_[0].function,
                             this->build_modbus_payload_(this->dynamic_command_queue_[0]));
@@ -622,7 +621,7 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
   if (!this->dynamic_command_queue_.empty()) {
     ESP_LOGD(TAG, "Command queue already built with %d commands, skipping rebuild",
              this->dynamic_command_queue_.size());
-    return;  // Queue already built, don't rebuild
+    return;
   }
 
   // Add system commands (always present)
