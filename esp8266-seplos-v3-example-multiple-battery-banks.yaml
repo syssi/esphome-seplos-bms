@@ -4,8 +4,8 @@ substitutions:
   battery_bank1: "${name} bank 1"
   battery_bank2: "${name} bank 2"
   device_description: "Monitor and control multiple Seplos V3 BMS via RS485 (Modbus)"
-  tx_pin: GPIO16
-  rx_pin: GPIO17
+  tx_pin: GPIO4
+  rx_pin: GPIO5
 
 esphome:
   name: ${name}
@@ -15,10 +15,8 @@ esphome:
     name: "syssi.esphome-seplos-bms"
     version: 1.3.0
 
-esp32:
-  board: wemos_d1_mini32
-  framework:
-    type: esp-idf
+esp8266:
+  board: d1_mini
 
 wifi:
   ssid: !secret wifi_ssid
