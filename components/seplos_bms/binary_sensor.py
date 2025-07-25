@@ -10,11 +10,9 @@ DEPENDENCIES = ["seplos_bms"]
 CODEOWNERS = ["@syssi"]
 
 CONF_ONLINE_STATUS = "online_status"
-CONF_FAN_RUNNING = "fan_running"
 
 BINARY_SENSORS = [
     CONF_ONLINE_STATUS,
-    CONF_FAN_RUNNING,
 ]
 
 CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
@@ -22,9 +20,6 @@ CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_ONLINE_STATUS): binary_sensor.binary_sensor_schema(
             device_class=DEVICE_CLASS_CONNECTIVITY,
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
-        ),
-        cv.Optional(CONF_FAN_RUNNING): binary_sensor.binary_sensor_schema(
-            icon="mdi:fan"
         ),
     }
 )
