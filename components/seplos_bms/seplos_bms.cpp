@@ -173,7 +173,6 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
   }
 
   uint8_t voltage_alarm_byte = data[30];
-  this->publish_state_(this->voltage_protection_binary_sensor_, (voltage_alarm_byte != 0));
   ESP_LOGD(TAG, "Voltage alarm byte: 0x%02X", voltage_alarm_byte);
   if (voltage_alarm_byte & 0x01)
     ESP_LOGD(TAG, "  - Cell high voltage alarm");
@@ -191,9 +190,9 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
     ESP_LOGD(TAG, "  - Pack low voltage alarm");
   if (voltage_alarm_byte & 0x80)
     ESP_LOGD(TAG, "  - Pack undervoltage protection active");
+  this->publish_state_(this->voltage_protection_binary_sensor_, (voltage_alarm_byte != 0));
 
   uint8_t temperature_alarm_byte = data[31];
-  this->publish_state_(this->temperature_protection_binary_sensor_, (temperature_alarm_byte != 0));
   ESP_LOGD(TAG, "Temperature alarm byte: 0x%02X", temperature_alarm_byte);
   if (temperature_alarm_byte & 0x01)
     ESP_LOGD(TAG, "  - Charge high temperature alarm");
@@ -211,9 +210,9 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
     ESP_LOGD(TAG, "  - Discharge low temperature alarm");
   if (temperature_alarm_byte & 0x80)
     ESP_LOGD(TAG, "  - Discharge undertemperature protection active");
+  this->publish_state_(this->temperature_protection_binary_sensor_, (temperature_alarm_byte != 0));
 
   uint8_t current_alarm_byte = data[33];
-  this->publish_state_(this->current_protection_binary_sensor_, (current_alarm_byte != 0));
   ESP_LOGD(TAG, "Current alarm byte: 0x%02X", current_alarm_byte);
   if (current_alarm_byte & 0x01)
     ESP_LOGD(TAG, "  - Current over alarm");
@@ -223,23 +222,24 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
     ESP_LOGD(TAG, "  - Current under alarm");
   if (current_alarm_byte & 0x08)
     ESP_LOGD(TAG, "  - Current under protection active");
+  this->publish_state_(this->current_protection_binary_sensor_, (current_alarm_byte != 0));
 
   uint8_t soc_alarm_byte = data[34];
-  this->publish_state_(this->soc_protection_binary_sensor_, (soc_alarm_byte != 0));
   ESP_LOGD(TAG, "SOC alarm byte: 0x%02X", soc_alarm_byte);
   if (soc_alarm_byte & 0x04)
     ESP_LOGD(TAG, "  - SOC low alarm");
   if (soc_alarm_byte & 0x08)
     ESP_LOGD(TAG, "  - SOC under protection active");
+  this->publish_state_(this->soc_protection_binary_sensor_, (soc_alarm_byte != 0));
 
   uint8_t switch_byte = data[35];
-  this->publish_state_(this->discharging_binary_sensor_, (switch_byte & 0x01) != 0);
-  this->publish_state_(this->charging_binary_sensor_, (switch_byte & 0x02) != 0);
   ESP_LOGD(TAG, "Switch byte: 0x%02X", switch_byte);
   if (switch_byte & 0x01)
     ESP_LOGD(TAG, "  - Discharge FET enabled");
   if (switch_byte & 0x02)
     ESP_LOGD(TAG, "  - Charge FET enabled");
+  this->publish_state_(this->discharging_binary_sensor_, (switch_byte & 0x01) != 0);
+  this->publish_state_(this->charging_binary_sensor_, (switch_byte & 0x02) != 0);
 }
 
 void SeplosBms::dump_config() {
