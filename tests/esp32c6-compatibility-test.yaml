@@ -139,3 +139,8 @@ sensor:
       name: "${name} state of health"
     port_voltage:
       name: "${name} port voltage"
+
+binary_sensor:
+  - platform: seplos_bms
+    online_status:
+      name: "${name} online status"

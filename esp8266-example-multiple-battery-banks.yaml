@@ -142,3 +142,19 @@ sensor:
       name: "${battery_bank2} power"
     state_of_charge:
       name: "${battery_bank2} state of charge"
+
+binary_sensor:
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank0
+    online_status:
+      name: "${battery_bank0} online status"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank1
+    online_status:
+      name: "${battery_bank1} online status"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank2
+    online_status:
+      name: "${battery_bank2} online status"

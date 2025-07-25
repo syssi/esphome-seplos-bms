@@ -11,6 +11,9 @@ namespace seplos_bms {
 
 class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDevice {
  public:
+  void set_online_status_binary_sensor(binary_sensor::BinarySensor *online_status_binary_sensor) {
+    online_status_binary_sensor_ = online_status_binary_sensor;
+  }
   void set_fan_running_binary_sensor(binary_sensor::BinarySensor *fan_running_binary_sensor) {
     fan_running_binary_sensor_ = fan_running_binary_sensor;
   }
@@ -79,6 +82,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   float get_setup_priority() const override;
 
  protected:
+  binary_sensor::BinarySensor *online_status_binary_sensor_;
   binary_sensor::BinarySensor *fan_running_binary_sensor_;
 
   sensor::Sensor *min_cell_voltage_sensor_;
@@ -111,11 +115,15 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   } temperatures_[6];
 
   uint8_t override_cell_count_{0};
+  uint8_t no_response_count_{0};
 
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void on_telemetry_data_(const std::vector<uint8_t> &data);
+  void reset_online_status_tracker_();
+  void track_online_status_();
+  void publish_device_unavailable_();
 };
 
 }  // namespace seplos_bms

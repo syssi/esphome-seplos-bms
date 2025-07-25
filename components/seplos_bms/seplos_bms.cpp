@@ -7,7 +7,11 @@ namespace seplos_bms {
 
 static const char *const TAG = "seplos_bms";
 
+static const uint8_t MAX_NO_RESPONSE_COUNT = 5;
+
 void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
+  this->reset_online_status_tracker_();
+
   // num_of_cells   frame_size   data_len
   // 8              65           118 (0x76)   guessed
   // 14             77           142 (0x8E)
@@ -202,7 +206,10 @@ float SeplosBms::get_setup_priority() const {
   return setup_priority::BUS - 1.0f;
 }
 
-void SeplosBms::update() { this->send(0x42, this->pack_); }
+void SeplosBms::update() {
+  this->track_online_status_();
+  this->send(0x42, this->pack_);
+}
 
 void SeplosBms::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr)
@@ -223,6 +230,53 @@ void SeplosBms::publish_state_(text_sensor::TextSensor *text_sensor, const std::
     return;
 
   text_sensor->publish_state(state);
+}
+
+void SeplosBms::track_online_status_() {
+  if (this->no_response_count_ < MAX_NO_RESPONSE_COUNT) {
+    this->no_response_count_++;
+  }
+  if (this->no_response_count_ == MAX_NO_RESPONSE_COUNT) {
+    this->publish_device_unavailable_();
+    this->no_response_count_++;
+  }
+}
+
+void SeplosBms::reset_online_status_tracker_() {
+  this->no_response_count_ = 0;
+  this->publish_state_(this->online_status_binary_sensor_, true);
+}
+
+void SeplosBms::publish_device_unavailable_() {
+  this->publish_state_(this->online_status_binary_sensor_, false);
+  this->publish_state_(this->errors_text_sensor_, "Offline");
+
+  this->publish_state_(this->min_cell_voltage_sensor_, NAN);
+  this->publish_state_(this->max_cell_voltage_sensor_, NAN);
+  this->publish_state_(this->min_voltage_cell_sensor_, NAN);
+  this->publish_state_(this->max_voltage_cell_sensor_, NAN);
+  this->publish_state_(this->delta_cell_voltage_sensor_, NAN);
+  this->publish_state_(this->average_cell_voltage_sensor_, NAN);
+  this->publish_state_(this->total_voltage_sensor_, NAN);
+  this->publish_state_(this->current_sensor_, NAN);
+  this->publish_state_(this->power_sensor_, NAN);
+  this->publish_state_(this->charging_power_sensor_, NAN);
+  this->publish_state_(this->discharging_power_sensor_, NAN);
+  this->publish_state_(this->state_of_charge_sensor_, NAN);
+  this->publish_state_(this->residual_capacity_sensor_, NAN);
+  this->publish_state_(this->battery_capacity_sensor_, NAN);
+  this->publish_state_(this->rated_capacity_sensor_, NAN);
+  this->publish_state_(this->charging_cycles_sensor_, NAN);
+  this->publish_state_(this->state_of_health_sensor_, NAN);
+  this->publish_state_(this->port_voltage_sensor_, NAN);
+
+  for (auto &temperature : this->temperatures_) {
+    this->publish_state_(temperature.temperature_sensor_, NAN);
+  }
+
+  for (auto &cell : this->cells_) {
+    this->publish_state_(cell.cell_voltage_sensor_, NAN);
+  }
 }
 
 }  // namespace seplos_bms
