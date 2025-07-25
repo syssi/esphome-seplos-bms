@@ -19,6 +19,13 @@ void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   // 16             81           150 (0x96)
   if (data.size() >= 44 && data[8] >= 8 && data[8] <= 16) {
     this->on_telemetry_data_(data);
+    this->send(0x44, this->pack_);
+    return;
+  }
+
+  // Check for alarm frame (0x44 response, typically 49 bytes data)
+  if (data.size() >= 40 && data[7] == 0x02) {  // command group 2 for alarm data
+    this->on_alarm_data_(data);
     return;
   }
 
@@ -156,8 +163,93 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   //   79     0x00 0x00      Reserved
 }
 
+void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
+  ESP_LOGI(TAG, "Alarm frame (%d bytes) received", data.size());
+  ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+
+  if (data.size() < 45) {
+    ESP_LOGW(TAG, "Alarm frame too short for alarm data parsing");
+    return;
+  }
+
+  uint8_t voltage_alarm_byte = data[30];
+  this->publish_state_(this->voltage_protection_binary_sensor_, (voltage_alarm_byte != 0));
+  ESP_LOGD(TAG, "Voltage alarm byte: 0x%02X", voltage_alarm_byte);
+  if (voltage_alarm_byte & 0x01)
+    ESP_LOGD(TAG, "  - Cell high voltage alarm");
+  if (voltage_alarm_byte & 0x02)
+    ESP_LOGD(TAG, "  - Cell overvoltage protection active");
+  if (voltage_alarm_byte & 0x04)
+    ESP_LOGD(TAG, "  - Cell low voltage alarm");
+  if (voltage_alarm_byte & 0x08)
+    ESP_LOGD(TAG, "  - Cell undervoltage protection active");
+  if (voltage_alarm_byte & 0x10)
+    ESP_LOGD(TAG, "  - Pack high voltage alarm");
+  if (voltage_alarm_byte & 0x20)
+    ESP_LOGD(TAG, "  - Pack overvoltage protection active");
+  if (voltage_alarm_byte & 0x40)
+    ESP_LOGD(TAG, "  - Pack low voltage alarm");
+  if (voltage_alarm_byte & 0x80)
+    ESP_LOGD(TAG, "  - Pack undervoltage protection active");
+
+  uint8_t temperature_alarm_byte = data[31];
+  this->publish_state_(this->temperature_protection_binary_sensor_, (temperature_alarm_byte != 0));
+  ESP_LOGD(TAG, "Temperature alarm byte: 0x%02X", temperature_alarm_byte);
+  if (temperature_alarm_byte & 0x01)
+    ESP_LOGD(TAG, "  - Charge high temperature alarm");
+  if (temperature_alarm_byte & 0x02)
+    ESP_LOGD(TAG, "  - Charge overtemperature protection active");
+  if (temperature_alarm_byte & 0x04)
+    ESP_LOGD(TAG, "  - Charge low temperature alarm");
+  if (temperature_alarm_byte & 0x08)
+    ESP_LOGD(TAG, "  - Charge undertemperature protection active");
+  if (temperature_alarm_byte & 0x10)
+    ESP_LOGD(TAG, "  - Discharge high temperature alarm");
+  if (temperature_alarm_byte & 0x20)
+    ESP_LOGD(TAG, "  - Discharge overtemperature protection active");
+  if (temperature_alarm_byte & 0x40)
+    ESP_LOGD(TAG, "  - Discharge low temperature alarm");
+  if (temperature_alarm_byte & 0x80)
+    ESP_LOGD(TAG, "  - Discharge undertemperature protection active");
+
+  uint8_t current_alarm_byte = data[33];
+  this->publish_state_(this->current_protection_binary_sensor_, (current_alarm_byte != 0));
+  ESP_LOGD(TAG, "Current alarm byte: 0x%02X", current_alarm_byte);
+  if (current_alarm_byte & 0x01)
+    ESP_LOGD(TAG, "  - Current over alarm");
+  if (current_alarm_byte & 0x02)
+    ESP_LOGD(TAG, "  - Current over protection active");
+  if (current_alarm_byte & 0x04)
+    ESP_LOGD(TAG, "  - Current under alarm");
+  if (current_alarm_byte & 0x08)
+    ESP_LOGD(TAG, "  - Current under protection active");
+
+  uint8_t soc_alarm_byte = data[34];
+  this->publish_state_(this->soc_protection_binary_sensor_, (soc_alarm_byte != 0));
+  ESP_LOGD(TAG, "SOC alarm byte: 0x%02X", soc_alarm_byte);
+  if (soc_alarm_byte & 0x04)
+    ESP_LOGD(TAG, "  - SOC low alarm");
+  if (soc_alarm_byte & 0x08)
+    ESP_LOGD(TAG, "  - SOC under protection active");
+
+  uint8_t switch_byte = data[35];
+  this->publish_state_(this->discharging_binary_sensor_, (switch_byte & 0x01) != 0);
+  this->publish_state_(this->charging_binary_sensor_, (switch_byte & 0x02) != 0);
+  ESP_LOGD(TAG, "Switch byte: 0x%02X", switch_byte);
+  if (switch_byte & 0x01)
+    ESP_LOGD(TAG, "  - Discharge FET enabled");
+  if (switch_byte & 0x02)
+    ESP_LOGD(TAG, "  - Charge FET enabled");
+}
+
 void SeplosBms::dump_config() {
   ESP_LOGCONFIG(TAG, "SeplosBms:");
+  LOG_BINARY_SENSOR("", "Charging", this->charging_binary_sensor_);
+  LOG_BINARY_SENSOR("", "Discharging", this->discharging_binary_sensor_);
+  LOG_BINARY_SENSOR("", "Voltage Protection", this->voltage_protection_binary_sensor_);
+  LOG_BINARY_SENSOR("", "Temperature Protection", this->temperature_protection_binary_sensor_);
+  LOG_BINARY_SENSOR("", "Current Protection", this->current_protection_binary_sensor_);
+  LOG_BINARY_SENSOR("", "SOC Protection", this->soc_protection_binary_sensor_);
   LOG_SENSOR("", "Minimum Cell Voltage", this->min_cell_voltage_sensor_);
   LOG_SENSOR("", "Maximum Cell Voltage", this->max_cell_voltage_sensor_);
   LOG_SENSOR("", "Minimum Voltage Cell", this->min_voltage_cell_sensor_);
@@ -249,6 +341,12 @@ void SeplosBms::reset_online_status_tracker_() {
 
 void SeplosBms::publish_device_unavailable_() {
   this->publish_state_(this->online_status_binary_sensor_, false);
+  this->publish_state_(this->charging_binary_sensor_, false);
+  this->publish_state_(this->discharging_binary_sensor_, false);
+  this->publish_state_(this->voltage_protection_binary_sensor_, false);
+  this->publish_state_(this->temperature_protection_binary_sensor_, false);
+  this->publish_state_(this->current_protection_binary_sensor_, false);
+  this->publish_state_(this->soc_protection_binary_sensor_, false);
   this->publish_state_(this->errors_text_sensor_, "Offline");
 
   this->publish_state_(this->min_cell_voltage_sensor_, NAN);

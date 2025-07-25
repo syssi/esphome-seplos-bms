@@ -148,13 +148,49 @@ binary_sensor:
     seplos_bms_id: battery_bank0
     online_status:
       name: "${battery_bank0} online status"
+    charging:
+      name: "${battery_bank0} charging"
+    discharging:
+      name: "${battery_bank0} discharging"
+    voltage_protection:
+      name: "${battery_bank0} voltage protection"
+    temperature_protection:
+      name: "${battery_bank0} temperature protection"
+    current_protection:
+      name: "${battery_bank0} current protection"
+    soc_protection:
+      name: "${battery_bank0} soc protection"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank1
     online_status:
       name: "${battery_bank1} online status"
+    charging:
+      name: "${battery_bank1} charging"
+    discharging:
+      name: "${battery_bank1} discharging"
+    voltage_protection:
+      name: "${battery_bank1} voltage protection"
+    temperature_protection:
+      name: "${battery_bank1} temperature protection"
+    current_protection:
+      name: "${battery_bank1} current protection"
+    soc_protection:
+      name: "${battery_bank1} soc protection"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank2
     online_status:
       name: "${battery_bank2} online status"
+    charging:
+      name: "${battery_bank2} charging"
+    discharging:
+      name: "${battery_bank2} discharging"
+    voltage_protection:
+      name: "${battery_bank2} voltage protection"
+    temperature_protection:
+      name: "${battery_bank2} temperature protection"
+    current_protection:
+      name: "${battery_bank2} current protection"
+    soc_protection:
+      name: "${battery_bank2} soc protection"

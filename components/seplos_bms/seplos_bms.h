@@ -15,6 +15,25 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
     online_status_binary_sensor_ = online_status_binary_sensor;
   }
 
+  void set_voltage_protection_binary_sensor(binary_sensor::BinarySensor *voltage_protection_binary_sensor) {
+    voltage_protection_binary_sensor_ = voltage_protection_binary_sensor;
+  }
+  void set_temperature_protection_binary_sensor(binary_sensor::BinarySensor *temperature_protection_binary_sensor) {
+    temperature_protection_binary_sensor_ = temperature_protection_binary_sensor;
+  }
+  void set_current_protection_binary_sensor(binary_sensor::BinarySensor *current_protection_binary_sensor) {
+    current_protection_binary_sensor_ = current_protection_binary_sensor;
+  }
+  void set_soc_protection_binary_sensor(binary_sensor::BinarySensor *soc_protection_binary_sensor) {
+    soc_protection_binary_sensor_ = soc_protection_binary_sensor;
+  }
+  void set_charging_binary_sensor(binary_sensor::BinarySensor *charging_binary_sensor) {
+    charging_binary_sensor_ = charging_binary_sensor;
+  }
+  void set_discharging_binary_sensor(binary_sensor::BinarySensor *discharging_binary_sensor) {
+    discharging_binary_sensor_ = discharging_binary_sensor;
+  }
+
   void set_min_cell_voltage_sensor(sensor::Sensor *min_cell_voltage_sensor) {
     min_cell_voltage_sensor_ = min_cell_voltage_sensor;
   }
@@ -80,6 +99,12 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
 
  protected:
   binary_sensor::BinarySensor *online_status_binary_sensor_;
+  binary_sensor::BinarySensor *voltage_protection_binary_sensor_;
+  binary_sensor::BinarySensor *temperature_protection_binary_sensor_;
+  binary_sensor::BinarySensor *current_protection_binary_sensor_;
+  binary_sensor::BinarySensor *soc_protection_binary_sensor_;
+  binary_sensor::BinarySensor *charging_binary_sensor_;
+  binary_sensor::BinarySensor *discharging_binary_sensor_;
 
   sensor::Sensor *min_cell_voltage_sensor_;
   sensor::Sensor *max_cell_voltage_sensor_;
@@ -117,6 +142,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void on_telemetry_data_(const std::vector<uint8_t> &data);
+  void on_alarm_data_(const std::vector<uint8_t> &data);
   void reset_online_status_tracker_();
   void track_online_status_();
   void publish_device_unavailable_();
