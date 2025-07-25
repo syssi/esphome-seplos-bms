@@ -12,20 +12,20 @@ static const uint8_t MAX_NO_RESPONSE_COUNT = 5;
 void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   this->reset_online_status_tracker_();
 
+  // Check for alarm frame first (0x44 response, command group 2)
+  if (data.size() >= 40 && data[7] == 0x02) {  // command group 2 for alarm data
+    this->on_alarm_data_(data);
+    return;
+  }
+
   // num_of_cells   frame_size   data_len
   // 8              65           118 (0x76)   guessed
   // 14             77           142 (0x8E)
   // 15             79           146 (0x92)
   // 16             81           150 (0x96)
-  if (data.size() >= 44 && data[8] >= 8 && data[8] <= 16) {
+  if (data.size() >= 44 && data[7] == 0x01 && data[8] >= 8 && data[8] <= 16) {
     this->on_telemetry_data_(data);
     this->send(0x44, this->pack_);
-    return;
-  }
-
-  // Check for alarm frame (0x44 response, typically 49 bytes data)
-  if (data.size() >= 40 && data[7] == 0x02) {  // command group 2 for alarm data
-    this->on_alarm_data_(data);
     return;
   }
 
