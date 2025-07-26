@@ -57,9 +57,10 @@ CONF_ALARM_EVENT6_BITMASK = "alarm_event6_bitmask"
 CONF_ALARM_EVENT7_BITMASK = "alarm_event7_bitmask"
 CONF_ALARM_EVENT8_BITMASK = "alarm_event8_bitmask"
 
-# Balancing and disconnection sensors
+# Balancing, disconnection and system status sensors
 CONF_BALANCING_BITMASK = "balancing_bitmask"
 CONF_DISCONNECTION_BITMASK = "disconnection_bitmask"
+CONF_SYSTEM_STATUS_BITMASK = "system_status_bitmask"
 
 
 ICON_CURRENT_DC = "mdi:current-dc"
@@ -276,6 +277,13 @@ SENSOR_DEFS = {
         "device_class": DEVICE_CLASS_EMPTY,
         "state_class": STATE_CLASS_MEASUREMENT,
     },
+    CONF_SYSTEM_STATUS_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:cog",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
 }
 
 _CELL_VOLTAGE_SCHEMA = sensor.sensor_schema(
@@ -283,8 +291,7 @@ _CELL_VOLTAGE_SCHEMA = sensor.sensor_schema(
     icon=ICON_EMPTY,
     accuracy_decimals=3,
     device_class=DEVICE_CLASS_VOLTAGE,
-    state_class=STATE_CLASS_MEASUREMENT,
-)
+    state_class=STATE_CLASS_MEASUREMENT,)
 _TEMPERATURE_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_CELSIUS,
     icon=ICON_EMPTY,

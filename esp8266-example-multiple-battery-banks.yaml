@@ -126,6 +126,8 @@ sensor:
       name: "${battery_bank0} balancing bitmask"
     disconnection_bitmask:
       name: "${battery_bank0} disconnection bitmask"
+    system_status_bitmask:
+      name: "${battery_bank0} system status bitmask"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank1
@@ -167,6 +169,8 @@ sensor:
       name: "${battery_bank1} balancing bitmask"
     disconnection_bitmask:
       name: "${battery_bank1} disconnection bitmask"
+    system_status_bitmask:
+      name: "${battery_bank1} system status bitmask"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank2
@@ -208,6 +212,8 @@ sensor:
       name: "${battery_bank2} balancing bitmask"
     disconnection_bitmask:
       name: "${battery_bank2} disconnection bitmask"
+    system_status_bitmask:
+      name: "${battery_bank2} system status bitmask"
 
 binary_sensor:
   - platform: seplos_bms

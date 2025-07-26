@@ -172,6 +172,8 @@ sensor:
       name: "${name} balancing bitmask"
     disconnection_bitmask:
       name: "${name} disconnection bitmask"
+    system_status_bitmask:
+      name: "${name} system status bitmask"
 
 binary_sensor:
   - platform: seplos_bms
