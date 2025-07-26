@@ -38,7 +38,6 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
     online_status_binary_sensor_ = online_status_binary_sensor;
   }
 
-  // Enhanced alarm bitmask and consolidated alarms text sensor
   void set_alarm_event1_bitmask_sensor(sensor::Sensor *sensor) { alarm_event1_bitmask_sensor_ = sensor; }
   void set_alarm_event2_bitmask_sensor(sensor::Sensor *sensor) { alarm_event2_bitmask_sensor_ = sensor; }
   void set_alarm_event3_bitmask_sensor(sensor::Sensor *sensor) { alarm_event3_bitmask_sensor_ = sensor; }
@@ -48,6 +47,11 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   void set_alarm_event7_bitmask_sensor(sensor::Sensor *sensor) { alarm_event7_bitmask_sensor_ = sensor; }
   void set_alarm_event8_bitmask_sensor(sensor::Sensor *sensor) { alarm_event8_bitmask_sensor_ = sensor; }
   void set_alarms_text_sensor(text_sensor::TextSensor *sensor) { alarms_text_sensor_ = sensor; }
+
+  void set_balancing_bitmask_sensor(sensor::Sensor *sensor) { balancing_bitmask_sensor_ = sensor; }
+  void set_balancing_binary_sensor(binary_sensor::BinarySensor *sensor) { balancing_binary_sensor_ = sensor; }
+
+  void set_disconnection_bitmask_sensor(sensor::Sensor *sensor) { disconnection_bitmask_sensor_ = sensor; }
 
   void set_total_voltage_sensor(sensor::Sensor *total_voltage_sensor) { total_voltage_sensor_ = total_voltage_sensor; }
   void set_current_sensor(sensor::Sensor *current_sensor) { current_sensor_ = current_sensor; }
@@ -158,17 +162,7 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   binary_sensor::BinarySensor *discharging_binary_sensor_;
   binary_sensor::BinarySensor *limiting_current_binary_sensor_;
   binary_sensor::BinarySensor *online_status_binary_sensor_;
-
-  // Enhanced alarm bitmask and consolidated alarms text sensor
-  sensor::Sensor *alarm_event1_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event2_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event3_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event4_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event5_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event6_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event7_bitmask_sensor_{nullptr};
-  sensor::Sensor *alarm_event8_bitmask_sensor_{nullptr};
-  text_sensor::TextSensor *alarms_text_sensor_{nullptr};
+  binary_sensor::BinarySensor *balancing_binary_sensor_{nullptr};
 
   sensor::Sensor *total_voltage_sensor_;
   sensor::Sensor *current_sensor_;
@@ -194,6 +188,16 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   sensor::Sensor *state_of_health_sensor_;
   sensor::Sensor *port_voltage_sensor_;
   sensor::Sensor *battery_capacity_sensor_;
+  sensor::Sensor *disconnection_bitmask_sensor_{nullptr};
+  sensor::Sensor *balancing_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event1_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event2_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event3_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event4_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event5_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event6_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event7_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event8_bitmask_sensor_{nullptr};
 
   text_sensor::TextSensor *software_version_text_sensor_;
   text_sensor::TextSensor *device_model_text_sensor_;
@@ -201,6 +205,7 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   text_sensor::TextSensor *voltage_protection_text_sensor_;
   text_sensor::TextSensor *current_protection_text_sensor_;
   text_sensor::TextSensor *temperature_protection_text_sensor_;
+  text_sensor::TextSensor *alarms_text_sensor_{nullptr};
 
   switch_::Switch *discharging_switch_;
   switch_::Switch *charging_switch_;

@@ -164,6 +164,10 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
+  auto seplos_get_16bit = [&](size_t i) -> uint16_t {
+    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  };
+
   ESP_LOGI(TAG, "Alarm frame (%d bytes) received", data.size());
   ESP_LOGVV(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
 
@@ -232,14 +236,18 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
     ESP_LOGD(TAG, "  - SOC under protection active");
   this->publish_state_(this->soc_protection_binary_sensor_, (soc_alarm_byte != 0));
 
-  uint8_t switch_byte = data[35];
-  ESP_LOGD(TAG, "Switch byte: 0x%02X", switch_byte);
-  if (switch_byte & 0x01)
-    ESP_LOGD(TAG, "  - Discharge FET enabled");
-  if (switch_byte & 0x02)
-    ESP_LOGD(TAG, "  - Charge FET enabled");
-  this->publish_state_(this->discharging_binary_sensor_, (switch_byte & 0x01) != 0);
-  this->publish_state_(this->charging_binary_sensor_, (switch_byte & 0x02) != 0);
+  uint8_t switch_status = data[35];
+  ESP_LOGD(TAG, "Switch status: 0x%02X", switch_status);
+  ESP_LOGD(TAG, "  Bit0 Discharge switch: %s", ONOFF(switch_status & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Charging switch: %s", ONOFF(switch_status & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Current limit switch: %s", ONOFF(switch_status & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Heating switch: %s", ONOFF(switch_status & 0x08));
+  ESP_LOGD(TAG, "  Bit4 Reserved: %s", ONOFF(switch_status & 0x10));
+  ESP_LOGD(TAG, "  Bit5 Reserved: %s", ONOFF(switch_status & 0x20));
+  ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(switch_status & 0x40));
+  ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(switch_status & 0x80));
+  this->publish_state_(this->discharging_binary_sensor_, (switch_status & 0x01) != 0);
+  this->publish_state_(this->charging_binary_sensor_, (switch_status & 0x02) != 0);
 
   // Check if we have enough data for extended alarm information (alarm events and balancing)
   if (data.size() >= 64) {
@@ -248,127 +256,79 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
     // Alarm event 1 - Hardware failures (Byte 47 in telecommand return frame)
     uint8_t alarm_event1 = data[47];
     ESP_LOGD(TAG, "Alarm event 1: 0x%02X", alarm_event1);
-    if (alarm_event1 & 0x01)
-      ESP_LOGD(TAG, "  Bit0 Voltage sensor fault");
-    if (alarm_event1 & 0x02)
-      ESP_LOGD(TAG, "  Bit1 Temperature sensor fault");
-    if (alarm_event1 & 0x04)
-      ESP_LOGD(TAG, "  Bit2 Current sensor fault");
-    if (alarm_event1 & 0x08)
-      ESP_LOGD(TAG, "  Bit3 Key switch fault");
-    if (alarm_event1 & 0x10)
-      ESP_LOGD(TAG, "  Bit4 Cell voltage dropout fault");
-    if (alarm_event1 & 0x20)
-      ESP_LOGD(TAG, "  Bit5 Charge switch fault");
-    if (alarm_event1 & 0x40)
-      ESP_LOGD(TAG, "  Bit6 Discharge switch fault");
-    if (alarm_event1 & 0x80)
-      ESP_LOGD(TAG, "  Bit7 Current limit switch fault");
+    ESP_LOGD(TAG, "  Bit0 Voltage sensing failure: %s", ONOFF(alarm_event1 & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Temperature sensing failure: %s", ONOFF(alarm_event1 & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Current sensing failure: %s", ONOFF(alarm_event1 & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Key switch failure: %s", ONOFF(alarm_event1 & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Cell voltage difference failure: %s", ONOFF(alarm_event1 & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Charging switch failed: %s", ONOFF(alarm_event1 & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Discharge switch failure: %s", ONOFF(alarm_event1 & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Current limit switch failure: %s", ONOFF(alarm_event1 & 0x80));
     this->publish_state_(this->alarm_event1_bitmask_sensor_, (float) alarm_event1);
 
     // Alarm event 2 - Voltage alarms (Byte 48)
     uint8_t alarm_event2 = data[48];
     ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
-    if (alarm_event2 & 0x01)
-      ESP_LOGD(TAG, "  Bit0 Monomer high voltage alarm");
-    if (alarm_event2 & 0x02)
-      ESP_LOGD(TAG, "  Bit1 Monomer overvoltage protection");
-    if (alarm_event2 & 0x04)
-      ESP_LOGD(TAG, "  Bit2 Monomer low voltage alarm");
-    if (alarm_event2 & 0x08)
-      ESP_LOGD(TAG, "  Bit3 Monomer under voltage protection");
-    if (alarm_event2 & 0x10)
-      ESP_LOGD(TAG, "  Bit4 High voltage alarm for total voltage");
-    if (alarm_event2 & 0x20)
-      ESP_LOGD(TAG, "  Bit5 Overvoltage protection for total voltage");
-    if (alarm_event2 & 0x40)
-      ESP_LOGD(TAG, "  Bit6 Low voltage alarm for total voltage");
-    if (alarm_event2 & 0x80)
-      ESP_LOGD(TAG, "  Bit7 Under voltage protection for total voltage");
+    ESP_LOGD(TAG, "  Bit0 Monomer high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Monomer overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Monomer low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Monomer under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Total pressure high pressure alarm: %s", ONOFF(alarm_event2 & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Total voltage overvoltage protection: %s", ONOFF(alarm_event2 & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Low total pressure alarm: %s", ONOFF(alarm_event2 & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Total voltage undervoltage protection: %s", ONOFF(alarm_event2 & 0x80));
     this->publish_state_(this->alarm_event2_bitmask_sensor_, (float) alarm_event2);
 
     // Alarm event 3 - Cell temperature (Byte 49)
     uint8_t alarm_event3 = data[49];
     ESP_LOGD(TAG, "Alarm event 3: 0x%02X", alarm_event3);
-    if (alarm_event3 & 0x01)
-      ESP_LOGD(TAG, "  Bit0 Charge high temperature alarm");
-    if (alarm_event3 & 0x02)
-      ESP_LOGD(TAG, "  Bit1 Charge over temperature protection");
-    if (alarm_event3 & 0x04)
-      ESP_LOGD(TAG, "  Bit2 Charge low temperature alarm");
-    if (alarm_event3 & 0x08)
-      ESP_LOGD(TAG, "  Bit3 Charge under temperature protection");
-    if (alarm_event3 & 0x10)
-      ESP_LOGD(TAG, "  Bit4 Discharge high temperature alarm");
-    if (alarm_event3 & 0x20)
-      ESP_LOGD(TAG, "  Bit5 Discharge over temperature protection");
-    if (alarm_event3 & 0x40)
-      ESP_LOGD(TAG, "  Bit6 Discharge low temperature alarm");
-    if (alarm_event3 & 0x80)
-      ESP_LOGD(TAG, "  Bit7 Discharge under temperature protection");
+    ESP_LOGD(TAG, "  Bit0 Charging high temperature alarm: %s", ONOFF(alarm_event3 & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Charging over-temperature protection: %s", ONOFF(alarm_event3 & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Charging low temperature alarm: %s", ONOFF(alarm_event3 & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Charging under-temperature protection: %s", ONOFF(alarm_event3 & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Discharge high temperature alarm: %s", ONOFF(alarm_event3 & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Discharge over temperature protection: %s", ONOFF(alarm_event3 & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Discharge low temperature alarm: %s", ONOFF(alarm_event3 & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Discharge under-temperature protection: %s", ONOFF(alarm_event3 & 0x80));
     this->publish_state_(this->alarm_event3_bitmask_sensor_, (float) alarm_event3);
 
     // Alarm event 4 - Environment temperature (Byte 50)
     uint8_t alarm_event4 = data[50];
     ESP_LOGD(TAG, "Alarm event 4: 0x%02X", alarm_event4);
-    if (alarm_event4 & 0x01)
-      ESP_LOGD(TAG, "  Bit0 Environment high temperature alarm");
-    if (alarm_event4 & 0x02)
-      ESP_LOGD(TAG, "  Bit1 Environment over temperature protection");
-    if (alarm_event4 & 0x04)
-      ESP_LOGD(TAG, "  Bit2 Environment low temperature alarm");
-    if (alarm_event4 & 0x08)
-      ESP_LOGD(TAG, "  Bit3 Environment under temperature protection");
-    if (alarm_event4 & 0x10)
-      ESP_LOGD(TAG, "  Bit4 Power over temperature protection");
-    if (alarm_event4 & 0x20)
-      ESP_LOGD(TAG, "  Bit5 Power high temperature alarm");
-    if (alarm_event4 & 0x40)
-      ESP_LOGD(TAG, "  Bit6 Cell low temperature heating");
-    if (alarm_event4 & 0x80)
-      ESP_LOGD(TAG, "  Bit7 Reservation bit");
+    ESP_LOGD(TAG, "  Bit0 Environmental high temperature alarm: %s", ONOFF(alarm_event4 & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Environmental over-temperature protection: %s", ONOFF(alarm_event4 & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Environmental low temperature alarm: %s", ONOFF(alarm_event4 & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Environmental under-temperature protection: %s", ONOFF(alarm_event4 & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Power over temperature protection: %s", ONOFF(alarm_event4 & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Power high temperature alarm: %s", ONOFF(alarm_event4 & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Battery core low temperature heating: %s", ONOFF(alarm_event4 & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Secondary trip protection: %s", ONOFF(alarm_event4 & 0x80));
     this->publish_state_(this->alarm_event4_bitmask_sensor_, (float) alarm_event4);
 
     // Alarm event 5 - Current protection (Byte 51)
     uint8_t alarm_event5 = data[51];
     ESP_LOGD(TAG, "Alarm event 5: 0x%02X", alarm_event5);
-    if (alarm_event5 & 0x01)
-      ESP_LOGD(TAG, "  Bit0 Charge over current alarm");
-    if (alarm_event5 & 0x02)
-      ESP_LOGD(TAG, "  Bit1 Charge over current protection");
-    if (alarm_event5 & 0x04)
-      ESP_LOGD(TAG, "  Bit2 Discharge over current alarm");
-    if (alarm_event5 & 0x08)
-      ESP_LOGD(TAG, "  Bit3 Discharge over current protection");
-    if (alarm_event5 & 0x10)
-      ESP_LOGD(TAG, "  Bit4 Transient over current protection");
-    if (alarm_event5 & 0x20)
-      ESP_LOGD(TAG, "  Bit5 Output short circuit protection");
-    if (alarm_event5 & 0x40)
-      ESP_LOGD(TAG, "  Bit6 Transient over current lockout");
-    if (alarm_event5 & 0x80)
-      ESP_LOGD(TAG, "  Bit7 Output short circuit lockout");
+    ESP_LOGD(TAG, "  Bit0 Charging overcurrent alarm: %s", ONOFF(alarm_event5 & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Charging overcurrent protection: %s", ONOFF(alarm_event5 & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Discharge overcurrent alarm: %s", ONOFF(alarm_event5 & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Discharge overcurrent protection: %s", ONOFF(alarm_event5 & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Transient overcurrent protection: %s", ONOFF(alarm_event5 & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Output short circuit protection: %s", ONOFF(alarm_event5 & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Transient overcurrent lockout: %s", ONOFF(alarm_event5 & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Output short circuit lockout: %s", ONOFF(alarm_event5 & 0x80));
     this->publish_state_(this->alarm_event5_bitmask_sensor_, (float) alarm_event5);
 
     // Alarm event 6 - Charging/output protection (Byte 52)
     uint8_t alarm_event6 = data[52];
     ESP_LOGD(TAG, "Alarm event 6: 0x%02X", alarm_event6);
-    if (alarm_event6 & 0x01)
-      ESP_LOGD(TAG, "  Bit0 Charge high voltage protection");
-    if (alarm_event6 & 0x02)
-      ESP_LOGD(TAG, "  Bit1 Intermittent recharge waiting");
-    if (alarm_event6 & 0x04)
-      ESP_LOGD(TAG, "  Bit2 Residual capacity alarm");
-    if (alarm_event6 & 0x08)
-      ESP_LOGD(TAG, "  Bit3 Residual capacity protection");
-    if (alarm_event6 & 0x10)
-      ESP_LOGD(TAG, "  Bit4 Cell low voltage charging prohibition");
-    if (alarm_event6 & 0x20)
-      ESP_LOGD(TAG, "  Bit5 Output reverse polarity protection");
-    if (alarm_event6 & 0x40)
-      ESP_LOGD(TAG, "  Bit6 Output connection fault");
-    if (alarm_event6 & 0x80)
-      ESP_LOGD(TAG, "  Bit7 Inside bit");
+    ESP_LOGD(TAG, "  Bit0 Charging high voltage protection: %s", ONOFF(alarm_event6 & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Waiting for intermittent power replenishment: %s", ONOFF(alarm_event6 & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Remaining capacity alarm: %s", ONOFF(alarm_event6 & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Remaining capacity protection: %s", ONOFF(alarm_event6 & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Battery cell low voltage charging is prohibited: %s", ONOFF(alarm_event6 & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Output reverse polarity protection: %s", ONOFF(alarm_event6 & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Output connection failure: %s", ONOFF(alarm_event6 & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Internal alarm: %s", ONOFF(alarm_event6 & 0x80));
     this->publish_state_(this->alarm_event6_bitmask_sensor_, (float) alarm_event6);
 
     // Check if we have enough data for balancing states and remaining alarm events
@@ -381,8 +341,8 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
       uint8_t balancing_state2 = data[54];
       ESP_LOGD(TAG, "Balancing state 2: 0x%02X", balancing_state2);
 
-      // Combine both bytes into 16-bit value (state2 << 8 | state1) for cells 1-16
-      uint16_t balancing_combined = (balancing_state2 << 8) | balancing_state1;
+      // Combine both bytes into 16-bit value using seplos_get_16bit for correct byte order
+      uint16_t balancing_combined = seplos_get_16bit(53);
       ESP_LOGD(TAG, "Combined balancing state: 0x%04X", balancing_combined);
 
       // Log which specific cells are balancing (like in BLE implementation)
@@ -403,6 +363,20 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
       // Publish balancing binary sensor (true if any cell is balancing)
       this->publish_state_(this->balancing_binary_sensor_, balancing_combined != 0);
 
+      // System state (Byte 56 based on protocol table position)
+      if (data.size() >= 69) {
+        uint8_t system_status = data[56];
+        ESP_LOGD(TAG, "System status: 0x%02X", system_status);
+        ESP_LOGD(TAG, "  Bit0 Discharge: %s", ONOFF(system_status & 0x01));
+        ESP_LOGD(TAG, "  Bit1 Charge: %s", ONOFF(system_status & 0x02));
+        ESP_LOGD(TAG, "  Bit2 Float charge: %s", ONOFF(system_status & 0x04));
+        ESP_LOGD(TAG, "  Bit3 Reserved: %s", ONOFF(system_status & 0x08));
+        ESP_LOGD(TAG, "  Bit4 Standby: %s", ONOFF(system_status & 0x10));
+        ESP_LOGD(TAG, "  Bit5 Shutdown: %s", ONOFF(system_status & 0x20));
+        ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(system_status & 0x40));
+        ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(system_status & 0x80));
+      }
+
       // Disconnection states (Bytes 57 & 58 based on protocol table position)
       if (data.size() >= 70) {
         // Disconnection state 1 - Cells 01-08 (Byte 57)
@@ -413,8 +387,8 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
         uint8_t disconnection_state2 = data[58];
         ESP_LOGD(TAG, "Disconnection state 2: 0x%02X", disconnection_state2);
 
-        // Combine both bytes into 16-bit value (state2 << 8 | state1) for cells 1-16
-        uint16_t disconnection_combined = (disconnection_state2 << 8) | disconnection_state1;
+        // Combine both bytes into 16-bit value using seplos_get_16bit for correct byte order
+        uint16_t disconnection_combined = seplos_get_16bit(57);
         ESP_LOGD(TAG, "Combined disconnection state: 0x%04X", disconnection_combined);
 
         // Log which specific cells are disconnected (like in BLE implementation)
@@ -438,43 +412,27 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
         // Alarm event 7 (Byte 59 based on protocol doc position)
         uint8_t alarm_event7 = data[59];
         ESP_LOGD(TAG, "Alarm event 7: 0x%02X", alarm_event7);
-        if (alarm_event7 & 0x01)
-          ESP_LOGD(TAG, "  Bit0 Inside bit");
-        if (alarm_event7 & 0x02)
-          ESP_LOGD(TAG, "  Bit1 Inside bit");
-        if (alarm_event7 & 0x04)
-          ESP_LOGD(TAG, "  Bit2 Inside bit");
-        if (alarm_event7 & 0x08)
-          ESP_LOGD(TAG, "  Bit3 Inside bit");
-        if (alarm_event7 & 0x10)
-          ESP_LOGD(TAG, "  Bit4 Automatic charging waiting");
-        if (alarm_event7 & 0x20)
-          ESP_LOGD(TAG, "  Bit5 Manual charging waiting");
-        if (alarm_event7 & 0x40)
-          ESP_LOGD(TAG, "  Bit6 Inside bit");
-        if (alarm_event7 & 0x80)
-          ESP_LOGD(TAG, "  Bit7 Inside bit");
+        ESP_LOGD(TAG, "  Bit0 Internal: %s", ONOFF(alarm_event7 & 0x01));
+        ESP_LOGD(TAG, "  Bit1 Internal: %s", ONOFF(alarm_event7 & 0x02));
+        ESP_LOGD(TAG, "  Bit2 Internal: %s", ONOFF(alarm_event7 & 0x04));
+        ESP_LOGD(TAG, "  Bit3 Internal: %s", ONOFF(alarm_event7 & 0x08));
+        ESP_LOGD(TAG, "  Bit4 Automatic charging waiting: %s", ONOFF(alarm_event7 & 0x10));
+        ESP_LOGD(TAG, "  Bit5 Manual charging waiting: %s", ONOFF(alarm_event7 & 0x20));
+        ESP_LOGD(TAG, "  Bit6 Internal: %s", ONOFF(alarm_event7 & 0x40));
+        ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event7 & 0x80));
         this->publish_state_(this->alarm_event7_bitmask_sensor_, (float) alarm_event7);
 
         // Alarm event 8 (Byte 60 based on protocol doc position)
         uint8_t alarm_event8 = data[60];
         ESP_LOGD(TAG, "Alarm event 8: 0x%02X", alarm_event8);
-        if (alarm_event8 & 0x01)
-          ESP_LOGD(TAG, "  Bit0 EEP storage fault");
-        if (alarm_event8 & 0x02)
-          ESP_LOGD(TAG, "  Bit1 RTC error");
-        if (alarm_event8 & 0x04)
-          ESP_LOGD(TAG, "  Bit2 Voltage calibration not performed");
-        if (alarm_event8 & 0x08)
-          ESP_LOGD(TAG, "  Bit3 Current calibration not performed");
-        if (alarm_event8 & 0x10)
-          ESP_LOGD(TAG, "  Bit4 Zero calibration not performed");
-        if (alarm_event8 & 0x20)
-          ESP_LOGD(TAG, "  Bit5 Inside bit");
-        if (alarm_event8 & 0x40)
-          ESP_LOGD(TAG, "  Bit6 Inside bit");
-        if (alarm_event8 & 0x80)
-          ESP_LOGD(TAG, "  Bit7 Inside bit");
+        ESP_LOGD(TAG, "  Bit0 EEP storage failure: %s", ONOFF(alarm_event8 & 0x01));
+        ESP_LOGD(TAG, "  Bit1 RTC clock failure: %s", ONOFF(alarm_event8 & 0x02));
+        ESP_LOGD(TAG, "  Bit2 Voltage calibration not done: %s", ONOFF(alarm_event8 & 0x04));
+        ESP_LOGD(TAG, "  Bit3 Current calibration not done: %s", ONOFF(alarm_event8 & 0x08));
+        ESP_LOGD(TAG, "  Bit4 Zero point calibration not done: %s", ONOFF(alarm_event8 & 0x10));
+        ESP_LOGD(TAG, "  Bit5 Perpetual calendar not synchronized: %s", ONOFF(alarm_event8 & 0x20));
+        ESP_LOGD(TAG, "  Bit6 Internal: %s", ONOFF(alarm_event8 & 0x40));
+        ESP_LOGD(TAG, "  Bit7 Internal: %s", ONOFF(alarm_event8 & 0x80));
         this->publish_state_(this->alarm_event8_bitmask_sensor_, (float) alarm_event8);
 
         // Generate consolidated alarm message
