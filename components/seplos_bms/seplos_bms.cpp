@@ -240,6 +240,250 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
     ESP_LOGD(TAG, "  - Charge FET enabled");
   this->publish_state_(this->discharging_binary_sensor_, (switch_byte & 0x01) != 0);
   this->publish_state_(this->charging_binary_sensor_, (switch_byte & 0x02) != 0);
+
+  // Check if we have enough data for extended alarm information (alarm events and balancing)
+  if (data.size() >= 64) {
+    // Alarm Events according to SEPLOS BMS Communication Protocol V2.0 - Table 13
+
+    // Alarm event 1 - Hardware failures (Byte 47 in telecommand return frame)
+    uint8_t alarm_event1 = data[47];
+    ESP_LOGD(TAG, "Alarm event 1: 0x%02X", alarm_event1);
+    if (alarm_event1 & 0x01)
+      ESP_LOGD(TAG, "  Bit0 Voltage sensor fault");
+    if (alarm_event1 & 0x02)
+      ESP_LOGD(TAG, "  Bit1 Temperature sensor fault");
+    if (alarm_event1 & 0x04)
+      ESP_LOGD(TAG, "  Bit2 Current sensor fault");
+    if (alarm_event1 & 0x08)
+      ESP_LOGD(TAG, "  Bit3 Key switch fault");
+    if (alarm_event1 & 0x10)
+      ESP_LOGD(TAG, "  Bit4 Cell voltage dropout fault");
+    if (alarm_event1 & 0x20)
+      ESP_LOGD(TAG, "  Bit5 Charge switch fault");
+    if (alarm_event1 & 0x40)
+      ESP_LOGD(TAG, "  Bit6 Discharge switch fault");
+    if (alarm_event1 & 0x80)
+      ESP_LOGD(TAG, "  Bit7 Current limit switch fault");
+    this->publish_state_(this->alarm_event1_bitmask_sensor_, (float) alarm_event1);
+
+    // Alarm event 2 - Voltage alarms (Byte 48)
+    uint8_t alarm_event2 = data[48];
+    ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
+    if (alarm_event2 & 0x01)
+      ESP_LOGD(TAG, "  Bit0 Monomer high voltage alarm");
+    if (alarm_event2 & 0x02)
+      ESP_LOGD(TAG, "  Bit1 Monomer overvoltage protection");
+    if (alarm_event2 & 0x04)
+      ESP_LOGD(TAG, "  Bit2 Monomer low voltage alarm");
+    if (alarm_event2 & 0x08)
+      ESP_LOGD(TAG, "  Bit3 Monomer under voltage protection");
+    if (alarm_event2 & 0x10)
+      ESP_LOGD(TAG, "  Bit4 High voltage alarm for total voltage");
+    if (alarm_event2 & 0x20)
+      ESP_LOGD(TAG, "  Bit5 Overvoltage protection for total voltage");
+    if (alarm_event2 & 0x40)
+      ESP_LOGD(TAG, "  Bit6 Low voltage alarm for total voltage");
+    if (alarm_event2 & 0x80)
+      ESP_LOGD(TAG, "  Bit7 Under voltage protection for total voltage");
+    this->publish_state_(this->alarm_event2_bitmask_sensor_, (float) alarm_event2);
+
+    // Alarm event 3 - Cell temperature (Byte 49)
+    uint8_t alarm_event3 = data[49];
+    ESP_LOGD(TAG, "Alarm event 3: 0x%02X", alarm_event3);
+    if (alarm_event3 & 0x01)
+      ESP_LOGD(TAG, "  Bit0 Charge high temperature alarm");
+    if (alarm_event3 & 0x02)
+      ESP_LOGD(TAG, "  Bit1 Charge over temperature protection");
+    if (alarm_event3 & 0x04)
+      ESP_LOGD(TAG, "  Bit2 Charge low temperature alarm");
+    if (alarm_event3 & 0x08)
+      ESP_LOGD(TAG, "  Bit3 Charge under temperature protection");
+    if (alarm_event3 & 0x10)
+      ESP_LOGD(TAG, "  Bit4 Discharge high temperature alarm");
+    if (alarm_event3 & 0x20)
+      ESP_LOGD(TAG, "  Bit5 Discharge over temperature protection");
+    if (alarm_event3 & 0x40)
+      ESP_LOGD(TAG, "  Bit6 Discharge low temperature alarm");
+    if (alarm_event3 & 0x80)
+      ESP_LOGD(TAG, "  Bit7 Discharge under temperature protection");
+    this->publish_state_(this->alarm_event3_bitmask_sensor_, (float) alarm_event3);
+
+    // Alarm event 4 - Environment temperature (Byte 50)
+    uint8_t alarm_event4 = data[50];
+    ESP_LOGD(TAG, "Alarm event 4: 0x%02X", alarm_event4);
+    if (alarm_event4 & 0x01)
+      ESP_LOGD(TAG, "  Bit0 Environment high temperature alarm");
+    if (alarm_event4 & 0x02)
+      ESP_LOGD(TAG, "  Bit1 Environment over temperature protection");
+    if (alarm_event4 & 0x04)
+      ESP_LOGD(TAG, "  Bit2 Environment low temperature alarm");
+    if (alarm_event4 & 0x08)
+      ESP_LOGD(TAG, "  Bit3 Environment under temperature protection");
+    if (alarm_event4 & 0x10)
+      ESP_LOGD(TAG, "  Bit4 Power over temperature protection");
+    if (alarm_event4 & 0x20)
+      ESP_LOGD(TAG, "  Bit5 Power high temperature alarm");
+    if (alarm_event4 & 0x40)
+      ESP_LOGD(TAG, "  Bit6 Cell low temperature heating");
+    if (alarm_event4 & 0x80)
+      ESP_LOGD(TAG, "  Bit7 Reservation bit");
+    this->publish_state_(this->alarm_event4_bitmask_sensor_, (float) alarm_event4);
+
+    // Alarm event 5 - Current protection (Byte 51)
+    uint8_t alarm_event5 = data[51];
+    ESP_LOGD(TAG, "Alarm event 5: 0x%02X", alarm_event5);
+    if (alarm_event5 & 0x01)
+      ESP_LOGD(TAG, "  Bit0 Charge over current alarm");
+    if (alarm_event5 & 0x02)
+      ESP_LOGD(TAG, "  Bit1 Charge over current protection");
+    if (alarm_event5 & 0x04)
+      ESP_LOGD(TAG, "  Bit2 Discharge over current alarm");
+    if (alarm_event5 & 0x08)
+      ESP_LOGD(TAG, "  Bit3 Discharge over current protection");
+    if (alarm_event5 & 0x10)
+      ESP_LOGD(TAG, "  Bit4 Transient over current protection");
+    if (alarm_event5 & 0x20)
+      ESP_LOGD(TAG, "  Bit5 Output short circuit protection");
+    if (alarm_event5 & 0x40)
+      ESP_LOGD(TAG, "  Bit6 Transient over current lockout");
+    if (alarm_event5 & 0x80)
+      ESP_LOGD(TAG, "  Bit7 Output short circuit lockout");
+    this->publish_state_(this->alarm_event5_bitmask_sensor_, (float) alarm_event5);
+
+    // Alarm event 6 - Charging/output protection (Byte 52)
+    uint8_t alarm_event6 = data[52];
+    ESP_LOGD(TAG, "Alarm event 6: 0x%02X", alarm_event6);
+    if (alarm_event6 & 0x01)
+      ESP_LOGD(TAG, "  Bit0 Charge high voltage protection");
+    if (alarm_event6 & 0x02)
+      ESP_LOGD(TAG, "  Bit1 Intermittent recharge waiting");
+    if (alarm_event6 & 0x04)
+      ESP_LOGD(TAG, "  Bit2 Residual capacity alarm");
+    if (alarm_event6 & 0x08)
+      ESP_LOGD(TAG, "  Bit3 Residual capacity protection");
+    if (alarm_event6 & 0x10)
+      ESP_LOGD(TAG, "  Bit4 Cell low voltage charging prohibition");
+    if (alarm_event6 & 0x20)
+      ESP_LOGD(TAG, "  Bit5 Output reverse polarity protection");
+    if (alarm_event6 & 0x40)
+      ESP_LOGD(TAG, "  Bit6 Output connection fault");
+    if (alarm_event6 & 0x80)
+      ESP_LOGD(TAG, "  Bit7 Inside bit");
+    this->publish_state_(this->alarm_event6_bitmask_sensor_, (float) alarm_event6);
+
+    // Check if we have enough data for balancing states and remaining alarm events
+    if (data.size() >= 68) {
+      // Balancing state 1 - Cells 01-08 (Byte 53)
+      uint8_t balancing_state1 = data[53];
+      ESP_LOGD(TAG, "Balancing state 1: 0x%02X", balancing_state1);
+
+      // Balancing state 2 - Cells 09-16 (Byte 54)
+      uint8_t balancing_state2 = data[54];
+      ESP_LOGD(TAG, "Balancing state 2: 0x%02X", balancing_state2);
+
+      // Combine both bytes into 16-bit value (state2 << 8 | state1) for cells 1-16
+      uint16_t balancing_combined = (balancing_state2 << 8) | balancing_state1;
+      ESP_LOGD(TAG, "Combined balancing state: 0x%04X", balancing_combined);
+
+      // Log which specific cells are balancing (like in BLE implementation)
+      if (balancing_combined != 0) {
+        ESP_LOGD(TAG, "Active balancing cells:");
+        for (uint8_t cell = 1; cell <= 16; cell++) {
+          if (balancing_combined & (1 << (cell - 1))) {
+            ESP_LOGD(TAG, "  - Cell %d balancing", cell);
+          }
+        }
+      } else {
+        ESP_LOGD(TAG, "No cells currently balancing");
+      }
+
+      // Publish 16-bit combined balancing sensor
+      this->publish_state_(this->balancing_bitmask_sensor_, (float) balancing_combined);
+
+      // Publish balancing binary sensor (true if any cell is balancing)
+      this->publish_state_(this->balancing_binary_sensor_, balancing_combined != 0);
+
+      // Disconnection states (Bytes 57 & 58 based on protocol table position)
+      if (data.size() >= 70) {
+        // Disconnection state 1 - Cells 01-08 (Byte 57)
+        uint8_t disconnection_state1 = data[57];
+        ESP_LOGD(TAG, "Disconnection state 1: 0x%02X", disconnection_state1);
+
+        // Disconnection state 2 - Cells 09-16 (Byte 58)
+        uint8_t disconnection_state2 = data[58];
+        ESP_LOGD(TAG, "Disconnection state 2: 0x%02X", disconnection_state2);
+
+        // Combine both bytes into 16-bit value (state2 << 8 | state1) for cells 1-16
+        uint16_t disconnection_combined = (disconnection_state2 << 8) | disconnection_state1;
+        ESP_LOGD(TAG, "Combined disconnection state: 0x%04X", disconnection_combined);
+
+        // Log which specific cells are disconnected (like in BLE implementation)
+        if (disconnection_combined != 0) {
+          ESP_LOGD(TAG, "Disconnected cells:");
+          for (uint8_t cell = 1; cell <= 16; cell++) {
+            if (disconnection_combined & (1 << (cell - 1))) {
+              ESP_LOGD(TAG, "  - Cell %d disconnected", cell);
+            }
+          }
+        } else {
+          ESP_LOGD(TAG, "All cells connected");
+        }
+
+        // Publish 16-bit combined disconnection sensor
+        this->publish_state_(this->disconnection_bitmask_sensor_, (float) disconnection_combined);
+      }
+
+      // Check for additional alarm events if frame is long enough
+      if (data.size() >= 70) {
+        // Alarm event 7 (Byte 59 based on protocol doc position)
+        uint8_t alarm_event7 = data[59];
+        ESP_LOGD(TAG, "Alarm event 7: 0x%02X", alarm_event7);
+        if (alarm_event7 & 0x01)
+          ESP_LOGD(TAG, "  Bit0 Inside bit");
+        if (alarm_event7 & 0x02)
+          ESP_LOGD(TAG, "  Bit1 Inside bit");
+        if (alarm_event7 & 0x04)
+          ESP_LOGD(TAG, "  Bit2 Inside bit");
+        if (alarm_event7 & 0x08)
+          ESP_LOGD(TAG, "  Bit3 Inside bit");
+        if (alarm_event7 & 0x10)
+          ESP_LOGD(TAG, "  Bit4 Automatic charging waiting");
+        if (alarm_event7 & 0x20)
+          ESP_LOGD(TAG, "  Bit5 Manual charging waiting");
+        if (alarm_event7 & 0x40)
+          ESP_LOGD(TAG, "  Bit6 Inside bit");
+        if (alarm_event7 & 0x80)
+          ESP_LOGD(TAG, "  Bit7 Inside bit");
+        this->publish_state_(this->alarm_event7_bitmask_sensor_, (float) alarm_event7);
+
+        // Alarm event 8 (Byte 60 based on protocol doc position)
+        uint8_t alarm_event8 = data[60];
+        ESP_LOGD(TAG, "Alarm event 8: 0x%02X", alarm_event8);
+        if (alarm_event8 & 0x01)
+          ESP_LOGD(TAG, "  Bit0 EEP storage fault");
+        if (alarm_event8 & 0x02)
+          ESP_LOGD(TAG, "  Bit1 RTC error");
+        if (alarm_event8 & 0x04)
+          ESP_LOGD(TAG, "  Bit2 Voltage calibration not performed");
+        if (alarm_event8 & 0x08)
+          ESP_LOGD(TAG, "  Bit3 Current calibration not performed");
+        if (alarm_event8 & 0x10)
+          ESP_LOGD(TAG, "  Bit4 Zero calibration not performed");
+        if (alarm_event8 & 0x20)
+          ESP_LOGD(TAG, "  Bit5 Inside bit");
+        if (alarm_event8 & 0x40)
+          ESP_LOGD(TAG, "  Bit6 Inside bit");
+        if (alarm_event8 & 0x80)
+          ESP_LOGD(TAG, "  Bit7 Inside bit");
+        this->publish_state_(this->alarm_event8_bitmask_sensor_, (float) alarm_event8);
+
+        // Generate consolidated alarm message
+        std::string all_alarms = this->decode_all_alarm_events_(alarm_event1, alarm_event2, alarm_event3, alarm_event4,
+                                                                alarm_event5, alarm_event6, alarm_event7, alarm_event8);
+        this->publish_state_(this->alarms_text_sensor_, all_alarms);
+      }
+    }
+  }
 }
 
 void SeplosBms::dump_config() {
@@ -343,6 +587,7 @@ void SeplosBms::publish_device_unavailable_() {
   this->publish_state_(this->online_status_binary_sensor_, false);
   this->publish_state_(this->charging_binary_sensor_, false);
   this->publish_state_(this->discharging_binary_sensor_, false);
+  this->publish_state_(this->balancing_binary_sensor_, false);
   this->publish_state_(this->voltage_protection_binary_sensor_, false);
   this->publish_state_(this->temperature_protection_binary_sensor_, false);
   this->publish_state_(this->current_protection_binary_sensor_, false);
@@ -375,6 +620,131 @@ void SeplosBms::publish_device_unavailable_() {
   for (auto &cell : this->cells_) {
     this->publish_state_(cell.cell_voltage_sensor_, NAN);
   }
+}
+
+std::string SeplosBms::bitmask_to_string_(const char *const messages[], const uint8_t &messages_size,
+                                          const uint8_t &mask) {
+  std::string alarm_info;
+  if (mask) {
+    for (uint8_t i = 0; i < messages_size; i++) {
+      if (mask & (1 << i)) {
+        if (!alarm_info.empty()) {
+          alarm_info.append("; ");
+        }
+        alarm_info.append(messages[i]);
+      }
+    }
+  }
+  return alarm_info;
+}
+
+std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t alarm_event2, uint8_t alarm_event3,
+                                                uint8_t alarm_event4, uint8_t alarm_event5, uint8_t alarm_event6,
+                                                uint8_t alarm_event7, uint8_t alarm_event8) {
+  std::string alarm_text;
+
+  // Alarm Event 1 - Hardware failures
+  static const char *const ALARM_EVENT1_NAMES[] = {
+      "Voltage sensor fault",       "Temperature sensor fault", "Current sensor fault",   "Key switch fault",
+      "Cell voltage dropout fault", "Charge switch fault",      "Discharge switch fault", "Current limit switch fault"};
+  std::string alarm_event1_text = this->bitmask_to_string_(ALARM_EVENT1_NAMES, 8, alarm_event1);
+  if (!alarm_event1_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("HW: ").append(alarm_event1_text);
+  }
+
+  // Alarm Event 2 - Voltage alarms
+  static const char *const ALARM_EVENT2_NAMES[] = {"Cell high voltage alarm", "Cell overvoltage protection",
+                                                   "Cell low voltage alarm",  "Cell undervoltage protection",
+                                                   "Pack high voltage alarm", "Pack overvoltage protection",
+                                                   "Pack low voltage alarm",  "Pack undervoltage protection"};
+  std::string alarm_event2_text = this->bitmask_to_string_(ALARM_EVENT2_NAMES, 8, alarm_event2);
+  if (!alarm_event2_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("VOLT: ").append(alarm_event2_text);
+  }
+
+  // Alarm Event 3 - Cell temperature
+  static const char *const ALARM_EVENT3_NAMES[] = {"Charge high temp alarm",    "Charge overtemp protection",
+                                                   "Charge low temp alarm",     "Charge undertemp protection",
+                                                   "Discharge high temp alarm", "Discharge overtemp protection",
+                                                   "Discharge low temp alarm",  "Discharge undertemp protection"};
+  std::string alarm_event3_text = this->bitmask_to_string_(ALARM_EVENT3_NAMES, 8, alarm_event3);
+  if (!alarm_event3_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("TEMP: ").append(alarm_event3_text);
+  }
+
+  // Alarm Event 4 - Environment temperature
+  static const char *const ALARM_EVENT4_NAMES[] = {
+      "Env high temp alarm",       "Env overtemp protection", "Env low temp alarm",    "Env undertemp protection",
+      "Power overtemp protection", "Power high temp alarm",   "Cell low temp heating", "Reserved"};
+  std::string alarm_event4_text = this->bitmask_to_string_(ALARM_EVENT4_NAMES, 8, alarm_event4);
+  if (!alarm_event4_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("ENV: ").append(alarm_event4_text);
+  }
+
+  // Alarm Event 5 - Current protection
+  static const char *const ALARM_EVENT5_NAMES[] = {
+      "Charge overcurrent alarm",         "Charge overcurrent protection",    "Discharge overcurrent alarm",
+      "Discharge overcurrent protection", "Transient overcurrent protection", "Output short circuit protection",
+      "Transient overcurrent lockout",    "Output short circuit lockout"};
+  std::string alarm_event5_text = this->bitmask_to_string_(ALARM_EVENT5_NAMES, 8, alarm_event5);
+  if (!alarm_event5_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("CURR: ").append(alarm_event5_text);
+  }
+
+  // Alarm Event 6 - Charging/output protection
+  static const char *const ALARM_EVENT6_NAMES[] = {"Charge high voltage protection",
+                                                   "Intermittent recharge waiting",
+                                                   "Residual capacity alarm",
+                                                   "Residual capacity protection",
+                                                   "Cell low voltage charging prohibition",
+                                                   "Output reverse polarity protection",
+                                                   "Output connection fault",
+                                                   "Inside bit"};
+  std::string alarm_event6_text = this->bitmask_to_string_(ALARM_EVENT6_NAMES, 8, alarm_event6);
+  if (!alarm_event6_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("CHG: ").append(alarm_event6_text);
+  }
+
+  // Alarm Event 7 - System status
+  static const char *const ALARM_EVENT7_NAMES[] = {
+      "Inside bit", "Inside bit", "Inside bit", "Inside bit", "Automatic charging waiting", "Manual charging waiting",
+      "Inside bit", "Inside bit"};
+  std::string alarm_event7_text = this->bitmask_to_string_(ALARM_EVENT7_NAMES, 8, alarm_event7);
+  if (!alarm_event7_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("SYS: ").append(alarm_event7_text);
+  }
+
+  // Alarm Event 8 - Calibration/storage faults
+  static const char *const ALARM_EVENT8_NAMES[] = {"EEP storage fault",
+                                                   "RTC error",
+                                                   "Voltage calibration not performed",
+                                                   "Current calibration not performed",
+                                                   "Zero calibration not performed",
+                                                   "Inside bit",
+                                                   "Inside bit",
+                                                   "Inside bit"};
+  std::string alarm_event8_text = this->bitmask_to_string_(ALARM_EVENT8_NAMES, 8, alarm_event8);
+  if (!alarm_event8_text.empty()) {
+    if (!alarm_text.empty())
+      alarm_text.append("; ");
+    alarm_text.append("CAL: ").append(alarm_event8_text);
+  }
+
+  return alarm_text.empty() ? "No alarms" : alarm_text;
 }
 
 }  // namespace seplos_bms
