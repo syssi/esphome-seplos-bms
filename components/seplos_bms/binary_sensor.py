@@ -16,6 +16,7 @@ CONF_VOLTAGE_PROTECTION = "voltage_protection"
 CONF_TEMPERATURE_PROTECTION = "temperature_protection"
 CONF_CURRENT_PROTECTION = "current_protection"
 CONF_SOC_PROTECTION = "soc_protection"
+CONF_BALANCING = "balancing"
 
 # key: binary_sensor_schema kwargs
 BINARY_SENSOR_DEFS = {
@@ -45,6 +46,10 @@ BINARY_SENSOR_DEFS = {
     },
     CONF_SOC_PROTECTION: {
         "icon": "mdi:battery-alert",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_BALANCING: {
+        "icon": "mdi:scale-balance",
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
 }

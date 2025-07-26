@@ -104,6 +104,28 @@ sensor:
       name: "${battery_bank0} power"
     state_of_charge:
       name: "${battery_bank0} state of charge"
+    # Alarm event bitmask sensors
+    alarm_event1_bitmask:
+      name: "${battery_bank0} alarm event 1 bitmask"
+    alarm_event2_bitmask:
+      name: "${battery_bank0} alarm event 2 bitmask"
+    alarm_event3_bitmask:
+      name: "${battery_bank0} alarm event 3 bitmask"
+    alarm_event4_bitmask:
+      name: "${battery_bank0} alarm event 4 bitmask"
+    alarm_event5_bitmask:
+      name: "${battery_bank0} alarm event 5 bitmask"
+    alarm_event6_bitmask:
+      name: "${battery_bank0} alarm event 6 bitmask"
+    alarm_event7_bitmask:
+      name: "${battery_bank0} alarm event 7 bitmask"
+    alarm_event8_bitmask:
+      name: "${battery_bank0} alarm event 8 bitmask"
+    # Balancing and disconnection sensors
+    balancing_bitmask:
+      name: "${battery_bank0} balancing bitmask"
+    disconnection_bitmask:
+      name: "${battery_bank0} disconnection bitmask"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank1
@@ -123,6 +145,28 @@ sensor:
       name: "${battery_bank1} power"
     state_of_charge:
       name: "${battery_bank1} state of charge"
+    # Alarm event bitmask sensors
+    alarm_event1_bitmask:
+      name: "${battery_bank1} alarm event 1 bitmask"
+    alarm_event2_bitmask:
+      name: "${battery_bank1} alarm event 2 bitmask"
+    alarm_event3_bitmask:
+      name: "${battery_bank1} alarm event 3 bitmask"
+    alarm_event4_bitmask:
+      name: "${battery_bank1} alarm event 4 bitmask"
+    alarm_event5_bitmask:
+      name: "${battery_bank1} alarm event 5 bitmask"
+    alarm_event6_bitmask:
+      name: "${battery_bank1} alarm event 6 bitmask"
+    alarm_event7_bitmask:
+      name: "${battery_bank1} alarm event 7 bitmask"
+    alarm_event8_bitmask:
+      name: "${battery_bank1} alarm event 8 bitmask"
+    # Balancing and disconnection sensors
+    balancing_bitmask:
+      name: "${battery_bank1} balancing bitmask"
+    disconnection_bitmask:
+      name: "${battery_bank1} disconnection bitmask"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank2
@@ -142,6 +186,28 @@ sensor:
       name: "${battery_bank2} power"
     state_of_charge:
       name: "${battery_bank2} state of charge"
+    # Alarm event bitmask sensors
+    alarm_event1_bitmask:
+      name: "${battery_bank2} alarm event 1 bitmask"
+    alarm_event2_bitmask:
+      name: "${battery_bank2} alarm event 2 bitmask"
+    alarm_event3_bitmask:
+      name: "${battery_bank2} alarm event 3 bitmask"
+    alarm_event4_bitmask:
+      name: "${battery_bank2} alarm event 4 bitmask"
+    alarm_event5_bitmask:
+      name: "${battery_bank2} alarm event 5 bitmask"
+    alarm_event6_bitmask:
+      name: "${battery_bank2} alarm event 6 bitmask"
+    alarm_event7_bitmask:
+      name: "${battery_bank2} alarm event 7 bitmask"
+    alarm_event8_bitmask:
+      name: "${battery_bank2} alarm event 8 bitmask"
+    # Balancing and disconnection sensors
+    balancing_bitmask:
+      name: "${battery_bank2} balancing bitmask"
+    disconnection_bitmask:
+      name: "${battery_bank2} disconnection bitmask"
 
 binary_sensor:
   - platform: seplos_bms
@@ -160,6 +226,8 @@ binary_sensor:
       name: "${battery_bank0} current protection"
     soc_protection:
       name: "${battery_bank0} soc protection"
+    balancing:
+      name: "${battery_bank0} balancing"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank1
@@ -177,6 +245,8 @@ binary_sensor:
       name: "${battery_bank1} current protection"
     soc_protection:
       name: "${battery_bank1} soc protection"
+    balancing:
+      name: "${battery_bank1} balancing"
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank2
@@ -194,3 +264,21 @@ binary_sensor:
       name: "${battery_bank2} current protection"
     soc_protection:
       name: "${battery_bank2} soc protection"
+    balancing:
+      name: "${battery_bank2} balancing"
+
+text_sensor:
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank0
+    alarms:
+      name: "${battery_bank0} alarms"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank1
+    alarms:
+      name: "${battery_bank1} alarms"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank2
+    alarms:
+      name: "${battery_bank2} alarms"

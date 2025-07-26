@@ -47,6 +47,21 @@ CONF_CHARGING_CYCLES = "charging_cycles"
 CONF_STATE_OF_HEALTH = "state_of_health"
 CONF_PORT_VOLTAGE = "port_voltage"
 
+# Alarm event bitmask sensors
+CONF_ALARM_EVENT1_BITMASK = "alarm_event1_bitmask"
+CONF_ALARM_EVENT2_BITMASK = "alarm_event2_bitmask"
+CONF_ALARM_EVENT3_BITMASK = "alarm_event3_bitmask"
+CONF_ALARM_EVENT4_BITMASK = "alarm_event4_bitmask"
+CONF_ALARM_EVENT5_BITMASK = "alarm_event5_bitmask"
+CONF_ALARM_EVENT6_BITMASK = "alarm_event6_bitmask"
+CONF_ALARM_EVENT7_BITMASK = "alarm_event7_bitmask"
+CONF_ALARM_EVENT8_BITMASK = "alarm_event8_bitmask"
+
+# Balancing and disconnection sensors
+CONF_BALANCING_BITMASK = "balancing_bitmask"
+CONF_DISCONNECTION_BITMASK = "disconnection_bitmask"
+
+
 ICON_CURRENT_DC = "mdi:current-dc"
 ICON_MIN_VOLTAGE_CELL = "mdi:battery-minus-outline"
 ICON_MAX_VOLTAGE_CELL = "mdi:battery-plus-outline"
@@ -189,6 +204,78 @@ SENSOR_DEFS = {
         "device_class": DEVICE_CLASS_VOLTAGE,
         "state_class": STATE_CLASS_MEASUREMENT,
     },
+    # Alarm event bitmask sensors
+    CONF_ALARM_EVENT1_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT2_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT3_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT4_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT5_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT6_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT7_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_ALARM_EVENT8_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    # Balancing and disconnection sensors
+    CONF_BALANCING_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:scale-balance",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_DISCONNECTION_BITMASK: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:connection",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
 }
 
 _CELL_VOLTAGE_SCHEMA = sensor.sensor_schema(
@@ -214,8 +301,7 @@ CONFIG_SCHEMA = (
         }
     )
     .extend({cv.Optional(key): _CELL_VOLTAGE_SCHEMA for key in CELLS})
-    .extend({cv.Optional(key): _TEMPERATURE_SCHEMA for key in TEMPERATURES})
-)
+    .extend({cv.Optional(key): _TEMPERATURE_SCHEMA for key in TEMPERATURES}))
 
 
 async def to_code(config):
