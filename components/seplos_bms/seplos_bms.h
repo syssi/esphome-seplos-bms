@@ -100,6 +100,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void set_alarms_text_sensor(text_sensor::TextSensor *sensor) { alarms_text_sensor_ = sensor; }
   void set_balancing_bitmask_sensor(sensor::Sensor *sensor) { balancing_bitmask_sensor_ = sensor; }
   void set_disconnection_bitmask_sensor(sensor::Sensor *sensor) { disconnection_bitmask_sensor_ = sensor; }
+  void set_system_status_bitmask_sensor(sensor::Sensor *sensor) { system_status_bitmask_sensor_ = sensor; }
 
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
 
@@ -149,6 +150,7 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   sensor::Sensor *alarm_event8_bitmask_sensor_{nullptr};
   sensor::Sensor *balancing_bitmask_sensor_{nullptr};
   sensor::Sensor *disconnection_bitmask_sensor_{nullptr};
+  sensor::Sensor *system_status_bitmask_sensor_{nullptr};
 
   text_sensor::TextSensor *errors_text_sensor_;
   text_sensor::TextSensor *alarms_text_sensor_{nullptr};

@@ -249,6 +249,21 @@ void SeplosBms::on_alarm_data_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->discharging_binary_sensor_, (switch_status & 0x01) != 0);
   this->publish_state_(this->charging_binary_sensor_, (switch_status & 0x02) != 0);
 
+  // System status byte - try position before switch_status (data[34] is already used for SOC, try data[33])
+  if (data.size() >= 36) {
+    uint8_t system_status = data[33];
+    ESP_LOGD(TAG, "System status: 0x%02X", system_status);
+    ESP_LOGD(TAG, "  Bit0 Discharge: %s", ONOFF(system_status & 0x01));
+    ESP_LOGD(TAG, "  Bit1 Charge: %s", ONOFF(system_status & 0x02));
+    ESP_LOGD(TAG, "  Bit2 Float charge: %s", ONOFF(system_status & 0x04));
+    ESP_LOGD(TAG, "  Bit3 Reserved: %s", ONOFF(system_status & 0x08));
+    ESP_LOGD(TAG, "  Bit4 Standby: %s", ONOFF(system_status & 0x10));
+    ESP_LOGD(TAG, "  Bit5 Shutdown: %s", ONOFF(system_status & 0x20));
+    ESP_LOGD(TAG, "  Bit6 Reserved: %s", ONOFF(system_status & 0x40));
+    ESP_LOGD(TAG, "  Bit7 Reserved: %s", ONOFF(system_status & 0x80));
+    this->publish_state_(this->system_status_bitmask_sensor_, (float) system_status);
+  }
+
   // Check if we have enough data for extended alarm information (alarm events and balancing)
   if (data.size() >= 64) {
     // Alarm Events according to SEPLOS BMS Communication Protocol V2.0 - Table 13
@@ -504,6 +519,7 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Alarm Event 8 Bitmask", this->alarm_event8_bitmask_sensor_);
   LOG_SENSOR("", "Balancing Bitmask", this->balancing_bitmask_sensor_);
   LOG_SENSOR("", "Disconnection Bitmask", this->disconnection_bitmask_sensor_);
+  LOG_SENSOR("", "System Status Bitmask", this->system_status_bitmask_sensor_);
 
   LOG_BINARY_SENSOR("", "Balancing", this->balancing_binary_sensor_);
 
@@ -599,6 +615,7 @@ void SeplosBms::publish_device_unavailable_() {
   // Balancing and disconnection sensors
   this->publish_state_(this->balancing_bitmask_sensor_, NAN);
   this->publish_state_(this->disconnection_bitmask_sensor_, NAN);
+  this->publish_state_(this->system_status_bitmask_sensor_, NAN);
 
   // Text sensors
   this->publish_state_(this->alarms_text_sensor_, "Offline");

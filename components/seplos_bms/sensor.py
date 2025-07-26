@@ -56,9 +56,10 @@ CONF_ALARM_EVENT6_BITMASK = "alarm_event6_bitmask"
 CONF_ALARM_EVENT7_BITMASK = "alarm_event7_bitmask"
 CONF_ALARM_EVENT8_BITMASK = "alarm_event8_bitmask"
 
-# Balancing and disconnection sensors
+# Balancing, disconnection and system status sensors
 CONF_BALANCING_BITMASK = "balancing_bitmask"
 CONF_DISCONNECTION_BITMASK = "disconnection_bitmask"
+CONF_SYSTEM_STATUS_BITMASK = "system_status_bitmask"
 
 CONF_CELL_VOLTAGE_1 = "cell_voltage_1"
 CONF_CELL_VOLTAGE_2 = "cell_voltage_2"
@@ -153,6 +154,7 @@ SENSORS = [
     CONF_ALARM_EVENT8_BITMASK,
     CONF_BALANCING_BITMASK,
     CONF_DISCONNECTION_BITMASK,
+    CONF_SYSTEM_STATUS_BITMASK,
 ]
 
 # pylint: disable=too-many-function-args
@@ -505,6 +507,13 @@ CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_DISCONNECTION_BITMASK): sensor.sensor_schema(
             unit_of_measurement=UNIT_EMPTY,
             icon="mdi:connection",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_SYSTEM_STATUS_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:cog",
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
