@@ -493,6 +493,21 @@ void SeplosBms::dump_config() {
   LOG_SENSOR("", "Average Cell Voltage", this->average_cell_voltage_sensor_);
   LOG_SENSOR("", "State of health", this->state_of_health_sensor_);
   LOG_SENSOR("", "Port Voltage", this->port_voltage_sensor_);
+
+  LOG_SENSOR("", "Alarm Event 1 Bitmask", this->alarm_event1_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 2 Bitmask", this->alarm_event2_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 3 Bitmask", this->alarm_event3_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 4 Bitmask", this->alarm_event4_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 5 Bitmask", this->alarm_event5_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 6 Bitmask", this->alarm_event6_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 7 Bitmask", this->alarm_event7_bitmask_sensor_);
+  LOG_SENSOR("", "Alarm Event 8 Bitmask", this->alarm_event8_bitmask_sensor_);
+  LOG_SENSOR("", "Balancing Bitmask", this->balancing_bitmask_sensor_);
+  LOG_SENSOR("", "Disconnection Bitmask", this->disconnection_bitmask_sensor_);
+
+  LOG_BINARY_SENSOR("", "Balancing", this->balancing_binary_sensor_);
+
+  LOG_TEXT_SENSOR("", "Alarms", this->alarms_text_sensor_);
 }
 
 float SeplosBms::get_setup_priority() const {
@@ -570,6 +585,23 @@ void SeplosBms::publish_device_unavailable_() {
   this->publish_state_(this->charging_cycles_sensor_, NAN);
   this->publish_state_(this->state_of_health_sensor_, NAN);
   this->publish_state_(this->port_voltage_sensor_, NAN);
+
+  // Alarm event bitmask sensors
+  this->publish_state_(this->alarm_event1_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event2_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event3_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event4_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event5_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event6_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event7_bitmask_sensor_, NAN);
+  this->publish_state_(this->alarm_event8_bitmask_sensor_, NAN);
+
+  // Balancing and disconnection sensors
+  this->publish_state_(this->balancing_bitmask_sensor_, NAN);
+  this->publish_state_(this->disconnection_bitmask_sensor_, NAN);
+
+  // Text sensors
+  this->publish_state_(this->alarms_text_sensor_, "Offline");
 
   for (auto &temperature : this->temperatures_) {
     this->publish_state_(temperature.temperature_sensor_, NAN);
