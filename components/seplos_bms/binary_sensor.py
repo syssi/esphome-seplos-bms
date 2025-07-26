@@ -57,8 +57,7 @@ BINARY_SENSOR_DEFS = {
 CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(key): binary_sensor.binary_sensor_schema(**kwargs)
-        for key, kwargs in BINARY_SENSOR_DEFS.items()
-    }
+        for key, kwargs in BINARY_SENSOR_DEFS.items()    }
 )
 
 
