@@ -59,6 +59,10 @@ CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
             icon="mdi:battery-alert",
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
+        cv.Optional(CONF_BALANCING): binary_sensor.binary_sensor_schema(
+            icon="mdi:scale-balance",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
     }
 )
 
