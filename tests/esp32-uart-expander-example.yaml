@@ -1,5 +1,7 @@
-# WeiKai SPI/I²C UART/IO Expander
-# https://esphome.io/components/weikai.html
+# 4 channels WeiKai SPI/I²C UART/IO Expander example
+#
+# Please use a WK2124-ISSG, WK2204-IQNG or WK2168-IQPG
+# See https://esphome.io/components/weikai.html
 
 substitutions:
   name: seplos-bms
