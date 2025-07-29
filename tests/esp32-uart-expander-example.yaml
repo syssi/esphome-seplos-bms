@@ -9,8 +9,6 @@ substitutions:
   battery_bank3: "${name} bank 3"
   device_description: "Monitor a Seplos BMS via RS485"
   external_components_source: github://syssi/esphome-seplos-bms@main
-  tx_pin: GPIO16
-  rx_pin: GPIO17
 
 esphome:
   name: ${name}
