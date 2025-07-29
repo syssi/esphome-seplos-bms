@@ -1,0 +1,180 @@
+# WeiKai SPI/I²C UART/IO Expander
+# https://esphome.io/components/weikai.html
+
+substitutions:
+  name: seplos-bms
+  battery_bank0: "${name} bank 0"
+  battery_bank1: "${name} bank 1"
+  battery_bank2: "${name} bank 2"
+  battery_bank3: "${name} bank 3"
+  device_description: "Monitor a Seplos BMS via RS485"
+  external_components_source: github://syssi/esphome-seplos-bms@main
+  tx_pin: GPIO16
+  rx_pin: GPIO17
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  min_version: 2024.6.0
+  project:
+    name: "syssi.esphome-seplos-bms"
+    version: 1.3.0
+
+esp32:
+  board: wemos_d1_mini32
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  platform: esphome
+
+logger:
+  level: DEBUG
+
+# If you use Home Assistant please remove this `mqtt` section and uncomment the `api` component!
+# The native API has many advantages over MQTT: https://esphome.io/components/api.html#advantages-over-mqtt
+mqtt:
+  broker: !secret mqtt_host
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  id: mqtt_client
+
+# api:
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+  miso_pin: GPIO19
+
+wk2168_spi:
+  - id: wk2168_bridge_spi
+    cs_pin: GPIO5
+    uart:
+      - id: uart_0
+        channel: 0
+        baud_rate: 9600
+        parity: even
+      - id: uart_1
+        channel: 1
+        baud_rate: 9600
+      - id: uart_2
+        channel: 2
+        baud_rate: 9600
+      - id: uart_3
+        channel: 3
+        baud_rate: 9600
+
+seplos_modbus:
+  - id: modbus0
+    uart_id: uart_0
+  - id: modbus1
+    uart_id: uart_1
+  - id: modbus2
+    uart_id: uart_2
+  - id: modbus3
+    uart_id: uart_3
+
+seplos_bms:
+  - id: battery_bank0
+    address: 0x01
+    protocol_version: 0x20
+    seplos_modbus_id: modbus0
+    update_interval: 10s
+  - id: battery_bank1
+    address: 0x01
+    protocol_version: 0x20
+    seplos_modbus_id: modbus1
+    update_interval: 10s
+  - id: battery_bank2
+    address: 0x01
+    protocol_version: 0x20
+    seplos_modbus_id: modbus2
+    update_interval: 10s
+  - id: battery_bank3
+    address: 0x01
+    protocol_version: 0x20
+    seplos_modbus_id: modbus3
+    update_interval: 10s
+
+sensor:
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank0
+    min_cell_voltage:
+      name: "${battery_bank0} min cell voltage"
+    max_cell_voltage:
+      name: "${battery_bank0} max cell voltage"
+    delta_cell_voltage:
+      name: "${battery_bank0} delta cell voltage"
+    average_cell_voltage:
+      name: "${battery_bank0} average cell voltage"
+    total_voltage:
+      name: "${battery_bank0} total voltage"
+    current:
+      name: "${battery_bank0} current"
+    power:
+      name: "${battery_bank0} power"
+    state_of_charge:
+      name: "${battery_bank0} state of charge"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank1
+    min_cell_voltage:
+      name: "${battery_bank1} min cell voltage"
+    max_cell_voltage:
+      name: "${battery_bank1} max cell voltage"
+    delta_cell_voltage:
+      name: "${battery_bank1} delta cell voltage"
+    average_cell_voltage:
+      name: "${battery_bank1} average cell voltage"
+    total_voltage:
+      name: "${battery_bank1} total voltage"
+    current:
+      name: "${battery_bank1} current"
+    power:
+      name: "${battery_bank1} power"
+    state_of_charge:
+      name: "${battery_bank1} state of charge"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank2
+    min_cell_voltage:
+      name: "${battery_bank2} min cell voltage"
+    max_cell_voltage:
+      name: "${battery_bank2} max cell voltage"
+    delta_cell_voltage:
+      name: "${battery_bank2} delta cell voltage"
+    average_cell_voltage:
+      name: "${battery_bank2} average cell voltage"
+    total_voltage:
+      name: "${battery_bank2} total voltage"
+    current:
+      name: "${battery_bank2} current"
+    power:
+      name: "${battery_bank2} power"
+    state_of_charge:
+      name: "${battery_bank2} state of charge"
+
+  - platform: seplos_bms
+    seplos_bms_id: battery_bank3
+    min_cell_voltage:
+      name: "${battery_bank3} min cell voltage"
+    max_cell_voltage:
+      name: "${battery_bank3} max cell voltage"
+    delta_cell_voltage:
+      name: "${battery_bank3} delta cell voltage"
+    average_cell_voltage:
+      name: "${battery_bank3} average cell voltage"
+    total_voltage:
+      name: "${battery_bank3} total voltage"
+    current:
+      name: "${battery_bank3} current"
+    power:
+      name: "${battery_bank3} power"
+    state_of_charge:
+      name: "${battery_bank3} state of charge"
