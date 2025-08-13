@@ -27,6 +27,10 @@ wifi:
 
 ota:
   platform: esphome
+  on_begin:
+    then:
+      - switch.turn_off: ble_client_switch0
+      - logger.log: "BLE connection suspended for OTA update"
 
 logger:
   level: INFO
@@ -264,6 +268,12 @@ sensor:
       name: "${name} pack 1 ambient temperature"
     mosfet_temperature:
       name: "${name} pack 1 mosfet temperature"
+
+switch:
+  - platform: ble_client
+    ble_client_id: client0
+    name: "${name} enable bluetooth connection"
+    id: ble_client_switch0
 
 text_sensor:
   - platform: seplos_bms_v3_ble
