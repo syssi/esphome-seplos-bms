@@ -10,11 +10,14 @@ DEPENDENCIES = ["seplos_bms"]
 CODEOWNERS = ["@syssi"]
 
 CONF_ERRORS = "errors"
+CONF_ALARMS = "alarms"
 
 ICON_ERRORS = "mdi:alert-circle-outline"
+ICON_ALARMS = "mdi:alarm-light"
 
 TEXT_SENSORS = [
     CONF_ERRORS,
+    CONF_ALARMS,
 ]
 
 CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
@@ -22,6 +25,11 @@ CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
         cv.Optional(CONF_ERRORS): text_sensor.text_sensor_schema(
             text_sensor.TextSensor,
             icon=ICON_ERRORS,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
+        cv.Optional(CONF_ALARMS): text_sensor.text_sensor_schema(
+            text_sensor.TextSensor,
+            icon=ICON_ALARMS,
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
