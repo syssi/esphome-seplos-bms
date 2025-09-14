@@ -150,6 +150,7 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
     case ESP_GATTC_DISCONNECT_EVT: {
       this->node_state = espbt::ClientState::IDLE;
       this->publish_state_(this->online_status_binary_sensor_, false);
+      online_status_ = false;
 
       // Clear frame assembly state on disconnect
       this->frame_buffer_.clear();
@@ -197,6 +198,8 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
     case ESP_GATTC_REG_FOR_NOTIFY_EVT: {
       this->node_state = espbt::ClientState::ESTABLISHED;
       this->publish_state_(this->online_status_binary_sensor_, true);
+      online_status_ = true;
+      ESP_LOGW(TAG, "yay im online");
       this->send_command(SEPLOS_COMMAND_QUEUE[0].function, SEPLOS_COMMAND_QUEUE[0].payload);
       break;
     }
@@ -852,6 +855,9 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data) {
+  char json_buffer[300] = {0};
+  char cell_entry[32];
+  snprintf(json_buffer, sizeof(json_buffer), "{\"vcells\":[");
   auto seplos_get_16bit = [&](size_t i) -> uint16_t {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
@@ -894,7 +900,16 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
       this->max_cell_voltage_ = cell_voltage;
       this->max_voltage_cell_ = i + 1;
     }
+
+    
+    snprintf(cell_entry, sizeof(cell_entry), "%d", (int)(cell_voltage * 1000));
+    strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+    if(i!= cells - 1)
+    {
+      strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+    }
   }
+  strncat(json_buffer, "],", sizeof(json_buffer) - strlen(json_buffer) - 1);
 
   this->publish_state_(this->min_cell_voltage_sensor_, this->min_cell_voltage_);
   this->publish_state_(this->max_cell_voltage_sensor_, this->max_cell_voltage_);
@@ -916,12 +931,27 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     float cell_temperature = (seplos_get_16bit(offset + 1 + (i * 2)) - 2731) * 0.1f;
     this->publish_state_(this->temperatures_[i].temperature_sensor_, cell_temperature);
     total_cell_temperature += cell_temperature;
+    if(i>=3)
+    {
+      snprintf(cell_entry, sizeof(cell_entry), "\"t%d\":%d", i+1,(seplos_get_16bit(offset + 1 + (i * 2)) - 2731));
+    }
+    else
+    {
+      /* ignore t3 */
+      snprintf(cell_entry, sizeof(cell_entry), "\"t%d\":%d", i+1+1,(seplos_get_16bit(offset + 1 + (i * 2)) - 2731));
+    }
+    strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+    strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
   }
 
   this->publish_state_(this->ambient_temperature_sensor_,
                        (seplos_get_16bit(offset + 1 + (cell_temperatures * 2)) - 2731) * 0.1f);
   this->publish_state_(this->mosfet_temperature_sensor_,
                        (seplos_get_16bit(offset + 1 + (cell_temperatures * 2) + 2) - 2731) * 0.1f);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"t0\":%d", ((int16_t) (seplos_get_16bit(offset + 1 + (cell_temperatures * 2) + 2) - 2731) ));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
 
   // Calculate average cell temperature (only cell temperatures, not ambient/mosfet)
   if (cell_temperatures > 0) {
@@ -933,13 +963,26 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   float current = (int16_t) seplos_get_16bit(offset + 0) * 0.01f;
   this->publish_state_(this->current_sensor_, current);
 
+  snprintf(cell_entry, sizeof(cell_entry), "\"cur\":%d", ((int16_t) seplos_get_16bit(offset + 0))/10);
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
   float total_voltage = seplos_get_16bit(offset + 2) * 0.01f;
   this->publish_state_(this->total_voltage_sensor_, total_voltage);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"vbat\":%d", (int)seplos_get_16bit(offset + 2)/10);
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
 
   float power = total_voltage * current;
   this->publish_state_(this->power_sensor_, power);
   this->publish_state_(this->charging_power_sensor_, power > 0 ? power : 0);
   this->publish_state_(this->discharging_power_sensor_, power < 0 ? -power : 0);
+  snprintf(cell_entry, sizeof(cell_entry), "\"p\":%d", (int) power);
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+
 
   this->publish_state_(this->charging_binary_sensor_, current > 0.1f);
   this->publish_state_(this->discharging_binary_sensor_, current < -0.1f);
@@ -954,6 +997,18 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   this->publish_state_(this->charging_cycles_sensor_, seplos_get_16bit(offset + 13));
   this->publish_state_(this->state_of_health_sensor_, seplos_get_16bit(offset + 15) * 0.1f);
   this->publish_state_(this->port_voltage_sensor_, seplos_get_16bit(offset + 17) * 0.01f);
+
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"soc\":%d", (int) seplos_get_16bit(offset + 9));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  snprintf(cell_entry, sizeof(cell_entry), "\"cap\":%d", (int) seplos_get_16bit(offset + 11));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  snprintf(cell_entry, sizeof(cell_entry), "\"cycle\":%d", (int) seplos_get_16bit(offset + 13));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
 
   offset = 7 + 3 + (cells * 2) + 1 + (temperatures * 2) + 19;
 
@@ -1005,6 +1060,27 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   this->publish_state_(this->charging_switch_, switch_status & 0x02);
   this->publish_state_(this->current_limit_switch_, switch_status & 0x04);
   this->publish_state_(this->heating_switch_, switch_status & 0x08);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"chg\": %d", (int)(switch_status & 0x02));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"dischg\": %d", (int)(switch_status & 0x01));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+
+  char mac_str[18];
+  snprintf(mac_str, sizeof(mac_str), "%02X:%02X:%02X:%02X:%02X:%02X",
+           (uint8_t)(this->mac_address_ >> 40) & 0xFF,
+           (uint8_t)(this->mac_address_ >> 32) & 0xFF,
+           (uint8_t)(this->mac_address_ >> 24) & 0xFF,
+           (uint8_t)(this->mac_address_ >> 16) & 0xFF,
+           (uint8_t)(this->mac_address_ >> 8) & 0xFF,
+           (uint8_t)(this->mac_address_ >> 0) & 0xFF);
+  snprintf(cell_entry, sizeof(cell_entry), "\"mac\":\"%s\"", mac_str);
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  // strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
 
   // Custom alarm volume P (1 byte)
   uint8_t custom_alarm_volume = data[protection_offset + 4];
@@ -1165,6 +1241,12 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     ESP_LOGD(TAG, "Remaining bytes: %s",
              format_hex_pretty(&data[protection_offset + 24], data.size() - protection_offset - 24 - 3).c_str());
   }
+  strncat(json_buffer, "}", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+    this->data_text_sensor_->publish_state(json_buffer);  
+    // ESP_LOGW(TAG, "send data");
+  }
+  ESP_LOGW(TAG, "json: %s", json_buffer);
 }
 
 void SeplosBmsBle::dump_config() {  // NOLINT(google-readability-function-size,readability-function-size)

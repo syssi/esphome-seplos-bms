@@ -153,7 +153,17 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   std::string interpret_rs485_protocol(uint8_t value);
   std::string interpret_battery_type(uint8_t value);
 
+  void changemac(uint64_t address){this->parent_->set_address(address); this->mac_address_ = address;};
+  uint64_t get_mac(){return this->parent_->get_address();};
+  bool get_online_status(){return this->online_status_;};
+  void set_fastdata(bool fastdata){this->fastdata_ = fastdata;};
+  void set_data_text_sensor(text_sensor::TextSensor *data_text_sensor) { data_text_sensor_ = data_text_sensor; }
+
  protected:
+  bool online_status_{false};
+  bool fastdata_{false};
+  uint64_t mac_address_;
+  text_sensor::TextSensor *data_text_sensor_;
   binary_sensor::BinarySensor *charging_binary_sensor_;
   binary_sensor::BinarySensor *discharging_binary_sensor_;
   binary_sensor::BinarySensor *limiting_current_binary_sensor_;

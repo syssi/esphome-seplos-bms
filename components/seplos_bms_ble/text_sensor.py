@@ -19,6 +19,8 @@ CONF_TEMPERATURE_PROTECTION = "temperature_protection"
 # Consolidated alarms text sensor
 CONF_ALARMS = "alarms"
 
+CONF_DATA = "data"
+
 ICON_DEVICE_MODEL = "mdi:chip"
 ICON_SOFTWARE_VERSION = "mdi:numeric"
 ICON_HARDWARE_VERSION = "mdi:developer-board"
@@ -37,6 +39,7 @@ TEXT_SENSORS = [
     CONF_CURRENT_PROTECTION,
     CONF_TEMPERATURE_PROTECTION,
     CONF_ALARMS,
+    CONF_DATA,
 ]
 
 CONFIG_SCHEMA = cv.Schema(
@@ -69,6 +72,14 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_ALARMS): text_sensor.text_sensor_schema(
             text_sensor.TextSensor,
             icon=ICON_ALARMS,
+        ),
+        cv.Optional(
+            CONF_DATA
+        ): text_sensor.TEXT_SENSOR_SCHEMA.extend(
+            {
+                cv.GenerateID(): cv.declare_id(text_sensor.TextSensor),
+                # cv.Optional(CONF_ICON, default=ICON_TIMELAPSE): cv.icon,
+            }
         ),
     }
 )
