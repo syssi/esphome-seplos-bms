@@ -91,6 +91,35 @@ void SeplosBmsV3BlePack::decode_pack_pia_data_(const std::vector<uint8_t> &data)
   this->publish_state_(this->pack_current_sensor_, (int16_t) seplos_get_16bit(2) * 0.01f);
   this->publish_state_(this->pack_battery_level_sensor_, seplos_get_16bit(10) * 0.1f);
   this->publish_state_(this->pack_cycle_sensor_, (float) seplos_get_16bit(14));
+#ifdef WEB_VERSION
+  char json_buffer[300] = {0};
+  char cell_entry[32];
+  snprintf(json_buffer, sizeof(json_buffer), "{");
+  snprintf(cell_entry, sizeof(cell_entry), "\"vbat\":%d", seplos_get_16bit(0));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"cur\":%d",  (int16_t) seplos_get_16bit(2));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"p\":%d", (int) seplos_get_16bit(0)*(int16_t) seplos_get_16bit(2));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"soc\":%d",  seplos_get_16bit(10));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"cycle\":%d", (int) seplos_get_16bit(14));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  // strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  // if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+  //   this->data_text_sensor_->publish_state(json_buffer);  
+  // }
+  ESP_LOGW(TAG, "json: %s", json_buffer);
+#endif
 }
 
 void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data) {
@@ -104,15 +133,46 @@ void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data)
     ESP_LOGW(TAG, "PIB data too short: %d bytes", data.size());
     return;
   }
-
+#ifdef WEB_VERSION
+  char json_buffer[300] = {0};
+  char cell_entry[32];
+  snprintf(json_buffer, sizeof(json_buffer), "{\"vcells\":[");
+#endif
   // Cell voltages (0-31, 16 cells * 2 bytes each)
   for (uint8_t i = 0; i < 16; i++) {
     this->publish_state_(this->pack_cell_voltage_sensors_[i], seplos_get_16bit(i * 2) * 0.001f);
+#ifdef WEB_VERSION
+    snprintf(cell_entry, sizeof(cell_entry), "%d", (int) seplos_get_16bit(i * 2));
+    strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+    if(i!= 16 - 1)
+    {
+      strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+    }
+#endif
   }
+#ifdef WEB_VERSION
+  strncat(json_buffer, "],", sizeof(json_buffer) - strlen(json_buffer) - 1);
+#endif
 
   // Cell temperatures (32-39, 4 sensors * 2 bytes each)
   for (uint8_t i = 0; i < 4; i++) {
     this->publish_state_(this->pack_temperature_sensors_[i], (seplos_get_16bit(32 + i * 2) - 2731.5f) * 0.1f);
+#ifdef WEB_VERSION
+    if(i>=3)
+    {
+      snprintf(cell_entry, sizeof(cell_entry), "\"t%d\":%d", i,(seplos_get_16bit(32 + i * 2) - 2731.5f));
+    }
+    else
+    {
+      /* ignore t3 */
+      snprintf(cell_entry, sizeof(cell_entry), "\"t%d\":%d", i+1,(seplos_get_16bit(32 + i * 2) - 2731.5f));
+    }
+    strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+    if(i!=4-1)
+    {
+      strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+    }
+#endif
   }
 
   // Environment temperature (bytes 40-41) if available
@@ -122,6 +182,14 @@ void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data)
     ESP_LOGD(TAG, "  Environment temperature: %d (%.1f °C)", env_temperature_raw, env_temperature_celsius);
     // TODO: Add environment temperature sensor when available
   }
+#ifdef WEB_VERSION
+  strncat(json_buffer, "}", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  // if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+  //   this->data_text_sensor_->publish_state(json_buffer);  
+  //   // ESP_LOGW(TAG, "send data");
+  // }
+  ESP_LOGW(TAG, "json: %s", json_buffer);
+#endif
 }
 
 void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data) {
@@ -146,6 +214,37 @@ void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data)
     ESP_LOGD(TAG, "  - Standby mode");
   if (system_state & 0x20)
     ESP_LOGW(TAG, "  - System turned off");
+
+#ifdef WEB_VERSION
+  char json_buffer[300] = {0};
+  char cell_entry[32];
+  snprintf(json_buffer, sizeof(json_buffer), "{");
+  snprintf(cell_entry, sizeof(cell_entry), "\"chg\": %d", (int)(system_state & 0x01));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  snprintf(cell_entry, sizeof(cell_entry), "\"dischg\": %d", (int)(system_state & 0x02));
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+
+  // char mac_str[18];
+  // snprintf(mac_str, sizeof(mac_str), "%02X:%02X:%02X:%02X:%02X:%02X",
+  //          (uint8_t)(this->mac_address_ >> 40) & 0xFF,
+  //          (uint8_t)(this->mac_address_ >> 32) & 0xFF,
+  //          (uint8_t)(this->mac_address_ >> 24) & 0xFF,
+  //          (uint8_t)(this->mac_address_ >> 16) & 0xFF,
+  //          (uint8_t)(this->mac_address_ >> 8) & 0xFF,
+  //          (uint8_t)(this->mac_address_ >> 0) & 0xFF);
+  snprintf(cell_entry, sizeof(cell_entry), "\"mac\":\"%s\"", "tbd");
+  strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
+  // strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  strncat(json_buffer, "}", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  // if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+  //   this->data_text_sensor_->publish_state(json_buffer);  
+  //   // ESP_LOGW(TAG, "send data");
+  // }
+  ESP_LOGW(TAG, "json: %s", json_buffer);
+#endif
 
   uint8_t voltage_event = data[1];
   ESP_LOGD(TAG, "Voltage Events (TB02) - Pack 0x%02X: 0x%02X", this->get_address(), voltage_event);
