@@ -3,7 +3,7 @@ from esphome.components import seplos_bms_v3_ble
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
-AUTO_LOAD = ["sensor"]
+AUTO_LOAD = ["sensor", "text_sensor"]
 
 CODEOWNERS = ["@syssi"]
 

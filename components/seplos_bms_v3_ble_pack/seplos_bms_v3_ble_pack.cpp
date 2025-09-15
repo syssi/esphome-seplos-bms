@@ -115,9 +115,10 @@ void SeplosBmsV3BlePack::decode_pack_pia_data_(const std::vector<uint8_t> &data)
   strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
   // strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
 
-  // if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
-  //   this->data_text_sensor_->publish_state(json_buffer);  
-  // }
+  strncat(json_buffer, "}", sizeof(json_buffer) - strlen(json_buffer) - 1);
+  if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+    this->data_text_sensor_->publish_state(json_buffer);  
+  }
   ESP_LOGW(TAG, "json: %s", json_buffer);
 #endif
 }
@@ -184,10 +185,10 @@ void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data)
   }
 #ifdef WEB_VERSION
   strncat(json_buffer, "}", sizeof(json_buffer) - strlen(json_buffer) - 1);
-  // if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
-  //   this->data_text_sensor_->publish_state(json_buffer);  
-  //   // ESP_LOGW(TAG, "send data");
-  // }
+  if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+    this->data_text_sensor_->publish_state(json_buffer);  
+    // ESP_LOGW(TAG, "send data");
+  }
   ESP_LOGW(TAG, "json: %s", json_buffer);
 #endif
 }
@@ -239,10 +240,10 @@ void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data)
   strncat(json_buffer, cell_entry, sizeof(json_buffer) - strlen(json_buffer) - 1);
   // strncat(json_buffer, ",", sizeof(json_buffer) - strlen(json_buffer) - 1);
   strncat(json_buffer, "}", sizeof(json_buffer) - strlen(json_buffer) - 1);
-  // if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
-  //   this->data_text_sensor_->publish_state(json_buffer);  
-  //   // ESP_LOGW(TAG, "send data");
-  // }
+  if((this->data_text_sensor_ != nullptr )&& (this->fastdata_)) {
+    this->data_text_sensor_->publish_state(json_buffer);  
+    // ESP_LOGW(TAG, "send data");
+  }
   ESP_LOGW(TAG, "json: %s", json_buffer);
 #endif
 

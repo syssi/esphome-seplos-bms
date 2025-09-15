@@ -30,9 +30,11 @@ class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBms
 
   void on_frame_data(const std::vector<uint8_t> &frame) override;
   void set_fastdata(bool fastdata){this->fastdata_ = fastdata;};
+  void set_data_text_sensor(text_sensor::TextSensor *data_text_sensor) { data_text_sensor_ = data_text_sensor; }
 
  protected:
   bool fastdata_{false};
+  text_sensor::TextSensor *data_text_sensor_;
   void decode_pack_pia_data_(const std::vector<uint8_t> &data);
   void decode_pack_pib_data_(const std::vector<uint8_t> &data);
   void decode_pack_pic_data_(const std::vector<uint8_t> &data);
