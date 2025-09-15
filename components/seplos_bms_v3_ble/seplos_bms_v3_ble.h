@@ -200,7 +200,15 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   void assemble(const uint8_t *data, uint16_t length);
   void decode(const std::vector<uint8_t> &data);
 
+  void changemac(uint64_t address){this->parent_->set_address(address); this->mac_address_ = address;};
+  bool get_online_status(){return this->online_status_;};
+  uint64_t get_mac(){return this->parent_->get_address();};
+  void set_fastdata(bool fastdata){this->fastdata_ = fastdata;};
+
  protected:
+  uint64_t mac_address_ = 0;
+  bool online_status_ = false;
+  bool fastdata_{false};
   binary_sensor::BinarySensor *charging_binary_sensor_;
   binary_sensor::BinarySensor *discharging_binary_sensor_;
   binary_sensor::BinarySensor *online_status_binary_sensor_;

@@ -64,6 +64,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
     case ESP_GATTC_DISCONNECT_EVT: {
       this->node_state = espbt::ClientState::IDLE;
       this->publish_state_(this->online_status_binary_sensor_, false);
+      this->online_status_ = false;
       this->frame_buffer_.clear();
       this->next_command_ = 0;
       this->pack_count_ = 0;
@@ -98,6 +99,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
     case ESP_GATTC_REG_FOR_NOTIFY_EVT: {
       this->node_state = espbt::ClientState::ESTABLISHED;
       this->publish_state_(this->online_status_binary_sensor_, true);
+      this->online_status_ = true;
 
       if (!this->dynamic_command_queue_.empty()) {
         this->send_command_(this->dynamic_command_queue_[0].function,
