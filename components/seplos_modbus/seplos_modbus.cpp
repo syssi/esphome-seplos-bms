@@ -17,6 +17,10 @@ void SeplosModbus::setup() {
 void SeplosModbus::loop() {
   const uint32_t now = millis();
 
+  if (now < this->last_seplos_modbus_byte_) { // timer will go back to zero after some time (50 days *maybe?*) so reset it to allow functionality
+    this->last_seplos_modbus_byte_ = now;
+  }
+
   if (now - this->last_seplos_modbus_byte_ > this->rx_timeout_) {
     ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
               format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
