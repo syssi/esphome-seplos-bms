@@ -179,7 +179,8 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
       auto *char_notify =
           this->parent_->get_characteristic(SEPLOS_BMS_SERVICE_UUID, SEPLOS_BMS_NOTIFY_CHARACTERISTIC_UUID);
       if (char_notify == nullptr) {
-        ESP_LOGE(TAG, "[%s] No notify service found at device, not an Seplos v2 BMS..?", ADDR_STR(ADDR_STR(this->parent_->address_str())));
+        ESP_LOGE(TAG, "[%s] No notify service found at device, not an Seplos v2 BMS..?",
+                 ADDR_STR(ADDR_STR(this->parent_->address_str())));
         break;
       }
       this->char_notify_handle_ = char_notify->handle;
@@ -193,7 +194,8 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
       auto *char_command =
           this->parent_->get_characteristic(SEPLOS_BMS_SERVICE_UUID, SEPLOS_BMS_CONTROL_CHARACTERISTIC_UUID);
       if (char_command == nullptr) {
-        ESP_LOGE(TAG, "[%s] No control service found at device, not an BASEN BMS..?", ADDR_STR(ADDR_STR(this->parent_->address_str())));
+        ESP_LOGE(TAG, "[%s] No control service found at device, not an BASEN BMS..?",
+                 ADDR_STR(ADDR_STR(this->parent_->address_str())));
         break;
       }
       this->char_command_handle_ = char_command->handle;
@@ -1311,7 +1313,8 @@ bool SeplosBmsBle::send_command(uint8_t function, const std::vector<uint8_t> &pa
                                data.size(), &data.front(), ESP_GATT_WRITE_TYPE_NO_RSP, ESP_GATT_AUTH_REQ_NONE);
 
   if (status) {
-    ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", ADDR_STR(ADDR_STR(this->parent_->address_str())), status);
+    ESP_LOGW(TAG, "[%s] esp_ble_gattc_write_char failed, status=%d", ADDR_STR(ADDR_STR(this->parent_->address_str())),
+             status);
   }
 
   return (status == 0);

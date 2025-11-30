@@ -80,7 +80,8 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       auto *char_notify =
           this->parent_->get_characteristic(SEPLOS_BMS_V3_SERVICE_UUID, SEPLOS_BMS_V3_NOTIFY_CHARACTERISTIC_UUID);
       if (char_notify == nullptr) {
-        ESP_LOGE(TAG, "[%s] No notify service found at device, not a Seplos BMS V3..?", ADDR_STR(this->parent_->address_str()));
+        ESP_LOGE(TAG, "[%s] No notify service found at device, not a Seplos BMS V3..?",
+                 ADDR_STR(this->parent_->address_str()));
         break;
       }
       this->char_notify_handle_ = char_notify->handle;
@@ -94,7 +95,8 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       auto *char_command =
           this->parent_->get_characteristic(SEPLOS_BMS_V3_SERVICE_UUID, SEPLOS_BMS_V3_CONTROL_CHARACTERISTIC_UUID);
       if (char_command == nullptr) {
-        ESP_LOGE(TAG, "[%s] No control service found at device, not a Seplos BMS V3..?", ADDR_STR(this->parent_->address_str()));
+        ESP_LOGE(TAG, "[%s] No control service found at device, not a Seplos BMS V3..?",
+                 ADDR_STR(this->parent_->address_str()));
         break;
       }
       this->char_command_handle_ = char_command->handle;
