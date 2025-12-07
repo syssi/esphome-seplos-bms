@@ -161,7 +161,12 @@ void SeplosBmsV3Ble::assemble(const uint8_t *data, uint16_t length) {
 
   // Check if we have a complete ModBus frame
   if (this->frame_buffer_.size() >= 5) {
-    uint16_t data_len = this->frame_buffer_[2];
+    uint8_t function = this->frame_buffer_[1];
+    uint16_t data_len = 0;
+
+    if ((function & 0x80) == 0) {
+      data_len = this->frame_buffer_[2];
+    }
 
     uint16_t expected_length = 3 + data_len + 2;  // header + data + CRC
 
