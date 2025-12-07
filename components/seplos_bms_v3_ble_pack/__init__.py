@@ -30,21 +30,22 @@ def validate_address_unique(value):
     from esphome.const import CONF_ADDRESS
     from esphome.core import CORE
 
-    if not hasattr(CORE, "seplos_v3_ble_pack_addresses"):
-        CORE.seplos_v3_ble_pack_addresses = {}
+    key = "seplos_v3_ble_pack_addresses"
+    if key not in CORE.data:
+        CORE.data[key] = {}
 
     parent_id = value[seplos_bms_v3_ble.CONF_SEPLOS_BMS_V3_BLE_ID]
     address = value[CONF_ADDRESS]
 
-    if parent_id not in CORE.seplos_v3_ble_pack_addresses:
-        CORE.seplos_v3_ble_pack_addresses[parent_id] = set()
+    if parent_id not in CORE.data[key]:
+        CORE.data[key][parent_id] = set()
 
-    if address in CORE.seplos_v3_ble_pack_addresses[parent_id]:
+    if address in CORE.data[key][parent_id]:
         raise cv.Invalid(
             f"Address 0x{address:02X} is already used by another pack component for the same parent BMS"
         )
 
-    CORE.seplos_v3_ble_pack_addresses[parent_id].add(address)
+    CORE.data[key][parent_id].add(address)
     return value
 
 
