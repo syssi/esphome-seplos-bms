@@ -1,7 +1,7 @@
 substitutions:
   name: seplos-bms-v3-ble
   device_description: "Monitor a Seplos Battery Management System V3 via BLE"
-  external_components_source: github://syssi/esphome-seplos-bms@v3-ble-support
+  external_components_source: github://syssi/esphome-seplos-bms@main
   mac_address: "00:00:00:00:00:00"
 
 esphome:
@@ -10,7 +10,7 @@ esphome:
   min_version: 2024.6.0
   project:
     name: "syssi.esphome-seplos-bms"
-    version: 1.0.0
+    version: 1.4.0
 
 esp32:
   board: wemos_d1_mini32

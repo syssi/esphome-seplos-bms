@@ -6,9 +6,6 @@ substitutions:
 esphome:
   name: ${name}
   comment: ${device_description}
-  project:
-    name: "syssi.esphome-seplos-bms"
-    version: 1.0.0
 
 esp32:
   board: wemos_d1_mini32
