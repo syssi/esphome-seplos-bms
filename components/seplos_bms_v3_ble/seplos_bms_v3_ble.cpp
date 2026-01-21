@@ -114,7 +114,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
     }
     case ESP_GATTC_NOTIFY_EVT: {
       ESP_LOGVV(TAG, "Notification received: %s",
-                format_hex_pretty(param->notify.value, param->notify.value_len).c_str());
+                format_hex_pretty(param->notify.value, param->notify.value_len).c_str());  // NOLINT
       this->assemble(param->notify.value, param->notify.value_len);
       break;
     }
@@ -341,7 +341,7 @@ void SeplosBmsV3Ble::decode_eib_data_(const std::vector<uint8_t> &data) {
   std::string hex_str = "";
   for (size_t i = 0; i < std::min((size_t) 32, data.size()); i++) {
     char hex[4];
-    sprintf(hex, "%02X ", data[i]);
+    sprintf(hex, "%02X ", data[i]);  // NOLINT
     hex_str += hex;
   }
   ESP_LOGD(TAG, "EIB raw data (first 32 bytes): %s", hex_str.c_str());
@@ -561,7 +561,7 @@ bool SeplosBmsV3Ble::send_command_(uint8_t function, const std::vector<uint8_t> 
     return false;
   }
 
-  ESP_LOGD(TAG, "Sending command 0x%02X with payload: %s", function, format_hex_pretty(payload).c_str());
+  ESP_LOGD(TAG, "Sending command 0x%02X with payload: %s", function, format_hex_pretty(payload).c_str());  // NOLINT
 
   auto status = esp_ble_gattc_write_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(),
                                          this->char_command_handle_, payload.size(), (uint8_t *) payload.data(),

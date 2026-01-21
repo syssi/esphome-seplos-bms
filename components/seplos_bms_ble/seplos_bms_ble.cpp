@@ -209,7 +209,7 @@ void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t
     }
     case ESP_GATTC_NOTIFY_EVT: {
       ESP_LOGVV(TAG, "Notification received: %s",
-                format_hex_pretty(param->notify.value, param->notify.value_len).c_str());
+                format_hex_pretty(param->notify.value, param->notify.value_len).c_str());  // NOLINT
 
       this->assemble(param->notify.value, param->notify.value_len);
       break;
@@ -322,7 +322,7 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
       break;
     case SEPLOS_CMD_SET_MOSFET_CONTROL:
       ESP_LOGI(TAG, "Switch control response (%zu bytes) received", data.size());
-      ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+      ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
       if (data.size() >= 9) {
         uint8_t result = data[7];
         ESP_LOGI(TAG, "Switch control result: %s", result == 0x00 ? "SUCCESS" : "FAILED");
@@ -330,7 +330,7 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
       break;
     default:
       ESP_LOGW(TAG, "Unhandled response received (function 0x%02X): %s", function,
-               format_hex_pretty(&data.front(), data.size()).c_str());
+               format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
   }
 
   // Send next command after each received frame
@@ -343,7 +343,7 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
 
 void SeplosBmsBle::decode_manufacturer_info_data_(const std::vector<uint8_t> &data) {
   ESP_LOGI(TAG, "Hardware version frame (%zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   // Expected frame size: 7 (header) + 35 (data) + 2 (CRC) + 1 (EOF) = 45 bytes
   if (data.size() < 45) {
@@ -442,7 +442,7 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   auto seplos_get_16bit = [&](size_t i) -> uint16_t { return (uint16_t(data[i]) << 8) | uint16_t(data[i + 1]); };
 
   ESP_LOGI(TAG, "Settings frame (%zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data.size() < 145) {
     ESP_LOGW(TAG, "Settings frame too short (%d bytes)", data.size());
@@ -695,7 +695,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   };
 
   ESP_LOGI(TAG, "Parallel data frame (%zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data.size() < 58) {
     ESP_LOGW(TAG, "Parallel data frame too short (%d bytes)", data.size());
@@ -864,7 +864,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   };
 
   ESP_LOGI(TAG, "Status frame (%zu bytes) received", data.size());
-  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());
+  ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data.size() < 60) {
     ESP_LOGW(TAG, "Status frame too short (%d bytes)", data.size());
@@ -1169,8 +1169,9 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   }
 
   if (protection_offset + 24 < data.size()) {
-    ESP_LOGD(TAG, "Remaining bytes: %s",
-             format_hex_pretty(&data[protection_offset + 24], data.size() - protection_offset - 24 - 3).c_str());
+    ESP_LOGD(
+        TAG, "Remaining bytes: %s",
+        format_hex_pretty(&data[protection_offset + 24], data.size() - protection_offset - 24 - 3).c_str());  // NOLINT
   }
 }
 
@@ -1306,7 +1307,7 @@ bool SeplosBmsBle::send_command(uint8_t function, const std::vector<uint8_t> &pa
   data.push_back(0x0d);             // EOF (0x0D)
 
   ESP_LOGD(TAG, "Send command (handle 0x%02X): %s", this->char_command_handle_,
-           format_hex_pretty(&data.front(), data.size()).c_str());
+           format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   auto status =
       esp_ble_gattc_write_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(), this->char_command_handle_,

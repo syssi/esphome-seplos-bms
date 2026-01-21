@@ -19,7 +19,7 @@ void SeplosModbus::loop() {
 
   if (now - this->last_seplos_modbus_byte_ > this->rx_timeout_) {
     ESP_LOGVV(TAG, "Buffer cleared due to timeout: %s",
-              format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
+              format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());  // NOLINT
     this->rx_buffer_.clear();
     this->last_seplos_modbus_byte_ = now;
   }
@@ -31,7 +31,7 @@ void SeplosModbus::loop() {
       this->last_seplos_modbus_byte_ = now;
     } else {
       ESP_LOGVV(TAG, "Buffer cleared due to reset: %s",
-                format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());
+                format_hex_pretty(&this->rx_buffer_.front(), this->rx_buffer_.size()).c_str());  // NOLINT
       this->rx_buffer_.clear();
     }
   }
