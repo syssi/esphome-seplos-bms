@@ -454,14 +454,14 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Parameter count: %d", data[8]);
 
   // Voltage parameters
-  ESP_LOGD(TAG, "Single high voltage alarm: %.3f V", seplos_get_16bit(9) * 0.001f);
-  ESP_LOGD(TAG, "Single high pressure recovery: %.3f V", seplos_get_16bit(11) * 0.001f);
-  ESP_LOGD(TAG, "Single unit low voltage alarm: %.3f V", seplos_get_16bit(13) * 0.001f);
-  ESP_LOGD(TAG, "Single unit low pressure recovery: %.3f V", seplos_get_16bit(15) * 0.001f);
-  ESP_LOGD(TAG, "Single unit overvoltage protection: %.3f V", seplos_get_16bit(17) * 0.001f);
+  ESP_LOGD(TAG, "Monomer high voltage alarm: %.3f V", seplos_get_16bit(9) * 0.001f);
+  ESP_LOGD(TAG, "Monomer high pressure recovery: %.3f V", seplos_get_16bit(11) * 0.001f);
+  ESP_LOGD(TAG, "Monomer low voltage alarm: %.3f V", seplos_get_16bit(13) * 0.001f);
+  ESP_LOGD(TAG, "Monomer low pressure recovery: %.3f V", seplos_get_16bit(15) * 0.001f);
+  ESP_LOGD(TAG, "Monomer overvoltage protection: %.3f V", seplos_get_16bit(17) * 0.001f);
   ESP_LOGD(TAG, "Cell overvoltage recovery: %.3f V", seplos_get_16bit(19) * 0.001f);
-  ESP_LOGD(TAG, "Single unit under voltage protection: %.3f V", seplos_get_16bit(21) * 0.001f);
-  ESP_LOGD(TAG, "Single unit undervoltage recovery: %.3f V", seplos_get_16bit(23) * 0.001f);
+  ESP_LOGD(TAG, "Monomer under voltage protection: %.3f V", seplos_get_16bit(21) * 0.001f);
+  ESP_LOGD(TAG, "Monomer undervoltage recovery: %.3f V", seplos_get_16bit(23) * 0.001f);
   ESP_LOGD(TAG, "Balanced turn-on voltage: %.3f V", seplos_get_16bit(25) * 0.001f);
   ESP_LOGD(TAG, "Battery cell low voltage charging is prohibited: %.3f V", seplos_get_16bit(27) * 0.001f);
 
@@ -558,13 +558,13 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   uint8_t switch2 = data[137];
   ESP_LOGD(TAG, "Function switch 2: 0x%02X", switch2);
   if (switch2 & 0x01)
-    ESP_LOGD(TAG, "  - Single high voltage alarm enabled");
+    ESP_LOGD(TAG, "  - Monomer high voltage alarm enabled");
   if (switch2 & 0x02)
-    ESP_LOGD(TAG, "  - Single overvoltage protection enabled");
+    ESP_LOGD(TAG, "  - Monomer overvoltage protection enabled");
   if (switch2 & 0x04)
-    ESP_LOGD(TAG, "  - Single unit low voltage alarm enabled");
+    ESP_LOGD(TAG, "  - Monomer low voltage alarm enabled");
   if (switch2 & 0x08)
-    ESP_LOGD(TAG, "  - Single unit undervoltage protection enabled");
+    ESP_LOGD(TAG, "  - Monomer undervoltage protection enabled");
   if (switch2 & 0x10)
     ESP_LOGD(TAG, "  - Total pressure high voltage alarm enabled");
   if (switch2 & 0x20)
@@ -769,10 +769,10 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   // Alarm event2 - Voltage alarms
   uint8_t alarm_event2 = data[48];
   ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
-  ESP_LOGD(TAG, "  Bit0 Single high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
-  ESP_LOGD(TAG, "  Bit1 Single unit overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
-  ESP_LOGD(TAG, "  Bit2 Single unit low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
-  ESP_LOGD(TAG, "  Bit3 Single unit under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
+  ESP_LOGD(TAG, "  Bit0 Monomer high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Monomer overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Monomer low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Monomer under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
   ESP_LOGD(TAG, "  Bit4 Total pressure high pressure alarm: %s", ONOFF(alarm_event2 & 0x10));
   ESP_LOGD(TAG, "  Bit5 Total voltage overvoltage protection: %s", ONOFF(alarm_event2 & 0x20));
   ESP_LOGD(TAG, "  Bit6 Low total pressure alarm: %s", ONOFF(alarm_event2 & 0x40));
@@ -1035,10 +1035,10 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   // Alarm event2 - Voltage alarms
   uint8_t alarm_event2 = data[alarm_offset + 1];
   ESP_LOGD(TAG, "Alarm event 2: 0x%02X", alarm_event2);
-  ESP_LOGD(TAG, "  Bit0 Single high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
-  ESP_LOGD(TAG, "  Bit1 Single unit overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
-  ESP_LOGD(TAG, "  Bit2 Single unit low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
-  ESP_LOGD(TAG, "  Bit3 Single unit under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
+  ESP_LOGD(TAG, "  Bit0 Monomer high voltage alarm: %s", ONOFF(alarm_event2 & 0x01));
+  ESP_LOGD(TAG, "  Bit1 Monomer overvoltage protection: %s", ONOFF(alarm_event2 & 0x02));
+  ESP_LOGD(TAG, "  Bit2 Monomer low voltage alarm: %s", ONOFF(alarm_event2 & 0x04));
+  ESP_LOGD(TAG, "  Bit3 Monomer under voltage protection: %s", ONOFF(alarm_event2 & 0x08));
   ESP_LOGD(TAG, "  Bit4 Total pressure high pressure alarm: %s", ONOFF(alarm_event2 & 0x10));
   ESP_LOGD(TAG, "  Bit5 Total voltage overvoltage protection: %s", ONOFF(alarm_event2 & 0x20));
   ESP_LOGD(TAG, "  Bit6 Low total pressure alarm: %s", ONOFF(alarm_event2 & 0x40));
@@ -1139,7 +1139,15 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   uint8_t balancing_bytes = (cells + 7) / 8;  // Round up to next byte
   ESP_LOGD(TAG, "Balancing states (%d bytes):", balancing_bytes);
 
-  for (uint8_t i = 0; i < balancing_bytes; i++) {
+  // Combine balancing bytes for sensor (use seplos_get_16bit for correct byte order)
+  uint16_t balancing_combined = 0;
+  if (balancing_bytes >= 2) {
+    balancing_combined = seplos_get_16bit(balancing_offset);
+  } else if (balancing_bytes == 1) {
+    balancing_combined = data[balancing_offset];
+  }
+
+  for (uint8_t i = 0; i < balancing_bytes && i < 2; i++) {  // Limit to 16 cells (2 bytes)
     uint8_t balancing_state = data[balancing_offset + i];
     ESP_LOGD(TAG, "  Balancing state byte %d: 0x%02X", i + 1, balancing_state);
 
@@ -1151,12 +1159,23 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
     }
   }
 
+  this->publish_state_(this->balancing_bitmask_sensor_, (float) balancing_combined);
+  this->publish_state_(this->balancing_binary_sensor_, balancing_combined != 0);
+
   // Disconnected states (M/8 bytes where M is number of cells)
   size_t disconnected_offset = balancing_offset + balancing_bytes;
   uint8_t disconnected_bytes = (cells + 7) / 8;  // Round up to next byte
   ESP_LOGD(TAG, "Disconnected states (%d bytes):", disconnected_bytes);
 
-  for (uint8_t i = 0; i < disconnected_bytes; i++) {
+  // Combine disconnection bytes for sensor (use seplos_get_16bit for correct byte order)
+  uint16_t disconnected_combined = 0;
+  if (disconnected_bytes >= 2) {
+    disconnected_combined = seplos_get_16bit(disconnected_offset);
+  } else if (disconnected_bytes == 1) {
+    disconnected_combined = data[disconnected_offset];
+  }
+
+  for (uint8_t i = 0; i < disconnected_bytes && i < 2; i++) {  // Limit to 16 cells (2 bytes)
     uint8_t disconnected_state = data[disconnected_offset + i];
     ESP_LOGD(TAG, "  Disconnected state byte %d: 0x%02X", i + 1, disconnected_state);
 
@@ -1167,6 +1186,8 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
       }
     }
   }
+
+  this->publish_state_(this->disconnection_bitmask_sensor_, (float) disconnected_combined);
 
   if (protection_offset + 24 < data.size()) {
     ESP_LOGD(
