@@ -359,7 +359,9 @@ void SeplosBmsBle::decode_manufacturer_info_data_(const std::vector<uint8_t> &da
   hardware_version.erase(hardware_version.find_last_not_of(' ') + 1);
   this->publish_state_(this->hardware_version_text_sensor_, hardware_version);
 
-  this->publish_state_(this->software_version_text_sensor_, std::to_string(data[37]) + "." + std::to_string(data[38]));
+  char version_buf[8];
+  snprintf(version_buf, sizeof(version_buf), "%u.%u", data[37], data[38]);
+  this->publish_state_(this->software_version_text_sensor_, version_buf);
 
   ESP_LOGI(TAG, "CAN Protocol: %s", this->interpret_can_protocol(data[39]).c_str());
 
