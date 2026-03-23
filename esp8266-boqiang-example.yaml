@@ -149,8 +149,51 @@ sensor:
       name: "${name} state of health"
     port_voltage:
       name: "${name} port voltage"
+    # Alarm event bitmask sensors
+    alarm_event1_bitmask:
+      name: "${name} alarm event 1 bitmask"
+    alarm_event2_bitmask:
+      name: "${name} alarm event 2 bitmask"
+    alarm_event3_bitmask:
+      name: "${name} alarm event 3 bitmask"
+    alarm_event4_bitmask:
+      name: "${name} alarm event 4 bitmask"
+    alarm_event5_bitmask:
+      name: "${name} alarm event 5 bitmask"
+    alarm_event6_bitmask:
+      name: "${name} alarm event 6 bitmask"
+    alarm_event7_bitmask:
+      name: "${name} alarm event 7 bitmask"
+    alarm_event8_bitmask:
+      name: "${name} alarm event 8 bitmask"
+    # Balancing and disconnection sensors
+    balancing_bitmask:
+      name: "${name} balancing bitmask"
+    disconnection_bitmask:
+      name: "${name} disconnection bitmask"
+    system_status_bitmask:
+      name: "${name} system status bitmask"
 
 binary_sensor:
   - platform: seplos_bms
     online_status:
       name: "${name} online status"
+    charging:
+      name: "${name} charging"
+    discharging:
+      name: "${name} discharging"
+    voltage_protection:
+      name: "${name} voltage protection"
+    temperature_protection:
+      name: "${name} temperature protection"
+    current_protection:
+      name: "${name} current protection"
+    soc_protection:
+      name: "${name} soc protection"
+    balancing:
+      name: "${name} balancing"
+
+text_sensor:
+  - platform: seplos_bms
+    alarms:
+      name: "${name} alarms"

@@ -15,6 +15,28 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
     online_status_binary_sensor_ = online_status_binary_sensor;
   }
 
+  void set_voltage_protection_binary_sensor(binary_sensor::BinarySensor *voltage_protection_binary_sensor) {
+    voltage_protection_binary_sensor_ = voltage_protection_binary_sensor;
+  }
+  void set_temperature_protection_binary_sensor(binary_sensor::BinarySensor *temperature_protection_binary_sensor) {
+    temperature_protection_binary_sensor_ = temperature_protection_binary_sensor;
+  }
+  void set_current_protection_binary_sensor(binary_sensor::BinarySensor *current_protection_binary_sensor) {
+    current_protection_binary_sensor_ = current_protection_binary_sensor;
+  }
+  void set_soc_protection_binary_sensor(binary_sensor::BinarySensor *soc_protection_binary_sensor) {
+    soc_protection_binary_sensor_ = soc_protection_binary_sensor;
+  }
+  void set_charging_binary_sensor(binary_sensor::BinarySensor *charging_binary_sensor) {
+    charging_binary_sensor_ = charging_binary_sensor;
+  }
+  void set_discharging_binary_sensor(binary_sensor::BinarySensor *discharging_binary_sensor) {
+    discharging_binary_sensor_ = discharging_binary_sensor;
+  }
+  void set_balancing_binary_sensor(binary_sensor::BinarySensor *balancing_binary_sensor) {
+    balancing_binary_sensor_ = balancing_binary_sensor;
+  }
+
   void set_min_cell_voltage_sensor(sensor::Sensor *min_cell_voltage_sensor) {
     min_cell_voltage_sensor_ = min_cell_voltage_sensor;
   }
@@ -67,6 +89,18 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
     state_of_health_sensor_ = state_of_health_sensor;
   }
   void set_port_voltage_sensor(sensor::Sensor *port_voltage_sensor) { port_voltage_sensor_ = port_voltage_sensor; }
+  void set_alarm_event1_bitmask_sensor(sensor::Sensor *sensor) { alarm_event1_bitmask_sensor_ = sensor; }
+  void set_alarm_event2_bitmask_sensor(sensor::Sensor *sensor) { alarm_event2_bitmask_sensor_ = sensor; }
+  void set_alarm_event3_bitmask_sensor(sensor::Sensor *sensor) { alarm_event3_bitmask_sensor_ = sensor; }
+  void set_alarm_event4_bitmask_sensor(sensor::Sensor *sensor) { alarm_event4_bitmask_sensor_ = sensor; }
+  void set_alarm_event5_bitmask_sensor(sensor::Sensor *sensor) { alarm_event5_bitmask_sensor_ = sensor; }
+  void set_alarm_event6_bitmask_sensor(sensor::Sensor *sensor) { alarm_event6_bitmask_sensor_ = sensor; }
+  void set_alarm_event7_bitmask_sensor(sensor::Sensor *sensor) { alarm_event7_bitmask_sensor_ = sensor; }
+  void set_alarm_event8_bitmask_sensor(sensor::Sensor *sensor) { alarm_event8_bitmask_sensor_ = sensor; }
+  void set_alarms_text_sensor(text_sensor::TextSensor *sensor) { alarms_text_sensor_ = sensor; }
+  void set_balancing_bitmask_sensor(sensor::Sensor *sensor) { balancing_bitmask_sensor_ = sensor; }
+  void set_disconnection_bitmask_sensor(sensor::Sensor *sensor) { disconnection_bitmask_sensor_ = sensor; }
+  void set_system_status_bitmask_sensor(sensor::Sensor *sensor) { system_status_bitmask_sensor_ = sensor; }
 
   void set_errors_text_sensor(text_sensor::TextSensor *errors_text_sensor) { errors_text_sensor_ = errors_text_sensor; }
 
@@ -80,6 +114,13 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
 
  protected:
   binary_sensor::BinarySensor *online_status_binary_sensor_;
+  binary_sensor::BinarySensor *voltage_protection_binary_sensor_;
+  binary_sensor::BinarySensor *temperature_protection_binary_sensor_;
+  binary_sensor::BinarySensor *current_protection_binary_sensor_;
+  binary_sensor::BinarySensor *soc_protection_binary_sensor_;
+  binary_sensor::BinarySensor *charging_binary_sensor_;
+  binary_sensor::BinarySensor *discharging_binary_sensor_;
+  binary_sensor::BinarySensor *balancing_binary_sensor_;
 
   sensor::Sensor *min_cell_voltage_sensor_;
   sensor::Sensor *max_cell_voltage_sensor_;
@@ -99,8 +140,20 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   sensor::Sensor *charging_cycles_sensor_;
   sensor::Sensor *state_of_health_sensor_;
   sensor::Sensor *port_voltage_sensor_;
+  sensor::Sensor *alarm_event1_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event2_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event3_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event4_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event5_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event6_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event7_bitmask_sensor_{nullptr};
+  sensor::Sensor *alarm_event8_bitmask_sensor_{nullptr};
+  sensor::Sensor *balancing_bitmask_sensor_{nullptr};
+  sensor::Sensor *disconnection_bitmask_sensor_{nullptr};
+  sensor::Sensor *system_status_bitmask_sensor_{nullptr};
 
   text_sensor::TextSensor *errors_text_sensor_;
+  text_sensor::TextSensor *alarms_text_sensor_{nullptr};
 
   struct Cell {
     sensor::Sensor *cell_voltage_sensor_{nullptr};
@@ -117,9 +170,16 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
   void on_telemetry_data_(const std::vector<uint8_t> &data);
+  void on_alarm_data_(const std::vector<uint8_t> &data);
   void reset_online_status_tracker_();
   void track_online_status_();
   void publish_device_unavailable_();
+
+  // Helper functions for alarm decoding
+  std::string bitmask_to_string_(const char *const messages[], const uint8_t &messages_size, const uint8_t &mask);
+  std::string decode_all_alarm_events_(uint8_t alarm_event1, uint8_t alarm_event2, uint8_t alarm_event3,
+                                       uint8_t alarm_event4, uint8_t alarm_event5, uint8_t alarm_event6,
+                                       uint8_t alarm_event7, uint8_t alarm_event8);
 };
 
 }  // namespace seplos_bms

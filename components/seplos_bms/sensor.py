@@ -46,6 +46,21 @@ CONF_CHARGING_CYCLES = "charging_cycles"
 CONF_STATE_OF_HEALTH = "state_of_health"
 CONF_PORT_VOLTAGE = "port_voltage"
 
+# Alarm event bitmask sensors
+CONF_ALARM_EVENT1_BITMASK = "alarm_event1_bitmask"
+CONF_ALARM_EVENT2_BITMASK = "alarm_event2_bitmask"
+CONF_ALARM_EVENT3_BITMASK = "alarm_event3_bitmask"
+CONF_ALARM_EVENT4_BITMASK = "alarm_event4_bitmask"
+CONF_ALARM_EVENT5_BITMASK = "alarm_event5_bitmask"
+CONF_ALARM_EVENT6_BITMASK = "alarm_event6_bitmask"
+CONF_ALARM_EVENT7_BITMASK = "alarm_event7_bitmask"
+CONF_ALARM_EVENT8_BITMASK = "alarm_event8_bitmask"
+
+# Balancing, disconnection and system status sensors
+CONF_BALANCING_BITMASK = "balancing_bitmask"
+CONF_DISCONNECTION_BITMASK = "disconnection_bitmask"
+CONF_SYSTEM_STATUS_BITMASK = "system_status_bitmask"
+
 CONF_CELL_VOLTAGE_1 = "cell_voltage_1"
 CONF_CELL_VOLTAGE_2 = "cell_voltage_2"
 CONF_CELL_VOLTAGE_3 = "cell_voltage_3"
@@ -129,6 +144,17 @@ SENSORS = [
     CONF_CHARGING_CYCLES,
     CONF_STATE_OF_HEALTH,
     CONF_PORT_VOLTAGE,
+    CONF_ALARM_EVENT1_BITMASK,
+    CONF_ALARM_EVENT2_BITMASK,
+    CONF_ALARM_EVENT3_BITMASK,
+    CONF_ALARM_EVENT4_BITMASK,
+    CONF_ALARM_EVENT5_BITMASK,
+    CONF_ALARM_EVENT6_BITMASK,
+    CONF_ALARM_EVENT7_BITMASK,
+    CONF_ALARM_EVENT8_BITMASK,
+    CONF_BALANCING_BITMASK,
+    CONF_DISCONNECTION_BITMASK,
+    CONF_SYSTEM_STATUS_BITMASK,
 ]
 
 # pylint: disable=too-many-function-args
@@ -411,6 +437,85 @@ CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
             icon=ICON_EMPTY,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        # Alarm event bitmask sensors
+        cv.Optional(CONF_ALARM_EVENT1_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT2_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT3_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT4_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT5_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT6_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT7_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_ALARM_EVENT8_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:alert-circle",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        # Balancing and disconnection sensors
+        cv.Optional(CONF_BALANCING_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:scale-balance",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_DISCONNECTION_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:connection",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_SYSTEM_STATUS_BITMASK): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            icon="mdi:cog",
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
     }
