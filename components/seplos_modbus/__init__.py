@@ -17,7 +17,8 @@ seplos_modbus_ns = cg.esphome_ns.namespace("seplos_modbus")
 SeplosModbus = seplos_modbus_ns.class_("SeplosModbus", cg.Component, uart.UARTDevice)
 SeplosModbusDevice = seplos_modbus_ns.class_("SeplosModbusDevice")
 
-CONFIG_SCHEMA = (
+CONFIG_SCHEMA = cv.All(
+    cv.require_esphome_version(2024, 6, 0),
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(SeplosModbus),
