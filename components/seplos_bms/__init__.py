@@ -39,7 +39,7 @@ CONFIG_SCHEMA = cv.All(
         seplos_modbus.seplos_modbus_device_schema(
             DEFAULT_PROTOCOL_VERSION, DEFAULT_ADDRESS
         )
-    )
+    ),
 )
 
 
