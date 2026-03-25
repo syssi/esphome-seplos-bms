@@ -1,7 +1,6 @@
 import esphome.codegen as cg
 from esphome.components import text_sensor
 import esphome.config_validation as cv
-from esphome.const import CONF_ID
 
 from . import CONF_SEPLOS_BMS_BLE_ID, SeplosBmsBle
 
