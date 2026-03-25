@@ -154,10 +154,10 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   std::string interpret_battery_type(uint8_t value);
 
  protected:
-  binary_sensor::BinarySensor *charging_binary_sensor_;
-  binary_sensor::BinarySensor *discharging_binary_sensor_;
-  binary_sensor::BinarySensor *limiting_current_binary_sensor_;
-  binary_sensor::BinarySensor *online_status_binary_sensor_;
+  binary_sensor::BinarySensor *charging_binary_sensor_{nullptr};
+  binary_sensor::BinarySensor *discharging_binary_sensor_{nullptr};
+  binary_sensor::BinarySensor *limiting_current_binary_sensor_{nullptr};
+  binary_sensor::BinarySensor *online_status_binary_sensor_{nullptr};
 
   // Enhanced alarm bitmask and consolidated alarms text sensor
   sensor::Sensor *alarm_event1_bitmask_sensor_{nullptr};
@@ -170,42 +170,42 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   sensor::Sensor *alarm_event8_bitmask_sensor_{nullptr};
   text_sensor::TextSensor *alarms_text_sensor_{nullptr};
 
-  sensor::Sensor *total_voltage_sensor_;
-  sensor::Sensor *current_sensor_;
-  sensor::Sensor *power_sensor_;
-  sensor::Sensor *charging_power_sensor_;
-  sensor::Sensor *discharging_power_sensor_;
-  sensor::Sensor *capacity_remaining_sensor_;
-  sensor::Sensor *voltage_protection_bitmask_sensor_;
-  sensor::Sensor *current_protection_bitmask_sensor_;
-  sensor::Sensor *temperature_protection_bitmask_sensor_;
-  sensor::Sensor *state_of_charge_sensor_;
-  sensor::Sensor *nominal_capacity_sensor_;
-  sensor::Sensor *charging_cycles_sensor_;
-  sensor::Sensor *min_cell_voltage_sensor_;
-  sensor::Sensor *max_cell_voltage_sensor_;
-  sensor::Sensor *min_voltage_cell_sensor_;
-  sensor::Sensor *max_voltage_cell_sensor_;
-  sensor::Sensor *delta_cell_voltage_sensor_;
-  sensor::Sensor *average_cell_voltage_sensor_;
-  sensor::Sensor *average_cell_temperature_sensor_;
-  sensor::Sensor *ambient_temperature_sensor_;
-  sensor::Sensor *mosfet_temperature_sensor_;
-  sensor::Sensor *state_of_health_sensor_;
-  sensor::Sensor *port_voltage_sensor_;
-  sensor::Sensor *battery_capacity_sensor_;
+  sensor::Sensor *total_voltage_sensor_{nullptr};
+  sensor::Sensor *current_sensor_{nullptr};
+  sensor::Sensor *power_sensor_{nullptr};
+  sensor::Sensor *charging_power_sensor_{nullptr};
+  sensor::Sensor *discharging_power_sensor_{nullptr};
+  sensor::Sensor *capacity_remaining_sensor_{nullptr};
+  sensor::Sensor *voltage_protection_bitmask_sensor_{nullptr};
+  sensor::Sensor *current_protection_bitmask_sensor_{nullptr};
+  sensor::Sensor *temperature_protection_bitmask_sensor_{nullptr};
+  sensor::Sensor *state_of_charge_sensor_{nullptr};
+  sensor::Sensor *nominal_capacity_sensor_{nullptr};
+  sensor::Sensor *charging_cycles_sensor_{nullptr};
+  sensor::Sensor *min_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *max_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *min_voltage_cell_sensor_{nullptr};
+  sensor::Sensor *max_voltage_cell_sensor_{nullptr};
+  sensor::Sensor *delta_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *average_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *average_cell_temperature_sensor_{nullptr};
+  sensor::Sensor *ambient_temperature_sensor_{nullptr};
+  sensor::Sensor *mosfet_temperature_sensor_{nullptr};
+  sensor::Sensor *state_of_health_sensor_{nullptr};
+  sensor::Sensor *port_voltage_sensor_{nullptr};
+  sensor::Sensor *battery_capacity_sensor_{nullptr};
 
-  text_sensor::TextSensor *software_version_text_sensor_;
-  text_sensor::TextSensor *device_model_text_sensor_;
-  text_sensor::TextSensor *hardware_version_text_sensor_;
-  text_sensor::TextSensor *voltage_protection_text_sensor_;
-  text_sensor::TextSensor *current_protection_text_sensor_;
-  text_sensor::TextSensor *temperature_protection_text_sensor_;
+  text_sensor::TextSensor *software_version_text_sensor_{nullptr};
+  text_sensor::TextSensor *device_model_text_sensor_{nullptr};
+  text_sensor::TextSensor *hardware_version_text_sensor_{nullptr};
+  text_sensor::TextSensor *voltage_protection_text_sensor_{nullptr};
+  text_sensor::TextSensor *current_protection_text_sensor_{nullptr};
+  text_sensor::TextSensor *temperature_protection_text_sensor_{nullptr};
 
-  switch_::Switch *discharging_switch_;
-  switch_::Switch *charging_switch_;
-  switch_::Switch *current_limit_switch_;
-  switch_::Switch *heating_switch_;
+  switch_::Switch *discharging_switch_{nullptr};
+  switch_::Switch *charging_switch_{nullptr};
+  switch_::Switch *current_limit_switch_{nullptr};
+  switch_::Switch *heating_switch_{nullptr};
 
   struct Cell {
     sensor::Sensor *cell_voltage_sensor_{nullptr};

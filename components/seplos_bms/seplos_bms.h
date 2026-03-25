@@ -79,28 +79,28 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   float get_setup_priority() const override;
 
  protected:
-  binary_sensor::BinarySensor *online_status_binary_sensor_;
+  binary_sensor::BinarySensor *online_status_binary_sensor_{nullptr};
 
-  sensor::Sensor *min_cell_voltage_sensor_;
-  sensor::Sensor *max_cell_voltage_sensor_;
-  sensor::Sensor *min_voltage_cell_sensor_;
-  sensor::Sensor *max_voltage_cell_sensor_;
-  sensor::Sensor *delta_cell_voltage_sensor_;
-  sensor::Sensor *average_cell_voltage_sensor_;
-  sensor::Sensor *total_voltage_sensor_;
-  sensor::Sensor *current_sensor_;
-  sensor::Sensor *power_sensor_;
-  sensor::Sensor *charging_power_sensor_;
-  sensor::Sensor *discharging_power_sensor_;
-  sensor::Sensor *state_of_charge_sensor_;
-  sensor::Sensor *residual_capacity_sensor_;
-  sensor::Sensor *battery_capacity_sensor_;
-  sensor::Sensor *rated_capacity_sensor_;
-  sensor::Sensor *charging_cycles_sensor_;
-  sensor::Sensor *state_of_health_sensor_;
-  sensor::Sensor *port_voltage_sensor_;
+  sensor::Sensor *min_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *max_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *min_voltage_cell_sensor_{nullptr};
+  sensor::Sensor *max_voltage_cell_sensor_{nullptr};
+  sensor::Sensor *delta_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *average_cell_voltage_sensor_{nullptr};
+  sensor::Sensor *total_voltage_sensor_{nullptr};
+  sensor::Sensor *current_sensor_{nullptr};
+  sensor::Sensor *power_sensor_{nullptr};
+  sensor::Sensor *charging_power_sensor_{nullptr};
+  sensor::Sensor *discharging_power_sensor_{nullptr};
+  sensor::Sensor *state_of_charge_sensor_{nullptr};
+  sensor::Sensor *residual_capacity_sensor_{nullptr};
+  sensor::Sensor *battery_capacity_sensor_{nullptr};
+  sensor::Sensor *rated_capacity_sensor_{nullptr};
+  sensor::Sensor *charging_cycles_sensor_{nullptr};
+  sensor::Sensor *state_of_health_sensor_{nullptr};
+  sensor::Sensor *port_voltage_sensor_{nullptr};
 
-  text_sensor::TextSensor *errors_text_sensor_;
+  text_sensor::TextSensor *errors_text_sensor_{nullptr};
 
   struct Cell {
     sensor::Sensor *cell_voltage_sensor_{nullptr};
