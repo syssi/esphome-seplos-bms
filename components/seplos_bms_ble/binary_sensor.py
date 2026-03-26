@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import binary_sensor
 import esphome.config_validation as cv
+from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_BLE_ID, SeplosBmsBle
 
@@ -35,10 +36,12 @@ CONFIG_SCHEMA = cv.Schema(
             icon=ICON_DISCHARGING
         ),
         cv.Optional(CONF_LIMITING_CURRENT): binary_sensor.binary_sensor_schema(
-            icon=ICON_LIMITING_CURRENT
+            icon=ICON_LIMITING_CURRENT,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_ONLINE_STATUS): binary_sensor.binary_sensor_schema(
-            icon=ICON_ONLINE_STATUS
+            icon=ICON_ONLINE_STATUS,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )

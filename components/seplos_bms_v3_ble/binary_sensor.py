@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import binary_sensor
 import esphome.config_validation as cv
+from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_V3_BLE_ID, SeplosBmsV3Ble
 
@@ -37,19 +38,24 @@ CONFIG_SCHEMA = cv.Schema(
             icon="mdi:power-plug"
         ),
         cv.Optional(CONF_ONLINE_STATUS): binary_sensor.binary_sensor_schema(
-            icon="mdi:heart-pulse"
+            icon="mdi:heart-pulse",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_VOLTAGE_PROTECTION): binary_sensor.binary_sensor_schema(
-            icon="mdi:flash-alert"
+            icon="mdi:flash-alert",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_TEMPERATURE_PROTECTION): binary_sensor.binary_sensor_schema(
-            icon="mdi:thermometer-alert"
+            icon="mdi:thermometer-alert",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_CURRENT_PROTECTION): binary_sensor.binary_sensor_schema(
-            icon="mdi:current-ac"
+            icon="mdi:current-ac",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_SYSTEM_FAULT): binary_sensor.binary_sensor_schema(
-            icon="mdi:alert-circle"
+            icon="mdi:alert-circle",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )
