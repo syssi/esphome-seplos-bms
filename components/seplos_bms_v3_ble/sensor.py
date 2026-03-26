@@ -5,11 +5,9 @@ from esphome.const import (
     CONF_CURRENT,
     CONF_POWER,
     DEVICE_CLASS_CURRENT,
-    DEVICE_CLASS_EMPTY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_VOLTAGE,
-    ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
     UNIT_AMPERE,
     UNIT_CELSIUS,
@@ -102,7 +100,7 @@ SENSORS = [
 ]
 
 
-def sensor_schema(unit, icon, accuracy_decimals=1, device_class=DEVICE_CLASS_EMPTY):
+def sensor_schema(unit, icon, accuracy_decimals=1, device_class=None):
     return sensor.sensor_schema(
         unit_of_measurement=unit,
         icon=icon,
@@ -116,19 +114,19 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
         cv.Optional(CONF_TOTAL_VOLTAGE): sensor_schema(
-            UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE
+            UNIT_VOLT, None, 2, DEVICE_CLASS_VOLTAGE
         ),
         cv.Optional(CONF_CURRENT): sensor_schema(
             UNIT_AMPERE, "mdi:current-dc", 1, DEVICE_CLASS_CURRENT
         ),
         cv.Optional(CONF_POWER): sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 1, DEVICE_CLASS_POWER
+            UNIT_WATT, None, 1, DEVICE_CLASS_POWER
         ),
         cv.Optional(CONF_CHARGING_POWER): sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 1, DEVICE_CLASS_POWER
+            UNIT_WATT, None, 1, DEVICE_CLASS_POWER
         ),
         cv.Optional(CONF_DISCHARGING_POWER): sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 1, DEVICE_CLASS_POWER
+            UNIT_WATT, None, 1, DEVICE_CLASS_POWER
         ),
         cv.Optional(CONF_CAPACITY_REMAINING): sensor_schema(
             UNIT_WATT_HOURS, "mdi:battery-50", 1
@@ -140,7 +138,7 @@ CONFIG_SCHEMA = cv.Schema(
             UNIT_EMPTY, "mdi:battery-sync", 0
         ),
         cv.Optional(CONF_AVERAGE_CELL_TEMPERATURE): sensor_schema(
-            UNIT_CELSIUS, ICON_EMPTY, 1, DEVICE_CLASS_TEMPERATURE
+            UNIT_CELSIUS, None, 1, DEVICE_CLASS_TEMPERATURE
         ),
         cv.Optional(CONF_PACK_COUNT): sensor_schema(
             UNIT_EMPTY, "mdi:package-variant", 0
