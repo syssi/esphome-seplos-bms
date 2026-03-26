@@ -247,8 +247,7 @@ async def to_code(config):
     for key in TYPES:
         if key in config:
             conf = config[key]
-            sens = cg.new_Pvariable(conf[cv.CONF_ID])
-            await sensor.register_sensor(sens, conf)
+            sens = await sensor.new_sensor(conf)
 
             # Use generic index-based setters for cell voltages and temperatures
             if key.startswith("pack_cell_voltage_"):
