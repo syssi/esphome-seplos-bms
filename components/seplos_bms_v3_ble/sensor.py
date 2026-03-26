@@ -119,9 +119,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CURRENT): sensor_schema(
             UNIT_AMPERE, "mdi:current-dc", 1, DEVICE_CLASS_CURRENT
         ),
-        cv.Optional(CONF_POWER): sensor_schema(
-            UNIT_WATT, None, 1, DEVICE_CLASS_POWER
-        ),
+        cv.Optional(CONF_POWER): sensor_schema(UNIT_WATT, None, 1, DEVICE_CLASS_POWER),
         cv.Optional(CONF_CHARGING_POWER): sensor_schema(
             UNIT_WATT, None, 1, DEVICE_CLASS_POWER
         ),
