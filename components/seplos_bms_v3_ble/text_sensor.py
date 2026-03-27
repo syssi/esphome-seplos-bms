@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import text_sensor
 import esphome.config_validation as cv
+from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_V3_BLE_ID, SeplosBmsV3Ble
 
@@ -29,20 +30,28 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
         cv.Optional(CONF_PROBLEM): text_sensor.text_sensor_schema(
-            icon="mdi:alert-circle-outline"
+            icon="mdi:alert-circle-outline",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_FACTORY_NAME): text_sensor.text_sensor_schema(
-            icon="mdi:factory"
+            icon="mdi:factory",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
-        cv.Optional(CONF_DEVICE_NAME): text_sensor.text_sensor_schema(icon="mdi:chip"),
+        cv.Optional(CONF_DEVICE_NAME): text_sensor.text_sensor_schema(
+            icon="mdi:chip",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
         cv.Optional(CONF_FIRMWARE_VERSION): text_sensor.text_sensor_schema(
-            icon="mdi:information-outline"
+            icon="mdi:information-outline",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_BMS_SERIAL_NUMBER): text_sensor.text_sensor_schema(
-            icon="mdi:barcode"
+            icon="mdi:barcode",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_PACK_SERIAL_NUMBER): text_sensor.text_sensor_schema(
-            icon="mdi:battery-outline"
+            icon="mdi:battery-outline",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )

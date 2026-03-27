@@ -1,6 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import text_sensor
 import esphome.config_validation as cv
+from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_BLE_ID, SeplosBmsBle
 
@@ -42,32 +43,32 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SEPLOS_BMS_BLE_ID): cv.use_id(SeplosBmsBle),
         cv.Optional(CONF_SOFTWARE_VERSION): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_SOFTWARE_VERSION,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_DEVICE_MODEL): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_DEVICE_MODEL,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_HARDWARE_VERSION): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_HARDWARE_VERSION,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_VOLTAGE_PROTECTION): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_VOLTAGE_PROTECTION,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_CURRENT_PROTECTION): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_CURRENT_PROTECTION,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_TEMPERATURE_PROTECTION): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_TEMPERATURE_PROTECTION,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
         cv.Optional(CONF_ALARMS): text_sensor.text_sensor_schema(
-            text_sensor.TextSensor,
             icon=ICON_ALARMS,
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
 )
