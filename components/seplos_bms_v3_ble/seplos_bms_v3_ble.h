@@ -257,8 +257,8 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   text_sensor::TextSensor *pack_serial_number_text_sensor_{nullptr};
 
   std::vector<uint8_t> frame_buffer_;
-  uint16_t char_notify_handle_;
-  uint16_t char_command_handle_;
+  uint16_t char_notify_handle_{0};
+  uint16_t char_command_handle_{0};
   uint8_t next_command_{0};
   uint8_t pack_count_{0};
   std::vector<SeplosBmsV3BlePack *> pack_devices_;
