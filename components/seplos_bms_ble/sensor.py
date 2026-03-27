@@ -12,6 +12,7 @@ from esphome.const import (
     ENTITY_CATEGORY_DIAGNOSTIC,
     ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
     UNIT_AMPERE,
     UNIT_CELSIUS,
     UNIT_EMPTY,
@@ -337,7 +338,7 @@ CONFIG_SCHEMA = cv.Schema(
             icon=ICON_CHARGING_CYCLES,
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_MEASUREMENT,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
         ),
         cv.Optional(CONF_MIN_CELL_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,

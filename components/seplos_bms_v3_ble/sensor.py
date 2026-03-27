@@ -11,6 +11,7 @@ from esphome.const import (
     DEVICE_CLASS_VOLTAGE,
     ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
     UNIT_AMPERE,
     UNIT_CELSIUS,
     UNIT_EMPTY,
@@ -102,13 +103,19 @@ SENSORS = [
 ]
 
 
-def sensor_schema(unit, icon, accuracy_decimals=1, device_class=DEVICE_CLASS_EMPTY):
+def sensor_schema(
+    unit,
+    icon,
+    accuracy_decimals=1,
+    device_class=DEVICE_CLASS_EMPTY,
+    state_class=STATE_CLASS_MEASUREMENT,
+):
     return sensor.sensor_schema(
         unit_of_measurement=unit,
         icon=icon,
         accuracy_decimals=accuracy_decimals,
         device_class=device_class,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=state_class,
     )
 
 
@@ -137,7 +144,7 @@ CONFIG_SCHEMA = cv.Schema(
             UNIT_PERCENT, "mdi:battery-50", 1
         ),
         cv.Optional(CONF_CHARGING_CYCLES): sensor_schema(
-            UNIT_EMPTY, "mdi:battery-sync", 0
+            UNIT_EMPTY, "mdi:battery-sync", 0, state_class=STATE_CLASS_TOTAL_INCREASING
         ),
         cv.Optional(CONF_AVERAGE_CELL_TEMPERATURE): sensor_schema(
             UNIT_CELSIUS, ICON_EMPTY, 1, DEVICE_CLASS_TEMPERATURE
@@ -149,12 +156,20 @@ CONFIG_SCHEMA = cv.Schema(
             UNIT_EMPTY, "mdi:alert-circle-outline", 0
         ),
         cv.Optional(CONF_CYCLE_CHARGE): sensor_schema(
-            UNIT_WATT_HOURS, "mdi:battery-charging-100", 2
+            UNIT_WATT_HOURS,
+            "mdi:battery-charging-100",
+            2,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
         ),
         cv.Optional(CONF_CYCLE_CAPACITY): sensor_schema(
-            UNIT_WATT_HOURS, "mdi:battery-50", 2
+            UNIT_WATT_HOURS,
+            "mdi:battery-50",
+            2,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
         ),
-        cv.Optional(CONF_RUNTIME): sensor_schema(UNIT_HOUR, "mdi:timer", 1),
+        cv.Optional(CONF_RUNTIME): sensor_schema(
+            UNIT_HOUR, "mdi:timer", 1, state_class=STATE_CLASS_TOTAL_INCREASING
+        ),
         cv.Optional(CONF_STATE_OF_HEALTH): sensor_schema(
             UNIT_PERCENT, "mdi:battery-heart", 1
         ),

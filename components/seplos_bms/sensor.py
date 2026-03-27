@@ -12,6 +12,7 @@ from esphome.const import (
     DEVICE_CLASS_VOLTAGE,
     ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
     UNIT_AMPERE,
     UNIT_CELSIUS,
     UNIT_EMPTY,
@@ -397,7 +398,7 @@ CONFIG_SCHEMA = SEPLOS_BMS_COMPONENT_SCHEMA.extend(
             icon=ICON_CHARGING_CYCLES,
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_MEASUREMENT,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
         ),
         cv.Optional(CONF_STATE_OF_HEALTH): sensor.sensor_schema(
             unit_of_measurement=UNIT_PERCENT,
