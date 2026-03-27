@@ -4,7 +4,7 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
 CODEOWNERS = ["@syssi"]
-
+DEPENDENCIES = ["ble_client"]
 AUTO_LOAD = ["binary_sensor", "sensor", "switch", "text_sensor"]
 
 MULTI_CONF = True
