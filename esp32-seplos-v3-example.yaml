@@ -61,7 +61,7 @@ sensor:
   # 1000    Pack Voltage                R    UINT16    2    10mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} total voltage"
+    name: "total voltage"
     address: 0x1000
     register_type: read
     value_type: U_WORD
@@ -75,7 +75,7 @@ sensor:
   # 1001    Current                     R     INT16    2    10mA
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} current"
+    name: "current"
     address: 0x1001
     register_type: read
     value_type: S_WORD
@@ -89,7 +89,7 @@ sensor:
   # 1002    Remaining capacity          R    UINT16    2    10mAH
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} remaining capacity"
+    name: "remaining capacity"
     address: 0x1002
     register_type: read
     value_type: U_WORD
@@ -102,7 +102,7 @@ sensor:
   # 1003    Total Capacity              R    UINT16    2    10mAH
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} total capacity"
+    name: "total capacity"
     address: 0x1003
     register_type: read
     value_type: U_WORD
@@ -115,7 +115,7 @@ sensor:
   # 1004    Total Discharge Capacity    R    UINT16    2    10AH
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} total discharge capacity"
+    name: "total discharge capacity"
     address: 0x1004
     register_type: read
     value_type: U_WORD
@@ -128,7 +128,7 @@ sensor:
   # 1005    SOC                         R    UINT16    2    0.1%
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} state of charge"
+    name: "state of charge"
     address: 0x1005
     register_type: read
     value_type: U_WORD
@@ -142,7 +142,7 @@ sensor:
   # 1006    SOH                         R    UINT16    2    0.1%
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} state of health"
+    name: "state of health"
     address: 0x1006
     register_type: read
     value_type: U_WORD
@@ -153,7 +153,7 @@ sensor:
   # 1007    Cycle                       R    UINT16    2    1
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cycle"
+    name: "cycle"
     address: 0x1007
     register_type: read
     value_type: U_WORD
@@ -164,7 +164,7 @@ sensor:
   # 1008    Averag of Cell Votage       R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} average cell voltage"
+    name: "average cell voltage"
     address: 0x1008
     register_type: read
     value_type: U_WORD
@@ -178,7 +178,7 @@ sensor:
   # 1009    Averag of Cell Temperature  R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} average cell temperature"
+    name: "average cell temperature"
     address: 0x1009
     register_type: read
     value_type: S_WORD
@@ -193,7 +193,7 @@ sensor:
   # 100A    Max Cell Voltage            R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} max cell voltage"
+    name: "max cell voltage"
     address: 0x100A
     register_type: read
     value_type: U_WORD
@@ -207,7 +207,7 @@ sensor:
   # 100B    Min Cell Voltage            R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} min cell voltage"
+    name: "min cell voltage"
     address: 0x100B
     register_type: read
     value_type: U_WORD
@@ -221,7 +221,7 @@ sensor:
   # 100C    Max Cell Temperature        R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} max cell temperature"
+    name: "max cell temperature"
     address: 0x100C
     register_type: read
     value_type: S_WORD
@@ -236,7 +236,7 @@ sensor:
   # 100D    Min Cell Temperature        R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} min cell temperature"
+    name: "min cell temperature"
     address: 0x100D
     register_type: read
     value_type: S_WORD
@@ -256,7 +256,7 @@ sensor:
   # 1100    Cell1 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 1"
+    name: "cell voltage 1"
     address: 0x1100
     register_type: read
     value_type: U_WORD
@@ -270,7 +270,7 @@ sensor:
   # 1101    Cell2 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 2"
+    name: "cell voltage 2"
     address: 0x1101
     register_type: read
     value_type: U_WORD
@@ -284,7 +284,7 @@ sensor:
   # 1102    Cell3 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 3"
+    name: "cell voltage 3"
     address: 0x1102
     register_type: read
     value_type: U_WORD
@@ -298,7 +298,7 @@ sensor:
   # 1103    Cell4 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 4"
+    name: "cell voltage 4"
     address: 0x1103
     register_type: read
     value_type: U_WORD
@@ -312,7 +312,7 @@ sensor:
   # 1104    Cell5 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 5"
+    name: "cell voltage 5"
     address: 0x1104
     register_type: read
     value_type: U_WORD
@@ -326,7 +326,7 @@ sensor:
   # 1105    Cell6 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 6"
+    name: "cell voltage 6"
     address: 0x1105
     register_type: read
     value_type: U_WORD
@@ -340,7 +340,7 @@ sensor:
   # 1106    Cell7 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 7"
+    name: "cell voltage 7"
     address: 0x1106
     register_type: read
     value_type: U_WORD
@@ -354,7 +354,7 @@ sensor:
   # 1107    Cell8 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 8"
+    name: "cell voltage 8"
     address: 0x1107
     register_type: read
     value_type: U_WORD
@@ -368,7 +368,7 @@ sensor:
   # 1108    Cell9 Voltage               R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 9"
+    name: "cell voltage 9"
     address: 0x1108
     register_type: read
     value_type: U_WORD
@@ -382,7 +382,7 @@ sensor:
   # 1109    Cell10 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 10"
+    name: "cell voltage 10"
     address: 0x1109
     register_type: read
     value_type: U_WORD
@@ -396,7 +396,7 @@ sensor:
   # 110A    Cell11 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 11"
+    name: "cell voltage 11"
     address: 0x110A
     register_type: read
     value_type: U_WORD
@@ -410,7 +410,7 @@ sensor:
   # 110B    Cell12 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 12"
+    name: "cell voltage 12"
     address: 0x110B
     register_type: read
     value_type: U_WORD
@@ -424,7 +424,7 @@ sensor:
   # 110C    Cell13 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 13"
+    name: "cell voltage 13"
     address: 0x110C
     register_type: read
     value_type: U_WORD
@@ -438,7 +438,7 @@ sensor:
   # 110D    Cell14 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 14"
+    name: "cell voltage 14"
     address: 0x110D
     register_type: read
     value_type: U_WORD
@@ -452,7 +452,7 @@ sensor:
   # 110E    Cell15 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 15"
+    name: "cell voltage 15"
     address: 0x110E
     register_type: read
     value_type: U_WORD
@@ -466,7 +466,7 @@ sensor:
   # 110F    Cell16 Voltage              R    UINT16    2    1mV
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell voltage 16"
+    name: "cell voltage 16"
     address: 0x110F
     register_type: read
     value_type: U_WORD
@@ -480,7 +480,7 @@ sensor:
   # 1110    Cell temperature 1          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell temperature 1"
+    name: "cell temperature 1"
     address: 0x1110
     register_type: read
     value_type: S_WORD
@@ -495,7 +495,7 @@ sensor:
   # 1111    Cell temperature 2          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell temperature 2"
+    name: "cell temperature 2"
     address: 0x1111
     register_type: read
     value_type: S_WORD
@@ -510,7 +510,7 @@ sensor:
   # 1112    Cell temperature 3          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell temperature 3"
+    name: "cell temperature 3"
     address: 0x1112
     register_type: read
     value_type: S_WORD
@@ -525,7 +525,7 @@ sensor:
   # 1113    Cell temperature 4          R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} cell temperature 4"
+    name: "cell temperature 4"
     address: 0x1113
     register_type: read
     value_type: S_WORD
@@ -540,7 +540,7 @@ sensor:
   # 1118    Environment Temperature     R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} environment temperature"
+    name: "environment temperature"
     address: 0x1118
     register_type: read
     value_type: S_WORD
@@ -555,7 +555,7 @@ sensor:
   # 1119    Power temperature           R    UINT16    2    0.1K
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${name} mosfet temperature"
+    name: "mosfet temperature"
     address: 0x1119
     register_type: read
     value_type: S_WORD

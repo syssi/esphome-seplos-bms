@@ -42,4 +42,4 @@ ble_client:
 switch:
   - platform: ble_client
     ble_client_id: client0
-    name: "${name} enable bluetooth connection"
+    name: "enable bluetooth connection"
