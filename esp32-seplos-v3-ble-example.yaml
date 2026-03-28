@@ -6,6 +6,7 @@ substitutions:
 
 esphome:
   name: ${name}
+  friendly_name: ${name}
   comment: ${device_description}
   project:
     name: "syssi.esphome-seplos-bms"
@@ -67,225 +68,225 @@ binary_sensor:
   - platform: seplos_bms_v3_ble
     seplos_bms_v3_ble_id: bms0
     charging:
-      name: "${name} charging"
+      name: "charging"
     discharging:
-      name: "${name} discharging"
+      name: "discharging"
     online_status:
-      name: "${name} online status"
+      name: "online status"
     voltage_protection:
-      name: "${name} voltage protection"
+      name: "voltage protection"
     temperature_protection:
-      name: "${name} temperature protection"
+      name: "temperature protection"
     current_protection:
-      name: "${name} current protection"
+      name: "current protection"
     system_fault:
-      name: "${name} system fault"
+      name: "system fault"
 
 sensor:
   - platform: seplos_bms_v3_ble
     seplos_bms_v3_ble_id: bms0
     total_voltage:
-      name: "${name} total voltage"
+      name: "total voltage"
     current:
-      name: "${name} current"
+      name: "current"
     power:
-      name: "${name} power"
+      name: "power"
     charging_power:
-      name: "${name} charging power"
+      name: "charging power"
     discharging_power:
-      name: "${name} discharging power"
+      name: "discharging power"
     state_of_charge:
-      name: "${name} state of charge"
+      name: "state of charge"
     charging_cycles:
-      name: "${name} charging cycles"
+      name: "charging cycles"
     average_cell_temperature:
-      name: "${name} average cell temperature"
+      name: "average cell temperature"
     pack_count:
-      name: "${name} pack count"
+      name: "pack count"
     problem_code:
-      name: "${name} problem code"
+      name: "problem code"
     cycle_charge:
-      name: "${name} cycle charge"
+      name: "cycle charge"
     cycle_capacity:
-      name: "${name} cycle capacity"
+      name: "cycle capacity"
     runtime:
-      name: "${name} runtime"
+      name: "runtime"
     min_cell_voltage:
-      name: "${name} min cell voltage"
+      name: "min cell voltage"
     max_cell_voltage:
-      name: "${name} max cell voltage"
+      name: "max cell voltage"
     min_voltage_cell:
-      name: "${name} min voltage cell"
+      name: "min voltage cell"
     max_voltage_cell:
-      name: "${name} max voltage cell"
+      name: "max voltage cell"
     delta_voltage:
-      name: "${name} delta voltage"
+      name: "delta voltage"
     state_of_health:
-      name: "${name} state of health"
+      name: "state of health"
     capacity_remaining:
-      name: "${name} capacity remaining"
+      name: "capacity remaining"
     total_capacity:
-      name: "${name} total capacity"
+      name: "total capacity"
     rated_capacity:
-      name: "${name} rated capacity"
+      name: "rated capacity"
     min_cell_temperature:
-      name: "${name} min cell temperature"
+      name: "min cell temperature"
     max_cell_temperature:
-      name: "${name} max cell temperature"
+      name: "max cell temperature"
     min_temperature_cell:
-      name: "${name} min temperature cell"
+      name: "min temperature cell"
     max_temperature_cell:
-      name: "${name} max temperature cell"
+      name: "max temperature cell"
     min_pack_voltage:
-      name: "${name} min pack voltage"
+      name: "min pack voltage"
     max_pack_voltage:
-      name: "${name} max pack voltage"
+      name: "max pack voltage"
     min_pack_voltage_id:
-      name: "${name} min pack voltage id"
+      name: "min pack voltage id"
     max_pack_voltage_id:
-      name: "${name} max pack voltage id"
+      name: "max pack voltage id"
     system_state_code:
-      name: "${name} system state code"
+      name: "system state code"
     voltage_event_code:
-      name: "${name} voltage event code"
+      name: "voltage event code"
     temperature_event_code:
-      name: "${name} temperature event code"
+      name: "temperature event code"
     current_event_code:
-      name: "${name} current event code"
+      name: "current event code"
     max_discharge_current:
-      name: "${name} max discharge current"
+      name: "max discharge current"
     max_charge_current:
-      name: "${name} max charge current"
+      name: "max charge current"
 
   # Pack-specific sensors
   - platform: seplos_bms_v3_ble_pack
     seplos_bms_v3_ble_pack_id: pack0
     pack_voltage:
-      name: "${name} pack 0 voltage"
+      name: "pack 0 voltage"
     pack_current:
-      name: "${name} pack 0 current"
+      name: "pack 0 current"
     pack_battery_level:
-      name: "${name} pack 0 battery level"
+      name: "pack 0 battery level"
     pack_cycle:
-      name: "${name} pack 0 cycles"
+      name: "pack 0 cycles"
     pack_cell_voltage_1:
-      name: "${name} pack 0 cell 1 voltage"
+      name: "pack 0 cell 1 voltage"
     pack_cell_voltage_2:
-      name: "${name} pack 0 cell 2 voltage"
+      name: "pack 0 cell 2 voltage"
     pack_cell_voltage_3:
-      name: "${name} pack 0 cell 3 voltage"
+      name: "pack 0 cell 3 voltage"
     pack_cell_voltage_4:
-      name: "${name} pack 0 cell 4 voltage"
+      name: "pack 0 cell 4 voltage"
     pack_cell_voltage_5:
-      name: "${name} pack 0 cell 5 voltage"
+      name: "pack 0 cell 5 voltage"
     pack_cell_voltage_6:
-      name: "${name} pack 0 cell 6 voltage"
+      name: "pack 0 cell 6 voltage"
     pack_cell_voltage_7:
-      name: "${name} pack 0 cell 7 voltage"
+      name: "pack 0 cell 7 voltage"
     pack_cell_voltage_8:
-      name: "${name} pack 0 cell 8 voltage"
+      name: "pack 0 cell 8 voltage"
     pack_cell_voltage_9:
-      name: "${name} pack 0 cell 9 voltage"
+      name: "pack 0 cell 9 voltage"
     pack_cell_voltage_10:
-      name: "${name} pack 0 cell 10 voltage"
+      name: "pack 0 cell 10 voltage"
     pack_cell_voltage_11:
-      name: "${name} pack 0 cell 11 voltage"
+      name: "pack 0 cell 11 voltage"
     pack_cell_voltage_12:
-      name: "${name} pack 0 cell 12 voltage"
+      name: "pack 0 cell 12 voltage"
     pack_cell_voltage_13:
-      name: "${name} pack 0 cell 13 voltage"
+      name: "pack 0 cell 13 voltage"
     pack_cell_voltage_14:
-      name: "${name} pack 0 cell 14 voltage"
+      name: "pack 0 cell 14 voltage"
     pack_cell_voltage_15:
-      name: "${name} pack 0 cell 15 voltage"
+      name: "pack 0 cell 15 voltage"
     pack_cell_voltage_16:
-      name: "${name} pack 0 cell 16 voltage"
+      name: "pack 0 cell 16 voltage"
     pack_temperature_1:
-      name: "${name} pack 0 temperature 1"
+      name: "pack 0 temperature 1"
     pack_temperature_2:
-      name: "${name} pack 0 temperature 2"
+      name: "pack 0 temperature 2"
     pack_temperature_3:
-      name: "${name} pack 0 temperature 3"
+      name: "pack 0 temperature 3"
     pack_temperature_4:
-      name: "${name} pack 0 temperature 4"
+      name: "pack 0 temperature 4"
     ambient_temperature:
-      name: "${name} pack 0 ambient temperature"
+      name: "pack 0 ambient temperature"
     mosfet_temperature:
-      name: "${name} pack 0 mosfet temperature"
+      name: "pack 0 mosfet temperature"
 
   - platform: seplos_bms_v3_ble_pack
     seplos_bms_v3_ble_pack_id: pack1
     pack_voltage:
-      name: "${name} pack 1 voltage"
+      name: "pack 1 voltage"
     pack_current:
-      name: "${name} pack 1 current"
+      name: "pack 1 current"
     pack_battery_level:
-      name: "${name} pack 1 battery level"
+      name: "pack 1 battery level"
     pack_cycle:
-      name: "${name} pack 1 cycles"
+      name: "pack 1 cycles"
     pack_cell_voltage_1:
-      name: "${name} pack 1 cell 1 voltage"
+      name: "pack 1 cell 1 voltage"
     pack_cell_voltage_2:
-      name: "${name} pack 1 cell 2 voltage"
+      name: "pack 1 cell 2 voltage"
     pack_cell_voltage_3:
-      name: "${name} pack 1 cell 3 voltage"
+      name: "pack 1 cell 3 voltage"
     pack_cell_voltage_4:
-      name: "${name} pack 1 cell 4 voltage"
+      name: "pack 1 cell 4 voltage"
     pack_cell_voltage_5:
-      name: "${name} pack 1 cell 5 voltage"
+      name: "pack 1 cell 5 voltage"
     pack_cell_voltage_6:
-      name: "${name} pack 1 cell 6 voltage"
+      name: "pack 1 cell 6 voltage"
     pack_cell_voltage_7:
-      name: "${name} pack 1 cell 7 voltage"
+      name: "pack 1 cell 7 voltage"
     pack_cell_voltage_8:
-      name: "${name} pack 1 cell 8 voltage"
+      name: "pack 1 cell 8 voltage"
     pack_cell_voltage_9:
-      name: "${name} pack 1 cell 9 voltage"
+      name: "pack 1 cell 9 voltage"
     pack_cell_voltage_10:
-      name: "${name} pack 1 cell 10 voltage"
+      name: "pack 1 cell 10 voltage"
     pack_cell_voltage_11:
-      name: "${name} pack 1 cell 11 voltage"
+      name: "pack 1 cell 11 voltage"
     pack_cell_voltage_12:
-      name: "${name} pack 1 cell 12 voltage"
+      name: "pack 1 cell 12 voltage"
     pack_cell_voltage_13:
-      name: "${name} pack 1 cell 13 voltage"
+      name: "pack 1 cell 13 voltage"
     pack_cell_voltage_14:
-      name: "${name} pack 1 cell 14 voltage"
+      name: "pack 1 cell 14 voltage"
     pack_cell_voltage_15:
-      name: "${name} pack 1 cell 15 voltage"
+      name: "pack 1 cell 15 voltage"
     pack_cell_voltage_16:
-      name: "${name} pack 1 cell 16 voltage"
+      name: "pack 1 cell 16 voltage"
     pack_temperature_1:
-      name: "${name} pack 1 temperature 1"
+      name: "pack 1 temperature 1"
     pack_temperature_2:
-      name: "${name} pack 1 temperature 2"
+      name: "pack 1 temperature 2"
     pack_temperature_3:
-      name: "${name} pack 1 temperature 3"
+      name: "pack 1 temperature 3"
     pack_temperature_4:
-      name: "${name} pack 1 temperature 4"
+      name: "pack 1 temperature 4"
     ambient_temperature:
-      name: "${name} pack 1 ambient temperature"
+      name: "pack 1 ambient temperature"
     mosfet_temperature:
-      name: "${name} pack 1 mosfet temperature"
+      name: "pack 1 mosfet temperature"
 
 switch:
   - platform: ble_client
     ble_client_id: client0
-    name: "${name} enable bluetooth connection"
+    name: "enable bluetooth connection"
     id: ble_client_switch0
 
 text_sensor:
   - platform: seplos_bms_v3_ble
     seplos_bms_v3_ble_id: bms0
     problem:
-      name: "${name} problem"
+      name: "problem"
     factory_name:
-      name: "${name} factory name"
+      name: "factory name"
     device_name:
-      name: "${name} device name"
+      name: "device name"
     firmware_version:
-      name: "${name} firmware version"
+      name: "firmware version"
     bms_serial_number:
-      name: "${name} BMS serial number"
+      name: "BMS serial number"
     pack_serial_number:
-      name: "${name} pack serial number"
+      name: "pack serial number"

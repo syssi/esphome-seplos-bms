@@ -6,6 +6,7 @@ substitutions:
 
 esphome:
   name: ${name}
+  friendly_name: ${name}
   comment: ${device_description}
   project:
     name: "syssi.esphome-seplos-bms"
@@ -59,153 +60,153 @@ binary_sensor:
   - platform: seplos_bms_ble
     seplos_bms_ble_id: bms0
     charging:
-      name: "${name} charging"
+      name: "charging"
     discharging:
-      name: "${name} discharging"
+      name: "discharging"
     limiting_current:
-      name: "${name} limiting current"
+      name: "limiting current"
     online_status:
-      name: "${name} online status"
+      name: "online status"
 
 sensor:
   - platform: seplos_bms_ble
     seplos_bms_ble_id: bms0
     voltage_protection_bitmask:
-      name: "${name} voltage protection bitmask"
+      name: "voltage protection bitmask"
     current_protection_bitmask:
-      name: "${name} current protection bitmask"
+      name: "current protection bitmask"
     temperature_protection_bitmask:
-      name: "${name} temperature protection bitmask"
+      name: "temperature protection bitmask"
     alarm_event1_bitmask:
-      name: "${name} alarm event 1 bitmask"
+      name: "alarm event 1 bitmask"
     alarm_event2_bitmask:
-      name: "${name} alarm event 2 bitmask"
+      name: "alarm event 2 bitmask"
     alarm_event3_bitmask:
-      name: "${name} alarm event 3 bitmask"
+      name: "alarm event 3 bitmask"
     alarm_event4_bitmask:
-      name: "${name} alarm event 4 bitmask"
+      name: "alarm event 4 bitmask"
     alarm_event5_bitmask:
-      name: "${name} alarm event 5 bitmask"
+      name: "alarm event 5 bitmask"
     alarm_event6_bitmask:
-      name: "${name} alarm event 6 bitmask"
+      name: "alarm event 6 bitmask"
     alarm_event7_bitmask:
-      name: "${name} alarm event 7 bitmask"
+      name: "alarm event 7 bitmask"
     alarm_event8_bitmask:
-      name: "${name} alarm event 8 bitmask"
+      name: "alarm event 8 bitmask"
     total_voltage:
-      name: "${name} total voltage"
+      name: "total voltage"
     current:
-      name: "${name} current"
+      name: "current"
     power:
-      name: "${name} power"
+      name: "power"
     charging_power:
-      name: "${name} charging power"
+      name: "charging power"
     discharging_power:
-      name: "${name} discharging power"
+      name: "discharging power"
     capacity_remaining:
-      name: "${name} capacity remaining"
+      name: "capacity remaining"
     state_of_charge:
-      name: "${name} state of charge"
+      name: "state of charge"
     nominal_capacity:
-      name: "${name} nominal capacity"
+      name: "nominal capacity"
     charging_cycles:
-      name: "${name} charging cycles"
+      name: "charging cycles"
     min_cell_voltage:
-      name: "${name} min cell voltage"
+      name: "min cell voltage"
     max_cell_voltage:
-      name: "${name} max cell voltage"
+      name: "max cell voltage"
     min_voltage_cell:
-      name: "${name} min voltage cell"
+      name: "min voltage cell"
     max_voltage_cell:
-      name: "${name} max voltage cell"
+      name: "max voltage cell"
     delta_cell_voltage:
-      name: "${name} delta cell voltage"
+      name: "delta cell voltage"
     average_cell_voltage:
-      name: "${name} average cell voltage"
+      name: "average cell voltage"
     average_cell_temperature:
-      name: "${name} average cell temperature"
+      name: "average cell temperature"
     ambient_temperature:
-      name: "${name} ambient temperature"
+      name: "ambient temperature"
     mosfet_temperature:
-      name: "${name} mosfet temperature"
+      name: "mosfet temperature"
     state_of_health:
-      name: "${name} state of health"
+      name: "state of health"
     port_voltage:
-      name: "${name} port voltage"
+      name: "port voltage"
     battery_capacity:
-      name: "${name} battery capacity"
+      name: "battery capacity"
     temperature_1:
-      name: "${name} temperature 1"
+      name: "temperature 1"
     temperature_2:
-      name: "${name} temperature 2"
+      name: "temperature 2"
     temperature_3:
-      name: "${name} temperature 3"
+      name: "temperature 3"
     temperature_4:
-      name: "${name} temperature 4"
+      name: "temperature 4"
     cell_voltage_1:
-      name: "${name} cell voltage 1"
+      name: "cell voltage 1"
     cell_voltage_2:
-      name: "${name} cell voltage 2"
+      name: "cell voltage 2"
     cell_voltage_3:
-      name: "${name} cell voltage 3"
+      name: "cell voltage 3"
     cell_voltage_4:
-      name: "${name} cell voltage 4"
+      name: "cell voltage 4"
     cell_voltage_5:
-      name: "${name} cell voltage 5"
+      name: "cell voltage 5"
     cell_voltage_6:
-      name: "${name} cell voltage 6"
+      name: "cell voltage 6"
     cell_voltage_7:
-      name: "${name} cell voltage 7"
+      name: "cell voltage 7"
     cell_voltage_8:
-      name: "${name} cell voltage 8"
+      name: "cell voltage 8"
     cell_voltage_9:
-      name: "${name} cell voltage 9"
+      name: "cell voltage 9"
     cell_voltage_10:
-      name: "${name} cell voltage 10"
+      name: "cell voltage 10"
     cell_voltage_11:
-      name: "${name} cell voltage 11"
+      name: "cell voltage 11"
     cell_voltage_12:
-      name: "${name} cell voltage 12"
+      name: "cell voltage 12"
     cell_voltage_13:
-      name: "${name} cell voltage 13"
+      name: "cell voltage 13"
     cell_voltage_14:
-      name: "${name} cell voltage 14"
+      name: "cell voltage 14"
     cell_voltage_15:
-      name: "${name} cell voltage 15"
+      name: "cell voltage 15"
     cell_voltage_16:
-      name: "${name} cell voltage 16"
+      name: "cell voltage 16"
 
 switch:
   - platform: seplos_bms_ble
     seplos_bms_ble_id: bms0
     discharging:
-      name: "${name} discharging"
+      name: "discharging"
     charging:
-      name: "${name} charging"
+      name: "charging"
     current_limit:
-      name: "${name} current limit"
+      name: "current limit"
     heating:
-      name: "${name} heating"
+      name: "heating"
 
   - platform: ble_client
     ble_client_id: client0
-    name: "${name} enable bluetooth connection"
+    name: "enable bluetooth connection"
     id: ble_client_switch0
 
 text_sensor:
   - platform: seplos_bms_ble
     seplos_bms_ble_id: bms0
     software_version:
-      name: "${name} software version"
+      name: "software version"
     device_model:
-      name: "${name} device model"
+      name: "device model"
     hardware_version:
-      name: "${name} hardware version"
+      name: "hardware version"
     voltage_protection:
-      name: "${name} voltage protection"
+      name: "voltage protection"
     current_protection:
-      name: "${name} current protection"
+      name: "current protection"
     temperature_protection:
-      name: "${name} temperature protection"
+      name: "temperature protection"
     alarms:
-      name: "${name} alarms"
+      name: "alarms"

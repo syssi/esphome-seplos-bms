@@ -5,6 +5,7 @@ substitutions:
 
 esphome:
   name: ${name}
+  friendly_name: ${name}
 
 esp32:
   board: wemos_d1_mini32
