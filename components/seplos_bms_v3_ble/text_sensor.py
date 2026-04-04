@@ -3,7 +3,7 @@ from esphome.components import text_sensor
 import esphome.config_validation as cv
 from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
-from . import CONF_SEPLOS_BMS_V3_BLE_ID, SeplosBmsV3Ble
+from . import CONF_SEPLOS_BMS_V3_BLE_ID, SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["seplos_bms_v3_ble"]
 
@@ -26,9 +26,8 @@ TEXT_SENSORS = [
     CONF_PACK_SERIAL_NUMBER,
 ]
 
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
         cv.Optional(CONF_PROBLEM): text_sensor.text_sensor_schema(
             icon="mdi:alert-circle-outline",
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
