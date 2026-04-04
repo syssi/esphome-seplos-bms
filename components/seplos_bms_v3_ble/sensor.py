@@ -63,179 +63,270 @@ CONF_CURRENT_EVENT_CODE = "current_event_code"
 CONF_MAX_DISCHARGE_CURRENT = "max_discharge_current"
 CONF_MAX_CHARGE_CURRENT = "max_charge_current"
 
-SENSORS = [
-    CONF_TOTAL_VOLTAGE,
-    CONF_CURRENT,
-    CONF_POWER,
-    CONF_CHARGING_POWER,
-    CONF_DISCHARGING_POWER,
-    CONF_CAPACITY_REMAINING,
-    CONF_STATE_OF_CHARGE,
-    CONF_CHARGING_CYCLES,
-    CONF_AVERAGE_CELL_TEMPERATURE,
-    CONF_PACK_COUNT,
-    CONF_PROBLEM_CODE,
-    CONF_CYCLE_CHARGE,
-    CONF_CYCLE_CAPACITY,
-    CONF_RUNTIME,
-    CONF_STATE_OF_HEALTH,
-    CONF_TOTAL_CAPACITY,
-    CONF_RATED_CAPACITY,
-    CONF_MIN_CELL_TEMPERATURE,
-    CONF_MAX_CELL_TEMPERATURE,
-    CONF_MIN_TEMPERATURE_CELL,
-    CONF_MAX_TEMPERATURE_CELL,
-    CONF_MIN_PACK_VOLTAGE,
-    CONF_MAX_PACK_VOLTAGE,
-    CONF_MIN_PACK_VOLTAGE_ID,
-    CONF_MAX_PACK_VOLTAGE_ID,
-    CONF_SYSTEM_STATE_CODE,
-    CONF_VOLTAGE_EVENT_CODE,
-    CONF_TEMPERATURE_EVENT_CODE,
-    CONF_CURRENT_EVENT_CODE,
-    CONF_MAX_DISCHARGE_CURRENT,
-    CONF_MAX_CHARGE_CURRENT,
-    CONF_MIN_CELL_VOLTAGE,
-    CONF_MAX_CELL_VOLTAGE,
-    CONF_MIN_VOLTAGE_CELL,
-    CONF_MAX_VOLTAGE_CELL,
-    CONF_DELTA_VOLTAGE,
-]
-
-
-def sensor_schema(
-    unit,
-    icon,
-    accuracy_decimals=1,
-    device_class=DEVICE_CLASS_EMPTY,
-    state_class=STATE_CLASS_MEASUREMENT,
-):
-    return sensor.sensor_schema(
-        unit_of_measurement=unit,
-        icon=icon,
-        accuracy_decimals=accuracy_decimals,
-        device_class=device_class,
-        state_class=state_class,
-    )
-
+# key: sensor_schema kwargs
+SENSOR_DEFS = {
+    CONF_TOTAL_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": ICON_EMPTY,
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CURRENT: {
+        "unit_of_measurement": UNIT_AMPERE,
+        "icon": "mdi:current-dc",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_CURRENT,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_POWER: {
+        "unit_of_measurement": UNIT_WATT,
+        "icon": ICON_EMPTY,
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_POWER,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CHARGING_POWER: {
+        "unit_of_measurement": UNIT_WATT,
+        "icon": ICON_EMPTY,
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_POWER,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_DISCHARGING_POWER: {
+        "unit_of_measurement": UNIT_WATT,
+        "icon": ICON_EMPTY,
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_POWER,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CAPACITY_REMAINING: {
+        "unit_of_measurement": UNIT_WATT_HOURS,
+        "icon": "mdi:battery-50",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_STATE_OF_CHARGE: {
+        "unit_of_measurement": UNIT_PERCENT,
+        "icon": "mdi:battery-50",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CHARGING_CYCLES: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:battery-sync",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_TOTAL_INCREASING,
+    },
+    CONF_AVERAGE_CELL_TEMPERATURE: {
+        "unit_of_measurement": UNIT_CELSIUS,
+        "icon": ICON_EMPTY,
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_PACK_COUNT: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:package-variant",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_PROBLEM_CODE: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:alert-circle-outline",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CYCLE_CHARGE: {
+        "unit_of_measurement": UNIT_WATT_HOURS,
+        "icon": "mdi:battery-charging-100",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_TOTAL_INCREASING,
+    },
+    CONF_CYCLE_CAPACITY: {
+        "unit_of_measurement": UNIT_WATT_HOURS,
+        "icon": "mdi:battery-50",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_TOTAL_INCREASING,
+    },
+    CONF_RUNTIME: {
+        "unit_of_measurement": UNIT_HOUR,
+        "icon": "mdi:timer",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_TOTAL_INCREASING,
+    },
+    CONF_STATE_OF_HEALTH: {
+        "unit_of_measurement": UNIT_PERCENT,
+        "icon": "mdi:battery-heart",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_TOTAL_CAPACITY: {
+        "unit_of_measurement": UNIT_WATT_HOURS,
+        "icon": "mdi:battery-outline",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_RATED_CAPACITY: {
+        "unit_of_measurement": UNIT_WATT_HOURS,
+        "icon": "mdi:battery-check",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MIN_CELL_TEMPERATURE: {
+        "unit_of_measurement": UNIT_CELSIUS,
+        "icon": "mdi:thermometer-minus",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_CELL_TEMPERATURE: {
+        "unit_of_measurement": UNIT_CELSIUS,
+        "icon": "mdi:thermometer-plus",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MIN_TEMPERATURE_CELL: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:thermometer-minus",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_TEMPERATURE_CELL: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:thermometer-plus",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MIN_PACK_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-minus",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_PACK_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-plus",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MIN_PACK_VOLTAGE_ID: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:battery-minus",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_PACK_VOLTAGE_ID: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:battery-plus",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_SYSTEM_STATE_CODE: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:state-machine",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_VOLTAGE_EVENT_CODE: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:flash-alert",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_TEMPERATURE_EVENT_CODE: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:thermometer-alert",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CURRENT_EVENT_CODE: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:current-ac",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_DISCHARGE_CURRENT: {
+        "unit_of_measurement": UNIT_AMPERE,
+        "icon": "mdi:battery-arrow-down",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_CURRENT,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_CHARGE_CURRENT: {
+        "unit_of_measurement": UNIT_AMPERE,
+        "icon": "mdi:battery-arrow-up",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_CURRENT,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MIN_CELL_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-minus-outline",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_CELL_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-plus-outline",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MIN_VOLTAGE_CELL: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:battery-minus-outline",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_MAX_VOLTAGE_CELL: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:battery-plus-outline",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_DELTA_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-unknown",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+}
 
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
-        cv.Optional(CONF_TOTAL_VOLTAGE): sensor_schema(
-            UNIT_VOLT, ICON_EMPTY, 2, DEVICE_CLASS_VOLTAGE
-        ),
-        cv.Optional(CONF_CURRENT): sensor_schema(
-            UNIT_AMPERE, "mdi:current-dc", 1, DEVICE_CLASS_CURRENT
-        ),
-        cv.Optional(CONF_POWER): sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 1, DEVICE_CLASS_POWER
-        ),
-        cv.Optional(CONF_CHARGING_POWER): sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 1, DEVICE_CLASS_POWER
-        ),
-        cv.Optional(CONF_DISCHARGING_POWER): sensor_schema(
-            UNIT_WATT, ICON_EMPTY, 1, DEVICE_CLASS_POWER
-        ),
-        cv.Optional(CONF_CAPACITY_REMAINING): sensor_schema(
-            UNIT_WATT_HOURS, "mdi:battery-50", 1
-        ),
-        cv.Optional(CONF_STATE_OF_CHARGE): sensor_schema(
-            UNIT_PERCENT, "mdi:battery-50", 1
-        ),
-        cv.Optional(CONF_CHARGING_CYCLES): sensor_schema(
-            UNIT_EMPTY, "mdi:battery-sync", 0, state_class=STATE_CLASS_TOTAL_INCREASING
-        ),
-        cv.Optional(CONF_AVERAGE_CELL_TEMPERATURE): sensor_schema(
-            UNIT_CELSIUS, ICON_EMPTY, 1, DEVICE_CLASS_TEMPERATURE
-        ),
-        cv.Optional(CONF_PACK_COUNT): sensor_schema(
-            UNIT_EMPTY, "mdi:package-variant", 0
-        ),
-        cv.Optional(CONF_PROBLEM_CODE): sensor_schema(
-            UNIT_EMPTY, "mdi:alert-circle-outline", 0
-        ),
-        cv.Optional(CONF_CYCLE_CHARGE): sensor_schema(
-            UNIT_WATT_HOURS,
-            "mdi:battery-charging-100",
-            2,
-            state_class=STATE_CLASS_TOTAL_INCREASING,
-        ),
-        cv.Optional(CONF_CYCLE_CAPACITY): sensor_schema(
-            UNIT_WATT_HOURS,
-            "mdi:battery-50",
-            2,
-            state_class=STATE_CLASS_TOTAL_INCREASING,
-        ),
-        cv.Optional(CONF_RUNTIME): sensor_schema(
-            UNIT_HOUR, "mdi:timer", 1, state_class=STATE_CLASS_TOTAL_INCREASING
-        ),
-        cv.Optional(CONF_STATE_OF_HEALTH): sensor_schema(
-            UNIT_PERCENT, "mdi:battery-heart", 1
-        ),
-        cv.Optional(CONF_TOTAL_CAPACITY): sensor_schema(
-            UNIT_WATT_HOURS, "mdi:battery-outline", 1
-        ),
-        cv.Optional(CONF_RATED_CAPACITY): sensor_schema(
-            UNIT_WATT_HOURS, "mdi:battery-check", 1
-        ),
-        cv.Optional(CONF_MIN_CELL_TEMPERATURE): sensor_schema(
-            UNIT_CELSIUS, "mdi:thermometer-minus", 1, DEVICE_CLASS_TEMPERATURE
-        ),
-        cv.Optional(CONF_MAX_CELL_TEMPERATURE): sensor_schema(
-            UNIT_CELSIUS, "mdi:thermometer-plus", 1, DEVICE_CLASS_TEMPERATURE
-        ),
-        cv.Optional(CONF_MIN_TEMPERATURE_CELL): sensor_schema(
-            UNIT_EMPTY, "mdi:thermometer-minus", 0
-        ),
-        cv.Optional(CONF_MAX_TEMPERATURE_CELL): sensor_schema(
-            UNIT_EMPTY, "mdi:thermometer-plus", 0
-        ),
-        cv.Optional(CONF_MIN_PACK_VOLTAGE): sensor_schema(
-            UNIT_VOLT, "mdi:battery-minus", 2, DEVICE_CLASS_VOLTAGE
-        ),
-        cv.Optional(CONF_MAX_PACK_VOLTAGE): sensor_schema(
-            UNIT_VOLT, "mdi:battery-plus", 2, DEVICE_CLASS_VOLTAGE
-        ),
-        cv.Optional(CONF_MIN_PACK_VOLTAGE_ID): sensor_schema(
-            UNIT_EMPTY, "mdi:battery-minus", 0
-        ),
-        cv.Optional(CONF_MAX_PACK_VOLTAGE_ID): sensor_schema(
-            UNIT_EMPTY, "mdi:battery-plus", 0
-        ),
-        cv.Optional(CONF_SYSTEM_STATE_CODE): sensor_schema(
-            UNIT_EMPTY, "mdi:state-machine", 0
-        ),
-        cv.Optional(CONF_VOLTAGE_EVENT_CODE): sensor_schema(
-            UNIT_EMPTY, "mdi:flash-alert", 0
-        ),
-        cv.Optional(CONF_TEMPERATURE_EVENT_CODE): sensor_schema(
-            UNIT_EMPTY, "mdi:thermometer-alert", 0
-        ),
-        cv.Optional(CONF_CURRENT_EVENT_CODE): sensor_schema(
-            UNIT_EMPTY, "mdi:current-ac", 0
-        ),
-        cv.Optional(CONF_MAX_DISCHARGE_CURRENT): sensor_schema(
-            UNIT_AMPERE, "mdi:battery-arrow-down", 1, DEVICE_CLASS_CURRENT
-        ),
-        cv.Optional(CONF_MAX_CHARGE_CURRENT): sensor_schema(
-            UNIT_AMPERE, "mdi:battery-arrow-up", 1, DEVICE_CLASS_CURRENT
-        ),
-        cv.Optional(CONF_MIN_CELL_VOLTAGE): sensor_schema(
-            UNIT_VOLT, "mdi:battery-minus-outline", 3, DEVICE_CLASS_VOLTAGE
-        ),
-        cv.Optional(CONF_MAX_CELL_VOLTAGE): sensor_schema(
-            UNIT_VOLT, "mdi:battery-plus-outline", 3, DEVICE_CLASS_VOLTAGE
-        ),
-        cv.Optional(CONF_MIN_VOLTAGE_CELL): sensor_schema(
-            UNIT_EMPTY, "mdi:battery-minus-outline", 0
-        ),
-        cv.Optional(CONF_MAX_VOLTAGE_CELL): sensor_schema(
-            UNIT_EMPTY, "mdi:battery-plus-outline", 0
-        ),
-        cv.Optional(CONF_DELTA_VOLTAGE): sensor_schema(
-            UNIT_VOLT, "mdi:battery-unknown", 3, DEVICE_CLASS_VOLTAGE
-        ),
+    }
+).extend(
+    {
+        cv.Optional(key): sensor.sensor_schema(**kwargs)
+        for key, kwargs in SENSOR_DEFS.items()
     }
 )
 
@@ -243,7 +334,7 @@ CONFIG_SCHEMA = cv.Schema(
 async def to_code(config):
     hub = await cg.get_variable(config[CONF_SEPLOS_BMS_V3_BLE_ID])
 
-    for key in SENSORS:
+    for key in SENSOR_DEFS:
         if key in config:
             conf = config[key]
             sens = await sensor.new_sensor(conf)
