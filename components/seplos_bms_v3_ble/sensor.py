@@ -22,7 +22,7 @@ from esphome.const import (
     UNIT_WATT_HOURS,
 )
 
-from . import CONF_SEPLOS_BMS_V3_BLE_ID, SeplosBmsV3Ble
+from . import CONF_SEPLOS_BMS_V3_BLE_ID, SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA
 
 DEPENDENCIES = ["seplos_bms_v3_ble"]
 
@@ -319,11 +319,7 @@ SENSOR_DEFS = {
     },
 }
 
-CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
-    }
-).extend(
+CONFIG_SCHEMA = SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA.extend(
     {
         cv.Optional(key): sensor.sensor_schema(**kwargs)
         for key, kwargs in SENSOR_DEFS.items()

@@ -17,6 +17,12 @@ SeplosBmsV3Ble = seplos_bms_v3_ble_ns.class_(
 )
 SeplosBmsV3BlePackBase = seplos_bms_v3_ble_ns.class_("SeplosBmsV3BlePack")
 
+SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_SEPLOS_BMS_V3_BLE_ID): cv.use_id(SeplosBmsV3Ble),
+    }
+)
+
 CONFIG_SCHEMA = cv.All(
     cv.require_esphome_version(2024, 12, 0),
     cv.Schema(
