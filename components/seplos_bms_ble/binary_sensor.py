@@ -19,37 +19,35 @@ ICON_DISCHARGING = "mdi:power-plug"
 ICON_LIMITING_CURRENT = "mdi:car-speed-limiter"
 ICON_ONLINE_STATUS = "mdi:heart-pulse"
 
-BINARY_SENSORS = [
-    CONF_CHARGING,
-    CONF_DISCHARGING,
-    CONF_LIMITING_CURRENT,
-    CONF_ONLINE_STATUS,
-]
+# key: binary_sensor_schema kwargs
+BINARY_SENSOR_DEFS = {
+    CONF_CHARGING: {"icon": ICON_CHARGING},
+    CONF_DISCHARGING: {"icon": ICON_DISCHARGING},
+    CONF_LIMITING_CURRENT: {
+        "icon": ICON_LIMITING_CURRENT,
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_ONLINE_STATUS: {
+        "icon": ICON_ONLINE_STATUS,
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+}
 
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_SEPLOS_BMS_BLE_ID): cv.use_id(SeplosBmsBle),
-        cv.Optional(CONF_CHARGING): binary_sensor.binary_sensor_schema(
-            icon=ICON_CHARGING
-        ),
-        cv.Optional(CONF_DISCHARGING): binary_sensor.binary_sensor_schema(
-            icon=ICON_DISCHARGING
-        ),
-        cv.Optional(CONF_LIMITING_CURRENT): binary_sensor.binary_sensor_schema(
-            icon=ICON_LIMITING_CURRENT,
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
-        ),
-        cv.Optional(CONF_ONLINE_STATUS): binary_sensor.binary_sensor_schema(
-            icon=ICON_ONLINE_STATUS,
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
-        ),
+    }
+).extend(
+    {
+        cv.Optional(key): binary_sensor.binary_sensor_schema(**kwargs)
+        for key, kwargs in BINARY_SENSOR_DEFS.items()
     }
 )
 
 
 async def to_code(config):
     hub = await cg.get_variable(config[CONF_SEPLOS_BMS_BLE_ID])
-    for key in BINARY_SENSORS:
+    for key in BINARY_SENSOR_DEFS:
         if key in config:
             conf = config[key]
             sens = await binary_sensor.new_binary_sensor(conf)
