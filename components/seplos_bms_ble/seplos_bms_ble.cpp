@@ -29,7 +29,7 @@ static uint16_t crc_xmodem(const uint8_t *data, uint16_t len) {
 
 static const char *const TAG = "seplos_bms_ble";
 
-static const char *const ALARM_EVENT1_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT1_MESSAGES[8] = {
     "Voltage sensing failure",      // Bit 0
     "Temperature sensing failure",  // Bit 1
     "Current sensing failure",      // Bit 2
@@ -40,7 +40,7 @@ static const char *const ALARM_EVENT1_MESSAGES[8] = {
     "Current limit switch failure"  // Bit 7
 };
 
-static const char *const ALARM_EVENT2_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT2_MESSAGES[8] = {
     "Single high voltage alarm",       // Bit 0
     "Single overvoltage protection",   // Bit 1
     "Single low voltage alarm",        // Bit 2
@@ -51,7 +51,7 @@ static const char *const ALARM_EVENT2_MESSAGES[8] = {
     "Total undervoltage protection"    // Bit 7
 };
 
-static const char *const ALARM_EVENT3_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT3_MESSAGES[8] = {
     "Charging high temp alarm",       // Bit 0
     "Charging overtemp protection",   // Bit 1
     "Charging low temp alarm",        // Bit 2
@@ -62,7 +62,7 @@ static const char *const ALARM_EVENT3_MESSAGES[8] = {
     "Discharge undertemp protection"  // Bit 7
 };
 
-static const char *const ALARM_EVENT4_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT4_MESSAGES[8] = {
     "Ambient high temp alarm",       // Bit 0
     "Ambient overtemp protection",   // Bit 1
     "Ambient low temp alarm",        // Bit 2
@@ -73,7 +73,7 @@ static const char *const ALARM_EVENT4_MESSAGES[8] = {
     "Secondary trip protection"      // Bit 7
 };
 
-static const char *const ALARM_EVENT5_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT5_MESSAGES[8] = {
     "Charging overcurrent alarm",        // Bit 0
     "Charging overcurrent protection",   // Bit 1
     "Discharge overcurrent alarm",       // Bit 2
@@ -84,7 +84,7 @@ static const char *const ALARM_EVENT5_MESSAGES[8] = {
     "Output short circuit lockout"       // Bit 7
 };
 
-static const char *const ALARM_EVENT6_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT6_MESSAGES[8] = {
     "Charging high voltage protection",    // Bit 0
     "Intermittent power replenishment",    // Bit 1
     "Remaining capacity alarm",            // Bit 2
@@ -95,7 +95,7 @@ static const char *const ALARM_EVENT6_MESSAGES[8] = {
     "Internal alarm"                       // Bit 7
 };
 
-static const char *const ALARM_EVENT7_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT7_MESSAGES[8] = {
     "Internal alarm 1",            // Bit 0
     "Internal alarm 2",            // Bit 1
     "Internal alarm 3",            // Bit 2
@@ -106,7 +106,7 @@ static const char *const ALARM_EVENT7_MESSAGES[8] = {
     "Internal alarm 7"             // Bit 7
 };
 
-static const char *const ALARM_EVENT8_MESSAGES[8] = {
+static constexpr const char *const ALARM_EVENT8_MESSAGES[8] = {
     "EEP storage failure",              // Bit 0
     "RTC clock failure",                // Bit 1
     "Voltage calibration not done",     // Bit 2
