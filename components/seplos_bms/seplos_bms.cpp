@@ -10,7 +10,6 @@ static constexpr char TAG[] = "seplos_bms";
 static constexpr uint8_t MAX_NO_RESPONSE_COUNT = 5;
 
 // clang-format off
-// Alarm event name tables for decode_all_alarm_events_
 static constexpr const char *const ALARM_EVENT1_NAMES[] = {
     "Voltage sensor fault",
     "Temperature sensor fault",
@@ -19,7 +18,9 @@ static constexpr const char *const ALARM_EVENT1_NAMES[] = {
     "Cell voltage dropout fault",
     "Charge switch fault",
     "Discharge switch fault",
-    "Current limit switch fault"};
+    "Current limit switch fault"
+};
+
 static constexpr const char *const ALARM_EVENT2_NAMES[] = {
     "Cell high voltage alarm",
     "Cell overvoltage protection",
@@ -28,7 +29,9 @@ static constexpr const char *const ALARM_EVENT2_NAMES[] = {
     "Pack high voltage alarm",
     "Pack overvoltage protection",
     "Pack low voltage alarm",
-    "Pack undervoltage protection"};
+    "Pack undervoltage protection"
+};
+
 static constexpr const char *const ALARM_EVENT3_NAMES[] = {
     "Charge high temp alarm",
     "Charge overtemp protection",
@@ -37,7 +40,9 @@ static constexpr const char *const ALARM_EVENT3_NAMES[] = {
     "Discharge high temp alarm",
     "Discharge overtemp protection",
     "Discharge low temp alarm",
-    "Discharge undertemp protection"};
+    "Discharge undertemp protection"
+};
+
 static constexpr const char *const ALARM_EVENT4_NAMES[] = {
     "Env high temp alarm",
     "Env overtemp protection",
@@ -46,7 +51,9 @@ static constexpr const char *const ALARM_EVENT4_NAMES[] = {
     "Power overtemp protection",
     "Power high temp alarm",
     "Cell low temp heating",
-    "Reserved"};
+    "Reserved"
+};
+
 static constexpr const char *const ALARM_EVENT5_NAMES[] = {
     "Charge overcurrent alarm",
     "Charge overcurrent protection",
@@ -55,7 +62,9 @@ static constexpr const char *const ALARM_EVENT5_NAMES[] = {
     "Transient overcurrent protection",
     "Output short circuit protection",
     "Transient overcurrent lockout",
-    "Output short circuit lockout"};
+    "Output short circuit lockout"
+};
+
 static constexpr const char *const ALARM_EVENT6_NAMES[] = {
     "Charge high voltage protection",
     "Intermittent recharge waiting",
@@ -64,7 +73,9 @@ static constexpr const char *const ALARM_EVENT6_NAMES[] = {
     "Cell low voltage charging prohibition",
     "Output reverse polarity protection",
     "Output connection fault",
-    "Inside bit"};
+    "Inside bit"
+};
+
 static constexpr const char *const ALARM_EVENT7_NAMES[] = {
     "Inside bit",
     "Inside bit",
@@ -73,7 +84,9 @@ static constexpr const char *const ALARM_EVENT7_NAMES[] = {
     "Automatic charging waiting",
     "Manual charging waiting",
     "Inside bit",
-    "Inside bit"};
+    "Inside bit"
+};
+
 static constexpr const char *const ALARM_EVENT8_NAMES[] = {
     "EEP storage fault",
     "RTC error",
@@ -82,7 +95,8 @@ static constexpr const char *const ALARM_EVENT8_NAMES[] = {
     "Zero calibration not performed",
     "Inside bit",
     "Inside bit",
-    "Inside bit"};
+    "Inside bit"
+};
 // clang-format on
 
 void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
