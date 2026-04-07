@@ -10,11 +10,46 @@ DEPENDENCIES = ["seplos_bms"]
 CODEOWNERS = ["@syssi"]
 
 CONF_ONLINE_STATUS = "online_status"
+CONF_CHARGING = "charging"
+CONF_DISCHARGING = "discharging"
+CONF_VOLTAGE_PROTECTION = "voltage_protection"
+CONF_TEMPERATURE_PROTECTION = "temperature_protection"
+CONF_CURRENT_PROTECTION = "current_protection"
+CONF_SOC_PROTECTION = "soc_protection"
+CONF_BALANCING = "balancing"
 
 # key: binary_sensor_schema kwargs
 BINARY_SENSOR_DEFS = {
     CONF_ONLINE_STATUS: {
         "device_class": DEVICE_CLASS_CONNECTIVITY,
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_CHARGING: {
+        "icon": "mdi:battery-charging",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_DISCHARGING: {
+        "icon": "mdi:power-plug",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_VOLTAGE_PROTECTION: {
+        "icon": "mdi:flash-alert",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_TEMPERATURE_PROTECTION: {
+        "icon": "mdi:thermometer-alert",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_CURRENT_PROTECTION: {
+        "icon": "mdi:current-ac",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_SOC_PROTECTION: {
+        "icon": "mdi:battery-alert",
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_BALANCING: {
+        "icon": "mdi:scale-balance",
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
 }
