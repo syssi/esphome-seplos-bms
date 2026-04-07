@@ -291,7 +291,8 @@ _CELL_VOLTAGE_SCHEMA = sensor.sensor_schema(
     icon=ICON_EMPTY,
     accuracy_decimals=3,
     device_class=DEVICE_CLASS_VOLTAGE,
-    state_class=STATE_CLASS_MEASUREMENT,)
+    state_class=STATE_CLASS_MEASUREMENT,
+)
 _TEMPERATURE_SCHEMA = sensor.sensor_schema(
     unit_of_measurement=UNIT_CELSIUS,
     icon=ICON_EMPTY,
@@ -308,7 +309,8 @@ CONFIG_SCHEMA = (
         }
     )
     .extend({cv.Optional(key): _CELL_VOLTAGE_SCHEMA for key in CELLS})
-    .extend({cv.Optional(key): _TEMPERATURE_SCHEMA for key in TEMPERATURES}))
+    .extend({cv.Optional(key): _TEMPERATURE_SCHEMA for key in TEMPERATURES})
+)
 
 
 async def to_code(config):

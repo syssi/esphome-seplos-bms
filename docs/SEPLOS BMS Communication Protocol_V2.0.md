@@ -2,7 +2,7 @@
 
 **MODBUS-ASCII Communication Protocol**
 
-**Applicable interfaces:** RS485  
+**Applicable interfaces:** RS485
 **Applicable models:** EMU10XX, 11XX Series
 
 ---
