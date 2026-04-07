@@ -45,7 +45,7 @@ class TestSeplosBmsSensorLists:
     def test_sensor_defs_completeness(self):
         assert "total_voltage" in sensor.SENSOR_DEFS
         assert "state_of_charge" in sensor.SENSOR_DEFS
-        assert len(sensor.SENSOR_DEFS) == 18
+        assert len(sensor.SENSOR_DEFS) == 29
 
     def test_no_cell_keys_in_sensor_defs(self):
         for key in sensor.SENSOR_DEFS:
@@ -56,13 +56,13 @@ class TestSeplosBmsSensorLists:
 class TestSeplosBmsBinarySensorConstants:
     def test_binary_sensor_defs_dict(self):
         assert binary_sensor.CONF_ONLINE_STATUS in binary_sensor.BINARY_SENSOR_DEFS
-        assert len(binary_sensor.BINARY_SENSOR_DEFS) == 1
+        assert len(binary_sensor.BINARY_SENSOR_DEFS) == 8
 
 
 class TestSeplosBmsTextSensorConstants:
     def test_text_sensors_list(self):
         assert text_sensor.CONF_ERRORS in text_sensor.TEXT_SENSORS
-        assert len(text_sensor.TEXT_SENSORS) == 1
+        assert len(text_sensor.TEXT_SENSORS) == 2
 
 
 class TestSeplosBmsBleSensorLists:

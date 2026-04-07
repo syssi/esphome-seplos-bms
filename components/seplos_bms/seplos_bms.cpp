@@ -5,9 +5,40 @@
 namespace esphome {
 namespace seplos_bms {
 
-static const char *const TAG = "seplos_bms";
+static constexpr char TAG[] = "seplos_bms";
 
-static const uint8_t MAX_NO_RESPONSE_COUNT = 5;
+static constexpr uint8_t MAX_NO_RESPONSE_COUNT = 5;
+
+// Alarm event name tables for decode_all_alarm_events_
+static constexpr const char *const ALARM_EVENT1_NAMES[] = {
+    "Voltage sensor fault",       "Temperature sensor fault", "Current sensor fault",   "Key switch fault",
+    "Cell voltage dropout fault", "Charge switch fault",      "Discharge switch fault", "Current limit switch fault"};
+static constexpr const char *const ALARM_EVENT2_NAMES[] = {
+    "Cell high voltage alarm", "Cell overvoltage protection", "Cell low voltage alarm",  "Cell undervoltage protection",
+    "Pack high voltage alarm", "Pack overvoltage protection", "Pack low voltage alarm",  "Pack undervoltage protection"};
+static constexpr const char *const ALARM_EVENT3_NAMES[] = {
+    "Charge high temp alarm",    "Charge overtemp protection",    "Charge low temp alarm",     "Charge undertemp protection",
+    "Discharge high temp alarm", "Discharge overtemp protection", "Discharge low temp alarm",  "Discharge undertemp protection"};
+static constexpr const char *const ALARM_EVENT4_NAMES[] = {
+    "Env high temp alarm",       "Env overtemp protection", "Env low temp alarm",    "Env undertemp protection",
+    "Power overtemp protection", "Power high temp alarm",   "Cell low temp heating", "Reserved"};
+static constexpr const char *const ALARM_EVENT5_NAMES[] = {
+    "Charge overcurrent alarm",         "Charge overcurrent protection",    "Discharge overcurrent alarm",
+    "Discharge overcurrent protection", "Transient overcurrent protection", "Output short circuit protection",
+    "Transient overcurrent lockout",    "Output short circuit lockout"};
+static constexpr const char *const ALARM_EVENT6_NAMES[] = {
+    "Charge high voltage protection",      "Intermittent recharge waiting",
+    "Residual capacity alarm",             "Residual capacity protection",
+    "Cell low voltage charging prohibition", "Output reverse polarity protection",
+    "Output connection fault",             "Inside bit"};
+static constexpr const char *const ALARM_EVENT7_NAMES[] = {
+    "Inside bit", "Inside bit", "Inside bit", "Inside bit",
+    "Automatic charging waiting", "Manual charging waiting", "Inside bit", "Inside bit"};
+static constexpr const char *const ALARM_EVENT8_NAMES[] = {
+    "EEP storage fault",                    "RTC error",
+    "Voltage calibration not performed",    "Current calibration not performed",
+    "Zero calibration not performed",       "Inside bit",
+    "Inside bit",                           "Inside bit"};
 
 void SeplosBms::on_seplos_modbus_data(const std::vector<uint8_t> &data) {
   this->reset_online_status_tracker_();
@@ -649,10 +680,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
                                                 uint8_t alarm_event7, uint8_t alarm_event8) {
   std::string alarm_text;
 
-  // Alarm Event 1 - Hardware failures
-  static const char *const ALARM_EVENT1_NAMES[] = {
-      "Voltage sensor fault",       "Temperature sensor fault", "Current sensor fault",   "Key switch fault",
-      "Cell voltage dropout fault", "Charge switch fault",      "Discharge switch fault", "Current limit switch fault"};
   std::string alarm_event1_text = this->bitmask_to_string_(ALARM_EVENT1_NAMES, 8, alarm_event1);
   if (!alarm_event1_text.empty()) {
     if (!alarm_text.empty())
@@ -660,11 +687,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("HW: ").append(alarm_event1_text);
   }
 
-  // Alarm Event 2 - Voltage alarms
-  static const char *const ALARM_EVENT2_NAMES[] = {"Cell high voltage alarm", "Cell overvoltage protection",
-                                                   "Cell low voltage alarm",  "Cell undervoltage protection",
-                                                   "Pack high voltage alarm", "Pack overvoltage protection",
-                                                   "Pack low voltage alarm",  "Pack undervoltage protection"};
   std::string alarm_event2_text = this->bitmask_to_string_(ALARM_EVENT2_NAMES, 8, alarm_event2);
   if (!alarm_event2_text.empty()) {
     if (!alarm_text.empty())
@@ -672,11 +694,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("VOLT: ").append(alarm_event2_text);
   }
 
-  // Alarm Event 3 - Cell temperature
-  static const char *const ALARM_EVENT3_NAMES[] = {"Charge high temp alarm",    "Charge overtemp protection",
-                                                   "Charge low temp alarm",     "Charge undertemp protection",
-                                                   "Discharge high temp alarm", "Discharge overtemp protection",
-                                                   "Discharge low temp alarm",  "Discharge undertemp protection"};
   std::string alarm_event3_text = this->bitmask_to_string_(ALARM_EVENT3_NAMES, 8, alarm_event3);
   if (!alarm_event3_text.empty()) {
     if (!alarm_text.empty())
@@ -684,10 +701,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("TEMP: ").append(alarm_event3_text);
   }
 
-  // Alarm Event 4 - Environment temperature
-  static const char *const ALARM_EVENT4_NAMES[] = {
-      "Env high temp alarm",       "Env overtemp protection", "Env low temp alarm",    "Env undertemp protection",
-      "Power overtemp protection", "Power high temp alarm",   "Cell low temp heating", "Reserved"};
   std::string alarm_event4_text = this->bitmask_to_string_(ALARM_EVENT4_NAMES, 8, alarm_event4);
   if (!alarm_event4_text.empty()) {
     if (!alarm_text.empty())
@@ -695,11 +708,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("ENV: ").append(alarm_event4_text);
   }
 
-  // Alarm Event 5 - Current protection
-  static const char *const ALARM_EVENT5_NAMES[] = {
-      "Charge overcurrent alarm",         "Charge overcurrent protection",    "Discharge overcurrent alarm",
-      "Discharge overcurrent protection", "Transient overcurrent protection", "Output short circuit protection",
-      "Transient overcurrent lockout",    "Output short circuit lockout"};
   std::string alarm_event5_text = this->bitmask_to_string_(ALARM_EVENT5_NAMES, 8, alarm_event5);
   if (!alarm_event5_text.empty()) {
     if (!alarm_text.empty())
@@ -707,15 +715,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("CURR: ").append(alarm_event5_text);
   }
 
-  // Alarm Event 6 - Charging/output protection
-  static const char *const ALARM_EVENT6_NAMES[] = {"Charge high voltage protection",
-                                                   "Intermittent recharge waiting",
-                                                   "Residual capacity alarm",
-                                                   "Residual capacity protection",
-                                                   "Cell low voltage charging prohibition",
-                                                   "Output reverse polarity protection",
-                                                   "Output connection fault",
-                                                   "Inside bit"};
   std::string alarm_event6_text = this->bitmask_to_string_(ALARM_EVENT6_NAMES, 8, alarm_event6);
   if (!alarm_event6_text.empty()) {
     if (!alarm_text.empty())
@@ -723,10 +722,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("CHG: ").append(alarm_event6_text);
   }
 
-  // Alarm Event 7 - System status
-  static const char *const ALARM_EVENT7_NAMES[] = {
-      "Inside bit", "Inside bit", "Inside bit", "Inside bit", "Automatic charging waiting", "Manual charging waiting",
-      "Inside bit", "Inside bit"};
   std::string alarm_event7_text = this->bitmask_to_string_(ALARM_EVENT7_NAMES, 8, alarm_event7);
   if (!alarm_event7_text.empty()) {
     if (!alarm_text.empty())
@@ -734,15 +729,6 @@ std::string SeplosBms::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t al
     alarm_text.append("SYS: ").append(alarm_event7_text);
   }
 
-  // Alarm Event 8 - Calibration/storage faults
-  static const char *const ALARM_EVENT8_NAMES[] = {"EEP storage fault",
-                                                   "RTC error",
-                                                   "Voltage calibration not performed",
-                                                   "Current calibration not performed",
-                                                   "Zero calibration not performed",
-                                                   "Inside bit",
-                                                   "Inside bit",
-                                                   "Inside bit"};
   std::string alarm_event8_text = this->bitmask_to_string_(ALARM_EVENT8_NAMES, 8, alarm_event8);
   if (!alarm_event8_text.empty()) {
     if (!alarm_text.empty())
