@@ -4,8 +4,6 @@
 #include "esphome/components/sensor/sensor.h"
 #include "../seplos_bms_v3_ble/seplos_bms_v3_ble.h"
 
-#ifdef USE_ESP32
-
 namespace esphome::seplos_bms_v3_ble_pack {
 
 class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBmsV3BlePack {
@@ -46,5 +44,3 @@ class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBms
 };
 
 }  // namespace esphome::seplos_bms_v3_ble_pack
-
-#endif
