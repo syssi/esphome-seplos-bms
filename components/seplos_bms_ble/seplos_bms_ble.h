@@ -12,8 +12,7 @@
 
 #include <esp_gattc_api.h>
 
-namespace esphome {
-namespace seplos_bms_ble {
+namespace esphome::seplos_bms_ble {
 
 namespace espbt = esphome::esp32_ble_tracker;
 
@@ -241,7 +240,6 @@ class SeplosBmsBle : public esphome::ble_client::BLEClientNode, public PollingCo
   bool check_bit_(uint16_t mask, uint16_t flag) { return (mask & flag) == flag; }
 };
 
-}  // namespace seplos_bms_ble
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_ble
 
 #endif

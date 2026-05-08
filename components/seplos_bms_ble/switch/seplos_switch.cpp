@@ -2,8 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/application.h"
 
-namespace esphome {
-namespace seplos_bms_ble {
+namespace esphome::seplos_bms_ble {
 
 static const char *const TAG = "seplos_bms_ble.switch";
 
@@ -32,5 +31,4 @@ void SeplosSwitch::write_state(bool state) {
   }
 }
 
-}  // namespace seplos_bms_ble
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_ble

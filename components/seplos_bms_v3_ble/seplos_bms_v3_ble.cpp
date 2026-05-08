@@ -11,8 +11,7 @@
 #define ADDR_STR(x) (x).c_str()
 #endif
 
-namespace esphome {
-namespace seplos_bms_v3_ble {
+namespace esphome::seplos_bms_v3_ble {
 
 static const char *const TAG = "seplos_bms_v3_ble";
 
@@ -654,5 +653,4 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
            this->dynamic_command_queue_.size(), this->pack_devices_.size());
 }
 
-}  // namespace seplos_bms_v3_ble
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_v3_ble

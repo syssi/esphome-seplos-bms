@@ -9,8 +9,7 @@
 #define ADDR_STR(x) (x).c_str()
 #endif
 
-namespace esphome {
-namespace seplos_bms_ble {
+namespace esphome::seplos_bms_ble {
 
 static uint16_t crc_xmodem(const uint8_t *data, uint16_t len) {
   uint16_t crc = 0x0000;
@@ -1370,5 +1369,4 @@ std::string SeplosBmsBle::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t
   return all_alarms;
 }
 
-}  // namespace seplos_bms_ble
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_ble

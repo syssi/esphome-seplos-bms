@@ -2,8 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
-namespace esphome {
-namespace seplos_modbus {
+namespace esphome::seplos_modbus {
 
 static const char *const TAG = "seplos_modbus";
 
@@ -181,5 +180,4 @@ void SeplosModbus::send(uint8_t protocol_version, uint8_t address, uint8_t funct
     this->flow_control_pin_->digital_write(false);
 }
 
-}  // namespace seplos_modbus
-}  // namespace esphome
+}  // namespace esphome::seplos_modbus

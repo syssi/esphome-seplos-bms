@@ -6,8 +6,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/seplos_modbus/seplos_modbus.h"
 
-namespace esphome {
-namespace seplos_bms {
+namespace esphome::seplos_bms {
 
 class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDevice {
  public:
@@ -122,5 +121,4 @@ class SeplosBms : public PollingComponent, public seplos_modbus::SeplosModbusDev
   void publish_device_unavailable_();
 };
 
-}  // namespace seplos_bms
-}  // namespace esphome
+}  // namespace esphome::seplos_bms
