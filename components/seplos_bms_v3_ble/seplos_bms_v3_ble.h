@@ -279,7 +279,6 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   void build_dynamic_command_queue_();
 };
 
-}  // namespace seplos_bms_v3_ble
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_v3_ble
 
 #endif

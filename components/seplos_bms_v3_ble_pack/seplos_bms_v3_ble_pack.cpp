@@ -1,8 +1,7 @@
 #include "seplos_bms_v3_ble_pack.h"
 #include "esphome/core/log.h"
 
-namespace esphome {
-namespace seplos_bms_v3_ble_pack {
+namespace esphome::seplos_bms_v3_ble_pack {
 
 static const char *const TAG = "seplos_bms_v3_ble_pack";
 
@@ -203,5 +202,4 @@ void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data)
     ESP_LOGE(TAG, "  - Short circuit protection!");
 }
 
-}  // namespace seplos_bms_v3_ble_pack
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_v3_ble_pack

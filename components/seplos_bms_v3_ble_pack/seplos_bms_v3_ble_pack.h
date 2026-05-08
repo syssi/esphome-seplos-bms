@@ -6,8 +6,7 @@
 
 #ifdef USE_ESP32
 
-namespace esphome {
-namespace seplos_bms_v3_ble_pack {
+namespace esphome::seplos_bms_v3_ble_pack {
 
 class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBmsV3BlePack {
  public:
@@ -46,7 +45,6 @@ class SeplosBmsV3BlePack : public Component, public seplos_bms_v3_ble::SeplosBms
   sensor::Sensor *mosfet_temperature_sensor_{nullptr};
 };
 
-}  // namespace seplos_bms_v3_ble_pack
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_v3_ble_pack
 
 #endif

@@ -2,8 +2,7 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
-namespace esphome {
-namespace seplos_bms {
+namespace esphome::seplos_bms {
 
 static const char *const TAG = "seplos_bms";
 
@@ -278,5 +277,4 @@ void SeplosBms::publish_device_unavailable_() {
   }
 }
 
-}  // namespace seplos_bms
-}  // namespace esphome
+}  // namespace esphome::seplos_bms

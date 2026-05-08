@@ -4,8 +4,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/switch/switch.h"
 
-namespace esphome {
-namespace seplos_bms_ble {
+namespace esphome::seplos_bms_ble {
 
 class SeplosBmsBle;
 class SeplosSwitch : public switch_::Switch, public Component {
@@ -22,5 +21,4 @@ class SeplosSwitch : public switch_::Switch, public Component {
   uint8_t holding_register_;
 };
 
-}  // namespace seplos_bms_ble
-}  // namespace esphome
+}  // namespace esphome::seplos_bms_ble

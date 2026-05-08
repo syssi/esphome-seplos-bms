@@ -3,8 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
-namespace esphome {
-namespace seplos_modbus {
+namespace esphome::seplos_modbus {
 
 class SeplosModbusDevice;
 
@@ -59,5 +58,4 @@ class SeplosModbusDevice {
   uint8_t protocol_version_;
 };
 
-}  // namespace seplos_modbus
-}  // namespace esphome
+}  // namespace esphome::seplos_modbus
