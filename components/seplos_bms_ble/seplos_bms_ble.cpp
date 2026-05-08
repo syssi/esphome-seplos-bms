@@ -147,6 +147,7 @@ static const SeplosCommand SEPLOS_COMMAND_QUEUE[SEPLOS_COMMAND_QUEUE_SIZE] = {
     {SEPLOS_CMD_GET_SINGLE_MACHINE_DATA, {0x00}},
     {SEPLOS_CMD_GET_PARALLEL_DATA, {}}};
 
+#ifdef USE_ESP32
 void SeplosBmsBle::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                                        esp_ble_gattc_cb_param_t *param) {
   switch (event) {
@@ -236,6 +237,9 @@ void SeplosBmsBle::update() {
                      SEPLOS_COMMAND_QUEUE[this->next_command_].payload);
   this->next_command_++;
 }
+#else
+void SeplosBmsBle::update() {}
+#endif  // USE_ESP32
 
 void SeplosBmsBle::assemble(const uint8_t *data, uint16_t length) {
   if (this->frame_buffer_.size() > MAX_RESPONSE_SIZE) {
@@ -1285,6 +1289,7 @@ void SeplosBmsBle::publish_state_(switch_::Switch *obj, const bool &state) {
   obj->publish_state(state);
 }
 
+#ifdef USE_ESP32
 bool SeplosBmsBle::send_command(uint8_t function, const std::vector<uint8_t> &payload) {
   std::vector<uint8_t> data;
   data.push_back(0x10);      // VER
@@ -1320,10 +1325,13 @@ bool SeplosBmsBle::send_command(uint8_t function, const std::vector<uint8_t> &pa
 
   return (status == 0);
 }
+#else
+bool SeplosBmsBle::send_command(uint8_t function, const std::vector<uint8_t> &payload) { return false; }
+#endif  // USE_ESP32
 
 std::string SeplosBmsBle::bitmask_to_string_(const char *const messages[], const uint8_t &messages_size,
                                              const uint8_t &mask) {
-  std::string values = "";
+  std::string values;
   if (mask) {
     for (uint8_t i = 0; i < messages_size; i++) {
       if (mask & (1 << i)) {
@@ -1341,7 +1349,7 @@ std::string SeplosBmsBle::bitmask_to_string_(const char *const messages[], const
 std::string SeplosBmsBle::decode_all_alarm_events_(uint8_t alarm_event1, uint8_t alarm_event2, uint8_t alarm_event3,
                                                    uint8_t alarm_event4, uint8_t alarm_event5, uint8_t alarm_event6,
                                                    uint8_t alarm_event7, uint8_t alarm_event8) {
-  std::string all_alarms = "";
+  std::string all_alarms;
 
   uint8_t alarm_events[8] = {alarm_event1, alarm_event2, alarm_event3, alarm_event4,
                              alarm_event5, alarm_event6, alarm_event7, alarm_event8};

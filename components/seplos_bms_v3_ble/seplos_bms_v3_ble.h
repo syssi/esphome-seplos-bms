@@ -1,23 +1,21 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/ble_client/ble_client.h"
-#include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 
 #ifdef USE_ESP32
-
+#include "esphome/components/ble_client/ble_client.h"
+#include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
 #include <esp_gattc_api.h>
-
-namespace esphome::seplos_bms_v3_ble_pack {
-class SeplosBmsV3BlePack;
-}  // namespace esphome::seplos_bms_v3_ble_pack
+#endif
 
 namespace esphome::seplos_bms_v3_ble {
 
+#ifdef USE_ESP32
 namespace espbt = esphome::esp32_ble_tracker;
+#endif
 
 class SeplosBmsV3Ble;
 
@@ -41,10 +39,16 @@ struct SeplosV3Command {
   uint16_t reg_count;
 };
 
-class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public PollingComponent {
+class SeplosBmsV3Ble :
+#ifdef USE_ESP32
+    public esphome::ble_client::BLEClientNode,
+#endif
+    public PollingComponent {
  public:
+#ifdef USE_ESP32
   void gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                            esp_ble_gattc_cb_param_t *param) override;
+#endif
   void dump_config() override;
   void update() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
@@ -255,8 +259,10 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   text_sensor::TextSensor *pack_serial_number_text_sensor_{nullptr};
 
   std::vector<uint8_t> frame_buffer_;
+#ifdef USE_ESP32
   uint16_t char_notify_handle_{0};
   uint16_t char_command_handle_{0};
+#endif
   uint8_t next_command_{0};
   uint8_t pack_count_{0};
   std::vector<SeplosBmsV3BlePack *> pack_devices_;
@@ -267,7 +273,9 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
   void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
   void publish_state_(sensor::Sensor *sensor, float value);
   void publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state);
+#ifdef USE_ESP32
   bool send_command_(uint8_t function, const std::vector<uint8_t> &payload);
+#endif
   void decode_eia_data_(const std::vector<uint8_t> &data);
   void decode_eib_data_(const std::vector<uint8_t> &data);
   void decode_eic_data_(const std::vector<uint8_t> &data);
@@ -278,5 +286,3 @@ class SeplosBmsV3Ble : public esphome::ble_client::BLEClientNode, public Polling
 };
 
 }  // namespace esphome::seplos_bms_v3_ble
-
-#endif

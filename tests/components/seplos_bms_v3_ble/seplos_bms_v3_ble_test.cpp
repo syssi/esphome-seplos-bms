@@ -1,0 +1,146 @@
+#include <gtest/gtest.h>
+#include "common.h"
+#include "frames.h"
+
+namespace esphome::seplos_bms_v3_ble::testing {
+
+// ── Voltage, current, power ───────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleStatusTest, VoltageCurrentPower) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor voltage, current, power, charging_power, discharging_power;
+  binary_sensor::BinarySensor charging, discharging;
+  bms.set_total_voltage_sensor(&voltage);
+  bms.set_current_sensor(&current);
+  bms.set_power_sensor(&power);
+  bms.set_charging_power_sensor(&charging_power);
+  bms.set_discharging_power_sensor(&discharging_power);
+  bms.set_charging_binary_sensor(&charging);
+  bms.set_discharging_binary_sensor(&discharging);
+
+  bms.decode_eia(EIA_DATA);
+
+  EXPECT_NEAR(voltage.state, 52.80f, 0.01f);
+  EXPECT_NEAR(current.state, 10.0f, 0.01f);
+  EXPECT_NEAR(power.state, 528.0f, 1.0f);
+  EXPECT_NEAR(charging_power.state, 528.0f, 1.0f);
+  EXPECT_NEAR(discharging_power.state, 0.0f, 0.01f);
+  EXPECT_TRUE(charging.state);
+  EXPECT_FALSE(discharging.state);
+}
+
+// ── Capacity and state of charge ──────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleStatusTest, CapacityAndStateOfCharge) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor soc, soh, cycles, cap_rem, total_cap, rated_cap, cycle_charge;
+  bms.set_state_of_charge_sensor(&soc);
+  bms.set_state_of_health_sensor(&soh);
+  bms.set_charging_cycles_sensor(&cycles);
+  bms.set_capacity_remaining_sensor(&cap_rem);
+  bms.set_total_capacity_sensor(&total_cap);
+  bms.set_rated_capacity_sensor(&rated_cap);
+  bms.set_cycle_charge_sensor(&cycle_charge);
+
+  bms.decode_eia(EIA_DATA);
+
+  EXPECT_NEAR(soc.state, 75.0f, 0.1f);
+  EXPECT_NEAR(soh.state, 98.0f, 0.1f);
+  EXPECT_FLOAT_EQ(cycles.state, 50.0f);
+  EXPECT_NEAR(cap_rem.state, 150.0f, 0.01f);
+  EXPECT_NEAR(total_cap.state, 200.0f, 0.01f);
+  EXPECT_NEAR(rated_cap.state, 200.0f, 0.01f);
+  EXPECT_NEAR(cycle_charge.state, 1000.0f, 0.01f);
+}
+
+// ── Cell voltage statistics ───────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleStatusTest, CellVoltageStats) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor max_v, min_v, max_cell, min_cell, delta;
+  bms.set_max_cell_voltage_sensor(&max_v);
+  bms.set_min_cell_voltage_sensor(&min_v);
+  bms.set_max_voltage_cell_sensor(&max_cell);
+  bms.set_min_voltage_cell_sensor(&min_cell);
+  bms.set_delta_voltage_sensor(&delta);
+
+  bms.decode_eib(EIB_DATA);
+
+  EXPECT_NEAR(max_v.state, 3.340f, 0.001f);
+  EXPECT_NEAR(min_v.state, 3.280f, 0.001f);
+  EXPECT_FLOAT_EQ(max_cell.state, 4.0f);
+  EXPECT_FLOAT_EQ(min_cell.state, 11.0f);
+  EXPECT_NEAR(delta.state, 0.060f, 0.001f);
+}
+
+// ── Pack voltage statistics ───────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleStatusTest, PackVoltageStats) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor max_pack, min_pack, max_pack_id, min_pack_id;
+  bms.set_max_pack_voltage_sensor(&max_pack);
+  bms.set_min_pack_voltage_sensor(&min_pack);
+  bms.set_max_pack_voltage_id_sensor(&max_pack_id);
+  bms.set_min_pack_voltage_id_sensor(&min_pack_id);
+
+  bms.decode_eib(EIB_DATA);
+
+  EXPECT_NEAR(max_pack.state, 53.00f, 0.01f);
+  EXPECT_NEAR(min_pack.state, 52.80f, 0.01f);
+  EXPECT_FLOAT_EQ(max_pack_id.state, 2.0f);
+  EXPECT_FLOAT_EQ(min_pack_id.state, 1.0f);
+}
+
+// ── Cell temperature statistics ───────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleStatusTest, CellTemperatureStats) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor max_temp, min_temp, avg_temp, max_temp_cell, min_temp_cell;
+  bms.set_max_cell_temperature_sensor(&max_temp);
+  bms.set_min_cell_temperature_sensor(&min_temp);
+  bms.set_average_cell_temperature_sensor(&avg_temp);
+  bms.set_max_temperature_cell_sensor(&max_temp_cell);
+  bms.set_min_temperature_cell_sensor(&min_temp_cell);
+
+  bms.decode_eib(EIB_DATA);
+
+  EXPECT_NEAR(max_temp.state, 26.05f, 0.1f);
+  EXPECT_NEAR(min_temp.state, 24.05f, 0.1f);
+  EXPECT_NEAR(avg_temp.state, 25.05f, 0.1f);
+  EXPECT_FLOAT_EQ(max_temp_cell.state, 3.0f);
+  EXPECT_FLOAT_EQ(min_temp_cell.state, 7.0f);
+}
+
+// ── Problem code ──────────────────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleStatusTest, ProblemCodeNoProblems) {
+  TestableSeplosBmsV3Ble bms;
+  text_sensor::TextSensor problem_text;
+  bms.set_problem_text_sensor(&problem_text);
+
+  bms.decode_eic(EIC_DATA_NO_PROBLEM);
+
+  EXPECT_EQ(problem_text.state, "No problems");
+}
+
+TEST(SeplosBmsV3BleStatusTest, ProblemCodeWithProblem) {
+  TestableSeplosBmsV3Ble bms;
+  text_sensor::TextSensor problem_text;
+  bms.set_problem_text_sensor(&problem_text);
+
+  bms.decode_eic(EIC_DATA_WITH_PROBLEM);
+
+  EXPECT_EQ(problem_text.state, "Problem detected");
+}
+
+// ── Null sensors do not crash ─────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
+  TestableSeplosBmsV3Ble bms;
+
+  EXPECT_NO_FATAL_FAILURE(bms.decode_eia(EIA_DATA));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_eib(EIB_DATA));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_NO_PROBLEM));
+}
+
+}  // namespace esphome::seplos_bms_v3_ble::testing

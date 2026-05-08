@@ -61,6 +61,7 @@ static const SeplosV3Command SEPLOS_V3_PACK_COMMANDS[] = {
     {0x00, SEPLOS_V3_CMD_READ_01, SEPLOS_V3_REG_PIC_START, SEPLOS_V3_PIC_LENGTH},
 };
 
+#ifdef USE_ESP32
 void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if,
                                          esp_ble_gattc_cb_param_t *param) {
   switch (event) {
@@ -122,11 +123,14 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
   }
 }
 
+#endif  // USE_ESP32
+
 void SeplosBmsV3Ble::dump_config() {
   ESP_LOGCONFIG(TAG, "Seplos BMS V3 BLE");
   ESP_LOGCONFIG(TAG, "  Update interval: %dms", this->get_update_interval());
 }
 
+#ifdef USE_ESP32
 void SeplosBmsV3Ble::update() {
   if (this->node_state != espbt::ClientState::ESTABLISHED) {
     ESP_LOGW(TAG, "[%s] Not connected", ADDR_STR(this->parent_->address_str()));
@@ -148,6 +152,9 @@ void SeplosBmsV3Ble::update() {
     this->next_command_++;
   }
 }
+#else
+void SeplosBmsV3Ble::update() {}
+#endif  // USE_ESP32
 
 void SeplosBmsV3Ble::assemble(const uint8_t *data, uint16_t length) {
   if (this->frame_buffer_.size() > MAX_RESPONSE_SIZE) {
@@ -178,12 +185,14 @@ void SeplosBmsV3Ble::assemble(const uint8_t *data, uint16_t length) {
         std::vector<uint8_t> complete_frame(this->frame_buffer_.begin(), this->frame_buffer_.begin() + expected_length);
         this->decode(complete_frame);
 
+#ifdef USE_ESP32
         // Send next command if available
         if (this->next_command_ < this->dynamic_command_queue_.size()) {
           this->send_command_(this->dynamic_command_queue_[this->next_command_].function,
                               this->build_modbus_payload_(this->dynamic_command_queue_[this->next_command_]));
           this->next_command_++;
         }
+#endif
       } else {
         ESP_LOGW(TAG, "CRC check failed! 0x%04X != 0x%04X", computed_crc, frame_crc);
       }
@@ -337,7 +346,7 @@ void SeplosBmsV3Ble::decode_eib_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Decoding EIB data (%d bytes)", data.size());
 
   // Debug: Print raw hex data
-  std::string hex_str = "";
+  std::string hex_str;
   for (size_t i = 0; i < std::min((size_t) 32, data.size()); i++) {
     char hex[4];
     sprintf(hex, "%02X ", data[i]);  // NOLINT
@@ -554,6 +563,7 @@ void SeplosBmsV3Ble::decode_spa_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Balancing Delta: %d mV", seplos_get_16bit(54));
 }
 
+#ifdef USE_ESP32
 bool SeplosBmsV3Ble::send_command_(uint8_t function, const std::vector<uint8_t> &payload) {
   if (this->node_state != espbt::ClientState::ESTABLISHED) {
     ESP_LOGW(TAG, "Not connected, cannot send command");
@@ -572,6 +582,7 @@ bool SeplosBmsV3Ble::send_command_(uint8_t function, const std::vector<uint8_t> 
 
   return true;
 }
+#endif  // USE_ESP32
 
 std::vector<uint8_t> SeplosBmsV3Ble::build_modbus_payload_(const SeplosV3Command &cmd) {
   std::vector<uint8_t> payload;

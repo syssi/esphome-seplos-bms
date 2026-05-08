@@ -1,0 +1,8 @@
+seplos_bms_v3_ble:
+  id: test_bms_parent
+  update_interval: 20s
+
+seplos_bms_v3_ble_pack:
+  id: test_pack
+  seplos_bms_v3_ble_id: test_bms_parent
+  address: 0x01
