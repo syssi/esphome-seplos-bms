@@ -11,10 +11,6 @@
 #include <esp_gattc_api.h>
 #endif
 
-namespace esphome::seplos_bms_v3_ble_pack {
-class SeplosBmsV3BlePack;
-}  // namespace esphome::seplos_bms_v3_ble_pack
-
 namespace esphome::seplos_bms_v3_ble {
 
 #ifdef USE_ESP32
