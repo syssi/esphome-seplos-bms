@@ -11,13 +11,11 @@
 
 #include <esp_gattc_api.h>
 
-namespace esphome {
-
-namespace seplos_bms_v3_ble_pack {
+namespace esphome::seplos_bms_v3_ble_pack {
 class SeplosBmsV3BlePack;
-}
+}  // namespace esphome::seplos_bms_v3_ble_pack
 
-namespace seplos_bms_v3_ble {
+namespace esphome::seplos_bms_v3_ble {
 
 namespace espbt = esphome::esp32_ble_tracker;
 
