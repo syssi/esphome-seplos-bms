@@ -1,0 +1,7 @@
+uart:
+  - id: uart_bus
+    baud_rate: 9600
+
+seplos_modbus:
+  - id: modbus_bus
+    uart_id: uart_bus
