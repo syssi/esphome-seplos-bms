@@ -79,10 +79,10 @@ void SeplosBmsV3BlePack::decode_pack_pia_data_(const std::vector<uint8_t> &data)
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGD(TAG, "Decoding PIA data for pack 0x%02X (%d bytes)", this->get_address(), data.size());
+  ESP_LOGD(TAG, "Decoding PIA data for pack 0x%02X (%zu bytes)", this->get_address(), data.size());
 
   if (data.size() < 34) {
-    ESP_LOGW(TAG, "PIA data too short: %d bytes", data.size());
+    ESP_LOGW(TAG, "PIA data too short: %zu bytes", data.size());
     return;
   }
 
@@ -97,10 +97,10 @@ void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data)
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGD(TAG, "Decoding PIB data for pack 0x%02X (%d bytes)", this->get_address(), data.size());
+  ESP_LOGD(TAG, "Decoding PIB data for pack 0x%02X (%zu bytes)", this->get_address(), data.size());
 
   if (data.size() < 52) {
-    ESP_LOGW(TAG, "PIB data too short: %d bytes", data.size());
+    ESP_LOGW(TAG, "PIB data too short: %zu bytes", data.size());
     return;
   }
 
@@ -124,10 +124,10 @@ void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data)
 }
 
 void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGD(TAG, "Decoding PIC data for pack 0x%02X (%d bytes)", this->get_address(), data.size());
+  ESP_LOGD(TAG, "Decoding PIC data for pack 0x%02X (%zu bytes)", this->get_address(), data.size());
 
   if (data.size() < 288) {  // 0x90 * 2 = 288 bytes
-    ESP_LOGW(TAG, "PIC data too short: %d bytes (expected 288)", data.size());
+    ESP_LOGW(TAG, "PIC data too short: %zu bytes (expected 288)", data.size());
     return;
   }
 

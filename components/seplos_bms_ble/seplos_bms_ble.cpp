@@ -350,7 +350,7 @@ void SeplosBmsBle::decode_manufacturer_info_data_(const std::vector<uint8_t> &da
 
   // Expected frame size: 7 (header) + 35 (data) + 2 (CRC) + 1 (EOF) = 45 bytes
   if (data.size() < 45) {
-    ESP_LOGW(TAG, "Hardware version frame too short (%d bytes, expected 45)", data.size());
+    ESP_LOGW(TAG, "Hardware version frame too short (%zu bytes, expected 45)", data.size());
     return;
   }
 
@@ -450,7 +450,7 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data.size() < 145) {
-    ESP_LOGW(TAG, "Settings frame too short (%d bytes)", data.size());
+    ESP_LOGW(TAG, "Settings frame too short (%zu bytes)", data.size());
     return;
   }
 
@@ -703,7 +703,7 @@ void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data.size() < 58) {
-    ESP_LOGW(TAG, "Parallel data frame too short (%d bytes)", data.size());
+    ESP_LOGW(TAG, "Parallel data frame too short (%zu bytes)", data.size());
     return;
   }
 
@@ -872,7 +872,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
 
   if (data.size() < 60) {
-    ESP_LOGW(TAG, "Status frame too short (%d bytes)", data.size());
+    ESP_LOGW(TAG, "Status frame too short (%zu bytes)", data.size());
     return;
   }
 
@@ -885,7 +885,7 @@ void SeplosBmsBle::decode_single_machine_data_(const std::vector<uint8_t> &data)
   ESP_LOGD(TAG, "Number of cells: %d", cells);
 
   if (data.size() < 7 + 3 + (cells * 2) + 1 + (temperatures * 2) + 58 + 2 + 1) {
-    ESP_LOGW(TAG, "Status frame too short (%d bytes)", data.size());
+    ESP_LOGW(TAG, "Status frame too short (%zu bytes)", data.size());
     return;
   }
 
