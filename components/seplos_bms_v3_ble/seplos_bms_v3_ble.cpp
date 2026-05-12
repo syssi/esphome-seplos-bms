@@ -262,7 +262,7 @@ void SeplosBmsV3Ble::decode_eia_data_(const std::vector<uint8_t> &data) {
            (uint32_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGD(TAG, "Decoding EIA data (%d bytes)", data.size());
+  ESP_LOGD(TAG, "Decoding EIA data (%zu bytes)", data.size());
 
   // Voltage
   float voltage = seplos_get_32bit(0) * 0.01f;
@@ -343,7 +343,7 @@ void SeplosBmsV3Ble::decode_eib_data_(const std::vector<uint8_t> &data) {
     return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
   };
 
-  ESP_LOGD(TAG, "Decoding EIB data (%d bytes)", data.size());
+  ESP_LOGD(TAG, "Decoding EIB data (%zu bytes)", data.size());
 
   // Debug: Print raw hex data
   std::string hex_str;
@@ -432,7 +432,7 @@ void SeplosBmsV3Ble::decode_eib_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsV3Ble::decode_eic_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGD(TAG, "Decoding EIC data (%d bytes)", data.size());
+  ESP_LOGD(TAG, "Decoding EIC data (%zu bytes)", data.size());
 
   // Problem code (1-9, 64-bit)
   uint64_t problem_code = 0;
@@ -449,7 +449,7 @@ void SeplosBmsV3Ble::decode_eic_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsV3Ble::decode_pct_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGD(TAG, "Decoding PCT data (Protocol Control Type) - %d bytes", data.size());
+  ESP_LOGD(TAG, "Decoding PCT data (Protocol Control Type) - %zu bytes", data.size());
 
   // Length field (byte 2)
   uint8_t length = data[2];
@@ -484,10 +484,10 @@ void SeplosBmsV3Ble::decode_pct_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsV3Ble::decode_sfa_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGD(TAG, "Decoding SFA data (System Function Switches) - %d bytes", data.size());
+  ESP_LOGD(TAG, "Decoding SFA data (System Function Switches) - %zu bytes", data.size());
 
   if (data.size() < 20) {
-    ESP_LOGW(TAG, "SFA data too short: %d bytes", data.size());
+    ESP_LOGW(TAG, "SFA data too short: %zu bytes", data.size());
     return;
   }
 
@@ -504,10 +504,10 @@ void SeplosBmsV3Ble::decode_sfa_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsV3Ble::decode_spa_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGD(TAG, "Decoding SPA data (System Parameters) - %d bytes", data.size());
+  ESP_LOGD(TAG, "Decoding SPA data (System Parameters) - %zu bytes", data.size());
 
   if (data.size() < 106) {  // 0x35 * 2 = 106 bytes
-    ESP_LOGW(TAG, "SPA data too short: %d bytes", data.size());
+    ESP_LOGW(TAG, "SPA data too short: %zu bytes", data.size());
     return;
   }
 
