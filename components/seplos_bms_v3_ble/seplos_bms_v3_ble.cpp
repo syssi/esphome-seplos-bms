@@ -637,7 +637,7 @@ void SeplosBmsV3Ble::publish_state_(text_sensor::TextSensor *text_sensor, const 
 
 void SeplosBmsV3Ble::build_dynamic_command_queue_() {
   if (!this->dynamic_command_queue_.empty()) {
-    ESP_LOGD(TAG, "Command queue already built with %d commands, skipping rebuild",
+    ESP_LOGD(TAG, "Command queue already built with %zu commands, skipping rebuild",
              this->dynamic_command_queue_.size());
     return;
   }
@@ -660,7 +660,7 @@ void SeplosBmsV3Ble::build_dynamic_command_queue_() {
     }
   }
 
-  ESP_LOGD(TAG, "Built dynamic command queue with %d commands for %d registered packs",
+  ESP_LOGD(TAG, "Built dynamic command queue with %zu commands for %zu registered packs",
            this->dynamic_command_queue_.size(), this->pack_devices_.size());
 }
 
