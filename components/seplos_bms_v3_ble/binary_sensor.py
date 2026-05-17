@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import binary_sensor
 import esphome.config_validation as cv
-from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
+from esphome.const import DEVICE_CLASS_PROBLEM, ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_V3_BLE_ID, SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA
 
@@ -28,18 +28,22 @@ BINARY_SENSOR_DEFS = {
     },
     CONF_VOLTAGE_PROTECTION: {
         "icon": "mdi:flash-alert",
+        "device_class": DEVICE_CLASS_PROBLEM,
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
     CONF_TEMPERATURE_PROTECTION: {
         "icon": "mdi:thermometer-alert",
+        "device_class": DEVICE_CLASS_PROBLEM,
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
     CONF_CURRENT_PROTECTION: {
         "icon": "mdi:current-ac",
+        "device_class": DEVICE_CLASS_PROBLEM,
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
     CONF_SYSTEM_FAULT: {
         "icon": "mdi:alert-circle",
+        "device_class": DEVICE_CLASS_PROBLEM,
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
 }
