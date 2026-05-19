@@ -2,7 +2,6 @@ substitutions:
   name: seplos-bms-ble
   device_description: "Monitor a Seplos Battery Management System via BLE"
   external_components_source: github://syssi/esphome-seplos-bms@main
-  mac_address: 90:A6:BF:93:A0:69
 
 esphome:
   name: ${name}
@@ -49,7 +48,7 @@ api:
 esp32_ble_tracker:
 
 ble_client:
-  - mac_address: ${mac_address}
+  - mac_address: !secret bms0_mac_address
     id: client0
 
 seplos_bms_ble:
