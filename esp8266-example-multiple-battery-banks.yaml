@@ -15,6 +15,13 @@ esphome:
   project:
     name: "syssi.esphome-seplos-bms"
     version: 1.5.0
+  devices:
+    - id: device0
+      name: "${battery_bank0}"
+    - id: device1
+      name: "${battery_bank1}"
+    - id: device2
+      name: "${battery_bank2}"
 
 esp8266:
   board: d1_mini
@@ -90,72 +97,99 @@ sensor:
   - platform: seplos_bms
     seplos_bms_id: battery_bank0
     min_cell_voltage:
-      name: "${battery_bank0} min cell voltage"
+      name: "min cell voltage"
+      device_id: device0
     max_cell_voltage:
-      name: "${battery_bank0} max cell voltage"
+      name: "max cell voltage"
+      device_id: device0
     delta_cell_voltage:
-      name: "${battery_bank0} delta cell voltage"
+      name: "delta cell voltage"
+      device_id: device0
     average_cell_voltage:
-      name: "${battery_bank0} average cell voltage"
+      name: "average cell voltage"
+      device_id: device0
     total_voltage:
-      name: "${battery_bank0} total voltage"
+      name: "total voltage"
+      device_id: device0
     current:
-      name: "${battery_bank0} current"
+      name: "current"
+      device_id: device0
     power:
-      name: "${battery_bank0} power"
+      name: "power"
+      device_id: device0
     state_of_charge:
-      name: "${battery_bank0} state of charge"
+      name: "state of charge"
+      device_id: device0
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank1
     min_cell_voltage:
-      name: "${battery_bank1} min cell voltage"
+      name: "min cell voltage"
+      device_id: device1
     max_cell_voltage:
-      name: "${battery_bank1} max cell voltage"
+      name: "max cell voltage"
+      device_id: device1
     delta_cell_voltage:
-      name: "${battery_bank1} delta cell voltage"
+      name: "delta cell voltage"
+      device_id: device1
     average_cell_voltage:
-      name: "${battery_bank1} average cell voltage"
+      name: "average cell voltage"
+      device_id: device1
     total_voltage:
-      name: "${battery_bank1} total voltage"
+      name: "total voltage"
+      device_id: device1
     current:
-      name: "${battery_bank1} current"
+      name: "current"
+      device_id: device1
     power:
-      name: "${battery_bank1} power"
+      name: "power"
+      device_id: device1
     state_of_charge:
-      name: "${battery_bank1} state of charge"
+      name: "state of charge"
+      device_id: device1
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank2
     min_cell_voltage:
-      name: "${battery_bank2} min cell voltage"
+      name: "min cell voltage"
+      device_id: device2
     max_cell_voltage:
-      name: "${battery_bank2} max cell voltage"
+      name: "max cell voltage"
+      device_id: device2
     delta_cell_voltage:
-      name: "${battery_bank2} delta cell voltage"
+      name: "delta cell voltage"
+      device_id: device2
     average_cell_voltage:
-      name: "${battery_bank2} average cell voltage"
+      name: "average cell voltage"
+      device_id: device2
     total_voltage:
-      name: "${battery_bank2} total voltage"
+      name: "total voltage"
+      device_id: device2
     current:
-      name: "${battery_bank2} current"
+      name: "current"
+      device_id: device2
     power:
-      name: "${battery_bank2} power"
+      name: "power"
+      device_id: device2
     state_of_charge:
-      name: "${battery_bank2} state of charge"
+      name: "state of charge"
+      device_id: device2
 
 binary_sensor:
   - platform: seplos_bms
     seplos_bms_id: battery_bank0
     online_status:
-      name: "${battery_bank0} online status"
+      name: "online status"
+      device_id: device0
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank1
     online_status:
-      name: "${battery_bank1} online status"
+      name: "online status"
+      device_id: device1
 
   - platform: seplos_bms
     seplos_bms_id: battery_bank2
     online_status:
-      name: "${battery_bank2} online status"
+      name: "online status"
+      device_id: device2

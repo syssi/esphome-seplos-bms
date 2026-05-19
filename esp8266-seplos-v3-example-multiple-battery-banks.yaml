@@ -14,6 +14,13 @@ esphome:
   project:
     name: "syssi.esphome-seplos-bms"
     version: 1.5.0
+  devices:
+    - id: device0
+      name: "${battery_bank0}"
+    - id: device1
+      name: "${battery_bank1}"
+    - id: device2
+      name: "${battery_bank2}"
 
 esp8266:
   board: d1_mini
@@ -73,7 +80,8 @@ modbus_controller:
 sensor:
   - platform: modbus_controller
     modbus_controller_id: bms0
-    name: "${battery_bank0} total voltage"
+    name: "total voltage"
+    device_id: device0
     address: 0x1000
     register_type: read
     value_type: U_WORD
@@ -86,7 +94,8 @@ sensor:
 
   - platform: modbus_controller
     modbus_controller_id: bms1
-    name: "${battery_bank1} total voltage"
+    name: "total voltage"
+    device_id: device1
     address: 0x1000
     register_type: read
     value_type: U_WORD
@@ -99,7 +108,8 @@ sensor:
 
   - platform: modbus_controller
     modbus_controller_id: bms2
-    name: "${battery_bank2} total voltage"
+    name: "total voltage"
+    device_id: device2
     address: 0x1000
     register_type: read
     value_type: U_WORD
