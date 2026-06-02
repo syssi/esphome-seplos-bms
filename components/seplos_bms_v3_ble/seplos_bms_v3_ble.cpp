@@ -35,7 +35,7 @@ static const uint16_t SEPLOS_V3_REG_SFA_START = 0x1400;
 static const uint16_t SEPLOS_V3_REG_SPA1_START = 0x1300;
 static const uint16_t SEPLOS_V3_REG_SPA2_START = 0x1335;
 
-static const uint16_t SEPLOS_V3_EIA_LENGTH = 0x11;
+static const uint16_t SEPLOS_V3_EIA_LENGTH = 0x1A;
 static const uint16_t SEPLOS_V3_EIB_LENGTH = 0x1A;
 static const uint16_t SEPLOS_V3_EIC_LENGTH = 0x05;
 static const uint16_t SEPLOS_V3_PIA_LENGTH = 0x11;
@@ -107,6 +107,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       this->publish_state_(this->online_status_binary_sensor_, true);
 
       if (!this->dynamic_command_queue_.empty()) {
+        this->pending_reg_start_ = this->dynamic_command_queue_[0].reg_start;
         this->send_command_(this->dynamic_command_queue_[0].function,
                             this->build_modbus_payload_(this->dynamic_command_queue_[0]));
       }
@@ -147,8 +148,9 @@ void SeplosBmsV3Ble::update() {
 
   this->next_command_ = 0;
   if (!this->dynamic_command_queue_.empty()) {
-    this->send_command_(this->dynamic_command_queue_[this->next_command_].function,
-                        this->build_modbus_payload_(this->dynamic_command_queue_[this->next_command_]));
+    this->pending_reg_start_ = this->dynamic_command_queue_[0].reg_start;
+    this->send_command_(this->dynamic_command_queue_[0].function,
+                        this->build_modbus_payload_(this->dynamic_command_queue_[0]));
     this->next_command_++;
   }
 }
@@ -188,6 +190,7 @@ void SeplosBmsV3Ble::assemble(const uint8_t *data, uint16_t length) {
 #ifdef USE_ESP32
         // Send next command if available
         if (this->next_command_ < this->dynamic_command_queue_.size()) {
+          this->pending_reg_start_ = this->dynamic_command_queue_[this->next_command_].reg_start;
           this->send_command_(this->dynamic_command_queue_[this->next_command_].function,
                               this->build_modbus_payload_(this->dynamic_command_queue_[this->next_command_]));
           this->next_command_++;
@@ -217,27 +220,28 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
   std::vector<uint8_t> payload(data.begin() + 3, data.end() - 2);
 
   if (device == 0x00 || device == 0xE0) {
-    switch (data_len) {
-      case SEPLOS_V3_EIA_LENGTH * 2:
+    switch (this->pending_reg_start_) {
+      case SEPLOS_V3_REG_EIA_START:
         this->decode_eia_data_(payload);
         break;
-      case SEPLOS_V3_EIB_LENGTH * 2:
+      case SEPLOS_V3_REG_EIB_START:
         this->decode_eib_data_(payload);
         break;
-      case SEPLOS_V3_EIC_LENGTH * 2:
+      case SEPLOS_V3_REG_EIC_START:
         this->decode_eic_data_(payload);
         break;
-      case SEPLOS_V3_PCT_LENGTH * 2:
+      case SEPLOS_V3_REG_PCT_START:
         this->decode_pct_data_(payload);
         break;
-      case SEPLOS_V3_SFA_LENGTH * 2:
+      case SEPLOS_V3_REG_SFA_START:
         this->decode_sfa_data_(payload);
         break;
-      case SEPLOS_V3_SPA_LENGTH * 2:
+      case SEPLOS_V3_REG_SPA1_START:
+      case SEPLOS_V3_REG_SPA2_START:
         this->decode_spa_data_(payload);
         break;
       default:
-        ESP_LOGW(TAG, "Unknown system data length: %d", data_len);
+        ESP_LOGW(TAG, "Unknown pending register start: 0x%04X (data_len=%d)", this->pending_reg_start_, data_len);
         break;
     }
   } else if (device >= 1 && device <= 16) {

@@ -264,6 +264,7 @@ class SeplosBmsV3Ble :
   uint16_t char_command_handle_{0};
 #endif
   uint8_t next_command_{0};
+  uint16_t pending_reg_start_{0};
   uint8_t pack_count_{0};
   std::vector<SeplosBmsV3BlePack *> pack_devices_;
   std::vector<SeplosV3Command> dynamic_command_queue_;
