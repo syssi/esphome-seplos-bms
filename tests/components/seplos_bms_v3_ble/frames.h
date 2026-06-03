@@ -115,6 +115,26 @@ static const std::vector<uint8_t> EIA_DATA_DISCHARGING = {
     0x03, 0xD4,              // [50-51] SOH = 980 → 98.0 %
 };
 
+// EIA idle payload – identical to EIA_DATA except current = 0 A (neither charging nor discharging)
+static const std::vector<uint8_t> EIA_DATA_IDLE = {
+    0x14, 0xA0, 0x00, 0x00,  // [0-3]   Pack Voltage = 5280 → 52.80 V
+    0x00, 0x00, 0x00, 0x00,  // [4-7]   Current = 0 → 0.0 A (idle)
+    0x3A, 0x98, 0x00, 0x00,  // [8-11]  Remaining Capacity = 15000 → 150.0 Ah
+    0x4E, 0x20, 0x00, 0x00,  // [12-15] Total Capacity = 20000 → 200.0 Ah
+    0x03, 0xE8, 0x00, 0x00,  // [16-19] Total Discharge Capacity = 1000 → 10000 Ah
+    0x4E, 0x20, 0x00, 0x00,  // [20-23] Rated Capacity = 20000 → 200.0 Ah
+    0x00, 0x01, 0x00, 0x00,  // [24-27] Online Pack Flag = 1
+    0x00, 0x00, 0x00, 0x00,  // [28-31] Protected Pack bit = 0
+    0x03, 0xE8, 0x00, 0x00,  // [32-35] Max Discharge Current = 1000 → 100.0 A
+    0x01, 0xF4, 0x00, 0x00,  // [36-39] Max Charge Current = 500 → 50.0 A
+    0x02, 0x40,              // [40-41] Suggest Pack OV = 576 → 57.6 V
+    0x01, 0xD0,              // [42-43] Suggest Pack UV = 464 → 46.4 V
+    0x00, 0x01,              // [44-45] System Pack No. = 1
+    0x00, 0x32,              // [46-47] Cycle = 50
+    0x02, 0xEE,              // [48-49] SOC = 750 → 75.0 %
+    0x03, 0xD4,              // [50-51] SOH = 980 → 98.0 %
+};
+
 // EIC payload (10 bytes) – EMS Info C, system event/alarm codes
 // Modbus function 0x01 (read coils), register 0x2200
 static const std::vector<uint8_t> EIC_DATA_NO_PROBLEM = {

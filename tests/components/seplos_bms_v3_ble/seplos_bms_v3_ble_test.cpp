@@ -54,6 +54,29 @@ TEST(SeplosBmsV3BleEiaTest, VoltageCurrentPowerDischarging) {
   EXPECT_TRUE(discharging.state);
 }
 
+// 0 A is idle: neither charging nor discharging, both power values 0
+TEST(SeplosBmsV3BleEiaTest, VoltageCurrentPowerIdle) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor voltage, current, power, charging_power, discharging_power;
+  binary_sensor::BinarySensor charging, discharging;
+  bms.set_total_voltage_sensor(&voltage);
+  bms.set_current_sensor(&current);
+  bms.set_power_sensor(&power);
+  bms.set_charging_power_sensor(&charging_power);
+  bms.set_discharging_power_sensor(&discharging_power);
+  bms.set_charging_binary_sensor(&charging);
+  bms.set_discharging_binary_sensor(&discharging);
+
+  bms.decode_eia(EIA_DATA_IDLE);
+
+  EXPECT_NEAR(current.state, 0.0f, 0.01f);
+  EXPECT_NEAR(power.state, 0.0f, 0.01f);
+  EXPECT_NEAR(charging_power.state, 0.0f, 0.01f);
+  EXPECT_NEAR(discharging_power.state, 0.0f, 0.01f);
+  EXPECT_FALSE(charging.state);
+  EXPECT_FALSE(discharging.state);
+}
+
 // ── EIA: capacity registers ───────────────────────────────────────────────────
 
 TEST(SeplosBmsV3BleEiaTest, CapacityRegisters) {

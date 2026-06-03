@@ -289,17 +289,13 @@ void SeplosBmsV3Ble::decode_eia_data_(const std::vector<uint8_t> &data) {
   float power = voltage * current;
   this->publish_state_(this->power_sensor_, power);
 
-  if (current > 0) {
-    this->publish_state_(this->charging_power_sensor_, power);
-    this->publish_state_(this->discharging_power_sensor_, 0.0f);
-    this->publish_state_(this->charging_binary_sensor_, true);
-    this->publish_state_(this->discharging_binary_sensor_, false);
-  } else {
-    this->publish_state_(this->charging_power_sensor_, 0.0f);
-    this->publish_state_(this->discharging_power_sensor_, -power);
-    this->publish_state_(this->charging_binary_sensor_, false);
-    this->publish_state_(this->discharging_binary_sensor_, true);
-  }
+  // Exactly 0 A is idle: neither charging nor discharging
+  bool charging = current > 0;
+  bool discharging = current < 0;
+  this->publish_state_(this->charging_power_sensor_, charging ? power : 0.0f);
+  this->publish_state_(this->discharging_power_sensor_, discharging ? -power : 0.0f);
+  this->publish_state_(this->charging_binary_sensor_, charging);
+  this->publish_state_(this->discharging_binary_sensor_, discharging);
 
   // Remaining capacity (Reg 0x2004, 10mAH → Ah)
   float remaining_capacity = seplos_get_32bit(8) * 0.01f;
