@@ -42,6 +42,8 @@ static const std::vector<uint8_t> PACK_PIA_FRAME = {
 //   temp[1]  = (3031 - 2731.5) * 0.1 = 29.95 °C
 //   temp[2]  = (2932 - 2731.5) * 0.1 = 20.05 °C
 //   temp[3]  = (2882 - 2731.5) * 0.1 = 15.05 °C
+//   ambient  = (2966 - 2731.5) * 0.1 = 23.45 °C  (reg 0x1118, byte 48)
+//   mosfet   = (2953 - 2731.5) * 0.1 = 22.15 °C  (reg 0x1119, byte 50)
 static const std::vector<uint8_t> PACK_PIB_FRAME = {
     0x01, 0x04, 0x34,  // device, function, data_len=52
     // payload (52 bytes)
@@ -54,12 +56,14 @@ static const std::vector<uint8_t> PACK_PIB_FRAME = {
     0x0C, 0xE4, 0x0C, 0xE4, 0x0C, 0xE4, 0x0C, 0xE4,  // cell[8-11] = 3300
     0x0C, 0xE4, 0x0C, 0xE4, 0x0C, 0xE4, 0x0C, 0xE4,  // cell[12-15] = 3300
     // 4 temperatures × 2 bytes each = bytes [32-39]
-    0x0B, 0xA6,  // temp[0] = 2982 → 25.05 °C
-    0x0B, 0xD7,  // temp[1] = 3031 → 29.95 °C
-    0x0B, 0x74,  // temp[2] = 2932 → 20.05 °C
-    0x0B, 0x42,  // temp[3] = 2882 → 15.05 °C
-    // env temp = bytes [40-41], rest padding to 52 bytes
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // CRC placeholder
+    0x0B, 0xA6,                                      // temp[0] = 2982 → 25.05 °C
+    0x0B, 0xD7,                                      // temp[1] = 3031 → 29.95 °C
+    0x0B, 0x74,                                      // temp[2] = 2932 → 20.05 °C
+    0x0B, 0x42,                                      // temp[3] = 2882 → 15.05 °C
+    0x0A, 0xAB, 0x0A, 0xAB, 0x0A, 0xAB, 0x0A, 0xAB,  // [40-47] reserved (0x1114-0x1117), 0x0AAB ≈ 0 °C
+    0x0B, 0x96,                                      // ambient temp (reg 0x1118) = 2966 → 23.45 °C
+    0x0B, 0x89,                                      // mosfet temp (reg 0x1119)  = 2953 → 22.15 °C
+    0x00, 0x00,                                      // CRC placeholder
 };
 
 }  // namespace esphome::seplos_bms_v3_ble_pack::testing

@@ -61,6 +61,20 @@ TEST(SeplosBmsV3BlePackStatusTest, CellTemperatures) {
   EXPECT_NEAR(t3.state, 15.05f, 0.1f);
 }
 
+TEST(SeplosBmsV3BlePackStatusTest, AmbientAndMosfetTemperatures) {
+  TestableSeplosBmsV3BlePack pack;
+  pack.set_address(0x01);
+  sensor::Sensor ambient, mosfet;
+  pack.set_ambient_temperature_sensor(&ambient);
+  pack.set_mosfet_temperature_sensor(&mosfet);
+
+  pack.on_frame_data(PACK_PIB_FRAME);
+
+  // Read from registers 0x1118/0x1119 (bytes 48/50), not the 0x1114-0x1117 reserve
+  EXPECT_NEAR(ambient.state, 23.45f, 0.1f);
+  EXPECT_NEAR(mosfet.state, 22.15f, 0.1f);
+}
+
 // ── Null sensors do not crash ─────────────────────────────────────────────────
 
 TEST(SeplosBmsV3BlePackSafetyTest, NullSensorsDoNotCrash) {
