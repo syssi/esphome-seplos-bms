@@ -244,8 +244,10 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
         this->decode_sfa_data_(payload);
         break;
       case SEPLOS_V3_REG_SPA1_START:
+        this->decode_spa1_data_(payload);
+        break;
       case SEPLOS_V3_REG_SPA2_START:
-        this->decode_spa_data_(payload);
+        this->decode_spa2_data_(payload);
         break;
       default:
         ESP_LOGW(TAG, "Unknown pending register start: 0x%04X (data_len=%d)", this->pending_reg_start_, data_len);
@@ -555,64 +557,67 @@ void SeplosBmsV3Ble::decode_sfa_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "  Hard Fault Switch: 0x%02X", data[12]);
 }
 
-void SeplosBmsV3Ble::decode_spa_data_(const std::vector<uint8_t> &data) {
-  ESP_LOGD(TAG, "Decoding SPA data (System Parameters) - %zu bytes", data.size());
+// SPA (System Parameters, registers 0x1300–0x1367, see "XZH BMS Modbus-RTU Protocol")
+// is fetched in two requests (0x1300 and 0x1335), each a full SEPLOS_V3_SPA_LENGTH
+// register block. Values are plain big-endian UINT16.
 
-  if (data.size() < 106) {  // 0x35 * 2 = 106 bytes
+void SeplosBmsV3Ble::decode_spa1_data_(const std::vector<uint8_t> &data) {
+  ESP_LOGD(TAG, "Decoding SPA data (System Parameters, 0x1300) - %zu bytes", data.size());
+
+  if (data.size() < SEPLOS_V3_SPA_LENGTH * 2) {
     ESP_LOGW(TAG, "SPA data too short: %zu bytes", data.size());
     return;
   }
 
-  auto seplos_get_16bit = [&](size_t i) -> uint16_t {
-    return (uint16_t(data[i + 0]) << 8) | (uint16_t(data[i + 1]) << 0);
+  auto reg = [&](uint16_t addr) -> uint16_t {
+    size_t offset = (size_t) (addr - SEPLOS_V3_REG_SPA1_START) * 2;
+    return (uint16_t(data[offset]) << 8) | uint16_t(data[offset + 1]);
   };
+  auto temperature = [&](uint16_t addr) -> float { return (reg(addr) - 2731.5f) * 0.1f; };
 
-  auto seplos_get_32bit = [&](size_t i) -> uint32_t {
-    // Read bytes in swapped order: word-swapped big endian
-    return (uint32_t(data[i + 2]) << 24) | (uint32_t(data[i + 3]) << 16) | (uint32_t(data[i + 0]) << 8) |
-           (uint32_t(data[i + 1]) << 0);
+  ESP_LOGD(TAG, "NTC Count: %u", reg(0x1300));
+  ESP_LOGD(TAG, "Cell Count: %u", reg(0x1301));
+  ESP_LOGD(TAG, "Pack Overvoltage Recover: %.2f V", reg(0x1304) * 0.01f);
+  ESP_LOGD(TAG, "Pack Overvoltage Protection: %.2f V", reg(0x1305) * 0.01f);
+  ESP_LOGD(TAG, "Pack Undervoltage Recover: %.2f V", reg(0x1308) * 0.01f);
+  ESP_LOGD(TAG, "Pack Undervoltage Protection: %.2f V", reg(0x1309) * 0.01f);
+  ESP_LOGD(TAG, "Cell Overvoltage Recover: %u mV", reg(0x130C));
+  ESP_LOGD(TAG, "Cell Overvoltage Protection: %u mV", reg(0x130D));
+  ESP_LOGD(TAG, "Cell Undervoltage Recover: %u mV", reg(0x1310));
+  ESP_LOGD(TAG, "Cell Undervoltage Protection: %u mV", reg(0x1311));
+  ESP_LOGD(TAG, "Cell Difference Protection: %u mV", reg(0x1313));
+  ESP_LOGD(TAG, "Charge Overcurrent Protection: %d A", reg(0x1317));
+  ESP_LOGD(TAG, "Discharge Overcurrent Protection: %d A", (int16_t) reg(0x131D));
+  ESP_LOGD(TAG, "Charge Overtemperature Protection: %.1f °C", temperature(0x1332));
+  ESP_LOGD(TAG, "Charge Low Temperature Alarm: %.1f °C", temperature(0x1334));
+}
+
+void SeplosBmsV3Ble::decode_spa2_data_(const std::vector<uint8_t> &data) {
+  ESP_LOGD(TAG, "Decoding SPA data (System Parameters, 0x1335) - %zu bytes", data.size());
+
+  if (data.size() < SEPLOS_V3_SPA_LENGTH * 2) {
+    ESP_LOGW(TAG, "SPA data too short: %zu bytes", data.size());
+    return;
+  }
+
+  auto reg = [&](uint16_t addr) -> uint16_t {
+    size_t offset = (size_t) (addr - SEPLOS_V3_REG_SPA2_START) * 2;
+    return (uint16_t(data[offset]) << 8) | uint16_t(data[offset + 1]);
   };
+  auto temperature = [&](uint16_t addr) -> float { return (reg(addr) - 2731.5f) * 0.1f; };
 
-  // Voltage protection parameters
-  ESP_LOGD(TAG, "Cell Overvoltage Protection: %d mV", seplos_get_16bit(0));
-  ESP_LOGD(TAG, "Cell Overvoltage Recovery: %d mV", seplos_get_16bit(2));
-  ESP_LOGD(TAG, "Cell Undervoltage Protection: %d mV", seplos_get_16bit(4));
-  ESP_LOGD(TAG, "Cell Undervoltage Recovery: %d mV", seplos_get_16bit(6));
+  int16_t discharge_limit = (int16_t) reg(0x1367);
 
-  // Pack voltage parameters
-  ESP_LOGD(TAG, "Pack Overvoltage Protection: %.2f V", seplos_get_16bit(8) * 0.01f);
-  ESP_LOGD(TAG, "Pack Overvoltage Recovery: %.2f V", seplos_get_16bit(10) * 0.01f);
-  ESP_LOGD(TAG, "Pack Undervoltage Protection: %.2f V", seplos_get_16bit(12) * 0.01f);
-  ESP_LOGD(TAG, "Pack Undervoltage Recovery: %.2f V", seplos_get_16bit(14) * 0.01f);
-
-  // Current protection parameters
-  ESP_LOGD(TAG, "Charge Overcurrent Protection: %.1f A", seplos_get_16bit(16) * 0.1f);
-  ESP_LOGD(TAG, "Charge Overcurrent Recovery: %.1f A", seplos_get_16bit(18) * 0.1f);
-  ESP_LOGD(TAG, "Discharge Overcurrent Protection: %.1f A", seplos_get_16bit(20) * 0.1f);
-  ESP_LOGD(TAG, "Discharge Overcurrent Recovery: %.1f A", seplos_get_16bit(22) * 0.1f);
-
-  // Temperature protection parameters
-  ESP_LOGD(TAG, "Cell Overtemperature Protection: %.1f °C", (seplos_get_16bit(24) - 2731.5f) * 0.1f);
-  ESP_LOGD(TAG, "Cell Overtemperature Recovery: %.1f °C", (seplos_get_16bit(26) - 2731.5f) * 0.1f);
-  ESP_LOGD(TAG, "Cell Undertemperature Protection: %.1f °C", (seplos_get_16bit(28) - 2731.5f) * 0.1f);
-  ESP_LOGD(TAG, "Cell Undertemperature Recovery: %.1f °C", (seplos_get_16bit(30) - 2731.5f) * 0.1f);
-
-  // Timing parameters
-  ESP_LOGD(TAG, "Overvoltage Protection Delay: %d s", seplos_get_16bit(32));
-  ESP_LOGD(TAG, "Undervoltage Protection Delay: %d s", seplos_get_16bit(34));
-  ESP_LOGD(TAG, "Overcurrent Protection Delay: %d s", seplos_get_16bit(36));
-  ESP_LOGD(TAG, "Short Circuit Protection Delay: %d s", seplos_get_16bit(38));
-
-  // Capacity and SOC parameters
-  ESP_LOGD(TAG, "Rated Capacity: %.2f Ah", seplos_get_32bit(40) * 0.01f);
-  ESP_LOGD(TAG, "SOC Low Alarm: %.1f %%", seplos_get_16bit(44) * 0.1f);
-  ESP_LOGD(TAG, "SOC Low Recovery: %.1f %%", seplos_get_16bit(46) * 0.1f);
-
-  // Additional system parameters
-  ESP_LOGD(TAG, "Cell Count: %d", seplos_get_16bit(48));
-  ESP_LOGD(TAG, "Temperature Sensor Count: %d", seplos_get_16bit(50));
-  ESP_LOGD(TAG, "Balancing Threshold: %d mV", seplos_get_16bit(52));
-  ESP_LOGD(TAG, "Balancing Delta: %d mV", seplos_get_16bit(54));
+  ESP_LOGD(TAG, "Discharge Overtemperature Protection: %.1f °C", temperature(0x133A));
+  ESP_LOGD(TAG, "Under Environment Temperature Protection: %.1f °C", temperature(0x1346));
+  ESP_LOGD(TAG, "Over Power Temperature Protection: %.1f °C", temperature(0x134A));
+  ESP_LOGD(TAG, "Balancing Open Voltage: %u mV", reg(0x1350));
+  ESP_LOGD(TAG, "Balancing Open Difference: %u mV", reg(0x1351));
+  ESP_LOGD(TAG, "SOC Low Alarm: %.1f %%", reg(0x1355) * 0.1f);
+  ESP_LOGD(TAG, "Rated Capacity: %.2f Ah", reg(0x1358) * 0.01f);
+  ESP_LOGD(TAG, "Total Capacity: %.2f Ah", reg(0x1359) * 0.01f);
+  ESP_LOGD(TAG, "PCS Charge Current Limit: %u A", reg(0x1366));
+  ESP_LOGD(TAG, "PCS Discharge Current Limit: %d A", discharge_limit < 0 ? -discharge_limit : discharge_limit);
 }
 
 #ifdef USE_ESP32

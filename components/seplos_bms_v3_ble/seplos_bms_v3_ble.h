@@ -283,7 +283,8 @@ class SeplosBmsV3Ble :
   void decode_via_data_(const std::vector<uint8_t> &data);
   void decode_pct_data_(const std::vector<uint8_t> &data);
   void decode_sfa_data_(const std::vector<uint8_t> &data);
-  void decode_spa_data_(const std::vector<uint8_t> &data);
+  void decode_spa1_data_(const std::vector<uint8_t> &data);
+  void decode_spa2_data_(const std::vector<uint8_t> &data);
   void build_dynamic_command_queue_();
 };
 
