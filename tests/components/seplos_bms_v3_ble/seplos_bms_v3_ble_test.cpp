@@ -230,8 +230,8 @@ TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
   EXPECT_NO_FATAL_FAILURE(bms.decode_eib(EIB_DATA));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_NO_PROBLEM));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_WITH_PROBLEM));
-  EXPECT_NO_FATAL_FAILURE(bms.decode_spa(SPA_DATA_1, 0x1300));
-  EXPECT_NO_FATAL_FAILURE(bms.decode_spa(SPA_DATA_2, 0x1335));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_spa1(SPA_DATA_1));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_spa2(SPA_DATA_2));
 }
 
 // ── SPA: first request (registers 0x1300–0x1334) ──────────────────────────────
@@ -239,7 +239,7 @@ TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
 TEST(SeplosBmsV3BleSpaTest, FirstRequestParameters) {
   TestableSeplosBmsV3Ble bms;
 
-  bms.decode_spa(SPA_DATA_1, 0x1300);
+  bms.decode_spa1(SPA_DATA_1);
 
   EXPECT_EQ(bms.spa().ntc_number, 4);
   EXPECT_EQ(bms.spa().cell_count, 16);
@@ -255,7 +255,7 @@ TEST(SeplosBmsV3BleSpaTest, FirstRequestParameters) {
 TEST(SeplosBmsV3BleSpaTest, SecondRequestParameters) {
   TestableSeplosBmsV3Ble bms;
 
-  bms.decode_spa(SPA_DATA_2, 0x1335);
+  bms.decode_spa2(SPA_DATA_2);
 
   EXPECT_EQ(bms.spa().balancing_open_voltage, 3400);
   EXPECT_EQ(bms.spa().balancing_open_difference, 50);
@@ -271,10 +271,10 @@ TEST(SeplosBmsV3BleSpaTest, SecondRequestParameters) {
 TEST(SeplosBmsV3BleSpaTest, RequestsDoNotCrossContaminate) {
   TestableSeplosBmsV3Ble bms;
 
-  bms.decode_spa(SPA_DATA_1, 0x1300);
-  bms.decode_spa(SPA_DATA_2, 0x1335);
+  bms.decode_spa1(SPA_DATA_1);
+  bms.decode_spa2(SPA_DATA_2);
 
-  // First-request fields survive the second (out-of-range) request
+  // First-request fields survive the second request (separate decoders)
   EXPECT_EQ(bms.spa().cell_count, 16);
   EXPECT_EQ(bms.spa().cell_overvoltage_protection, 3650);
   // Second-request fields are populated

@@ -9,7 +9,8 @@ class TestableSeplosBmsV3Ble : public SeplosBmsV3Ble {
   void decode_eia(const std::vector<uint8_t> &data) { decode_eia_data_(data); }
   void decode_eib(const std::vector<uint8_t> &data) { decode_eib_data_(data); }
   void decode_eic(const std::vector<uint8_t> &data) { decode_eic_data_(data); }
-  void decode_spa(const std::vector<uint8_t> &data, uint16_t reg_start) { decode_spa_data_(data, reg_start); }
+  void decode_spa1(const std::vector<uint8_t> &data) { decode_spa1_data_(data); }
+  void decode_spa2(const std::vector<uint8_t> &data) { decode_spa2_data_(data); }
   const SpaParameters &spa() const { return spa_; }
 };
 
