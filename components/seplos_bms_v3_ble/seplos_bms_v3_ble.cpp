@@ -30,6 +30,7 @@ static const uint16_t SEPLOS_V3_REG_EIC_START = 0x2200;
 static const uint16_t SEPLOS_V3_REG_PIA_START = 0x1000;
 static const uint16_t SEPLOS_V3_REG_PIB_START = 0x1100;
 static const uint16_t SEPLOS_V3_REG_PIC_START = 0x1200;
+static const uint16_t SEPLOS_V3_REG_VIA_START = 0x1700;
 static const uint16_t SEPLOS_V3_REG_PCT_START = 0x1800;
 static const uint16_t SEPLOS_V3_REG_SFA_START = 0x1400;
 static const uint16_t SEPLOS_V3_REG_SPA1_START = 0x1300;
@@ -44,11 +45,14 @@ static const uint16_t SEPLOS_V3_PIC_LENGTH = 0x90;
 static const uint16_t SEPLOS_V3_PCT_LENGTH = 0x24;
 static const uint16_t SEPLOS_V3_SFA_LENGTH = 0x50;
 static const uint16_t SEPLOS_V3_SPA_LENGTH = 0x35;
+// Factory(10) + Device(10) + FW(1) + BMS_SN(15) + Pack_SN(15) = 51 registers
+static const uint16_t SEPLOS_V3_VIA_LENGTH = 0x33;
 
 static const SeplosV3Command SEPLOS_V3_SYSTEM_COMMANDS[] = {
     {0x00, SEPLOS_V3_CMD_READ_04, SEPLOS_V3_REG_EIA_START, SEPLOS_V3_EIA_LENGTH},
     {0x00, SEPLOS_V3_CMD_READ_04, SEPLOS_V3_REG_EIB_START, SEPLOS_V3_EIB_LENGTH},
     {0x00, SEPLOS_V3_CMD_READ_01, SEPLOS_V3_REG_EIC_START, SEPLOS_V3_EIC_LENGTH},
+    {0x00, SEPLOS_V3_CMD_READ_04, SEPLOS_V3_REG_VIA_START, SEPLOS_V3_VIA_LENGTH},
     {0x00, SEPLOS_V3_CMD_READ_04, SEPLOS_V3_REG_PCT_START, SEPLOS_V3_PCT_LENGTH},
     {0x00, SEPLOS_V3_CMD_READ_01, SEPLOS_V3_REG_SFA_START, SEPLOS_V3_SFA_LENGTH},
     {0xE0, SEPLOS_V3_CMD_READ_04, SEPLOS_V3_REG_SPA1_START, SEPLOS_V3_SPA_LENGTH},
@@ -229,6 +233,9 @@ void SeplosBmsV3Ble::decode(const std::vector<uint8_t> &data) {
         break;
       case SEPLOS_V3_REG_EIC_START:
         this->decode_eic_data_(payload);
+        break;
+      case SEPLOS_V3_REG_VIA_START:
+        this->decode_via_data_(payload);
         break;
       case SEPLOS_V3_REG_PCT_START:
         this->decode_pct_data_(payload);
@@ -444,6 +451,53 @@ void SeplosBmsV3Ble::decode_eic_data_(const std::vector<uint8_t> &data) {
 
   bool has_problem = (problem_code != 0);
   this->publish_state_(this->problem_text_sensor_, has_problem ? "Problem detected" : "No problems");
+}
+
+void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
+  ESP_LOGD(TAG, "Decoding VIA data (Version Info) - %zu bytes", data.size());
+
+  if (data.size() < 102) {
+    ESP_LOGW(TAG, "VIA data too short: %zu bytes (expected 102)", data.size());
+    return;
+  }
+
+  // The spec notes "fill in the small end first" for VIA, suggesting little-endian
+  // byte order within each 16-bit register. We log raw hex so byte order can be
+  // verified against a real device response.
+  auto extract_string = [&](size_t offset, size_t len) -> std::string {
+    std::string s(data.begin() + offset, data.begin() + offset + len);
+    s.erase(std::find(s.begin(), s.end(), '\0'), s.end());
+    return s;
+  };
+
+  // Reg 0x1700–0x1709: Factory Name (20 bytes)
+  std::string factory_name = extract_string(0, 20);
+  ESP_LOGI(TAG, "  Factory Name:     '%s'", factory_name.c_str());
+  ESP_LOGD(TAG, "  Factory Name hex: %s", format_hex_pretty(data.data(), 20).c_str());
+  this->publish_state_(this->factory_name_text_sensor_, factory_name);
+
+  // Reg 0x170A–0x1713: Device Name (20 bytes)
+  std::string device_name = extract_string(20, 20);
+  ESP_LOGI(TAG, "  Device Name:      '%s'", device_name.c_str());
+  ESP_LOGD(TAG, "  Device Name hex:  %s", format_hex_pretty(data.data() + 20, 20).c_str());
+  this->publish_state_(this->device_name_text_sensor_, device_name);
+
+  // Reg 0x1714: Firmware Version (2 bytes)
+  std::string firmware_version = extract_string(40, 2);
+  ESP_LOGI(TAG, "  Firmware Version: '%s'", firmware_version.c_str());
+  this->publish_state_(this->firmware_version_text_sensor_, firmware_version);
+
+  // Reg 0x1715–0x1723: BMS SN (30 bytes)
+  std::string bms_serial = extract_string(42, 30);
+  ESP_LOGI(TAG, "  BMS SN:           '%s'", bms_serial.c_str());
+  ESP_LOGD(TAG, "  BMS SN hex:       %s", format_hex_pretty(data.data() + 42, 30).c_str());
+  this->publish_state_(this->bms_serial_number_text_sensor_, bms_serial);
+
+  // Reg 0x1724–0x1732: Pack SN (30 bytes)
+  std::string pack_serial = extract_string(72, 30);
+  ESP_LOGI(TAG, "  Pack SN:          '%s'", pack_serial.c_str());
+  ESP_LOGD(TAG, "  Pack SN hex:      %s", format_hex_pretty(data.data() + 72, 30).c_str());
+  this->publish_state_(this->pack_serial_number_text_sensor_, pack_serial);
 }
 
 void SeplosBmsV3Ble::decode_pct_data_(const std::vector<uint8_t> &data) {
