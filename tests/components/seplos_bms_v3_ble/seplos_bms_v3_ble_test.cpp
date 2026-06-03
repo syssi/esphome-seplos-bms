@@ -4,9 +4,9 @@
 
 namespace esphome::seplos_bms_v3_ble::testing {
 
-// ── Voltage, current, power ───────────────────────────────────────────────────
+// ── EIA: voltage, current, power (charging) ───────────────────────────────────
 
-TEST(SeplosBmsV3BleStatusTest, VoltageCurrentPower) {
+TEST(SeplosBmsV3BleEiaTest, VoltageCurrentPowerCharging) {
   TestableSeplosBmsV3Ble bms;
   sensor::Sensor voltage, current, power, charging_power, discharging_power;
   binary_sensor::BinarySensor charging, discharging;
@@ -29,14 +29,36 @@ TEST(SeplosBmsV3BleStatusTest, VoltageCurrentPower) {
   EXPECT_FALSE(discharging.state);
 }
 
-// ── Capacity and state of charge ──────────────────────────────────────────────
+// ── EIA: voltage, current, power (discharging) ────────────────────────────────
 
-TEST(SeplosBmsV3BleStatusTest, CapacityAndStateOfCharge) {
+TEST(SeplosBmsV3BleEiaTest, VoltageCurrentPowerDischarging) {
   TestableSeplosBmsV3Ble bms;
-  sensor::Sensor soc, soh, cycles, cap_rem, total_cap, rated_cap, cycle_charge;
-  bms.set_state_of_charge_sensor(&soc);
-  bms.set_state_of_health_sensor(&soh);
-  bms.set_charging_cycles_sensor(&cycles);
+  sensor::Sensor voltage, current, power, charging_power, discharging_power;
+  binary_sensor::BinarySensor charging, discharging;
+  bms.set_total_voltage_sensor(&voltage);
+  bms.set_current_sensor(&current);
+  bms.set_power_sensor(&power);
+  bms.set_charging_power_sensor(&charging_power);
+  bms.set_discharging_power_sensor(&discharging_power);
+  bms.set_charging_binary_sensor(&charging);
+  bms.set_discharging_binary_sensor(&discharging);
+
+  bms.decode_eia(EIA_DATA_DISCHARGING);
+
+  EXPECT_NEAR(voltage.state, 52.80f, 0.01f);
+  EXPECT_NEAR(current.state, -10.0f, 0.01f);
+  EXPECT_NEAR(power.state, -528.0f, 1.0f);
+  EXPECT_NEAR(charging_power.state, 0.0f, 0.01f);
+  EXPECT_NEAR(discharging_power.state, 528.0f, 1.0f);
+  EXPECT_FALSE(charging.state);
+  EXPECT_TRUE(discharging.state);
+}
+
+// ── EIA: capacity registers ───────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleEiaTest, CapacityRegisters) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor cap_rem, total_cap, rated_cap, cycle_charge;
   bms.set_capacity_remaining_sensor(&cap_rem);
   bms.set_total_capacity_sensor(&total_cap);
   bms.set_rated_capacity_sensor(&rated_cap);
@@ -44,18 +66,75 @@ TEST(SeplosBmsV3BleStatusTest, CapacityAndStateOfCharge) {
 
   bms.decode_eia(EIA_DATA);
 
-  EXPECT_NEAR(soc.state, 75.0f, 0.1f);
-  EXPECT_NEAR(soh.state, 98.0f, 0.1f);
-  EXPECT_FLOAT_EQ(cycles.state, 50.0f);
   EXPECT_NEAR(cap_rem.state, 150.0f, 0.01f);
   EXPECT_NEAR(total_cap.state, 200.0f, 0.01f);
   EXPECT_NEAR(rated_cap.state, 200.0f, 0.01f);
-  EXPECT_NEAR(cycle_charge.state, 1000.0f, 0.01f);
+  EXPECT_NEAR(cycle_charge.state, 10000.0f, 1.0f);
 }
 
-// ── Cell voltage statistics ───────────────────────────────────────────────────
+// ── EIA: state registers ──────────────────────────────────────────────────────
 
-TEST(SeplosBmsV3BleStatusTest, CellVoltageStats) {
+TEST(SeplosBmsV3BleEiaTest, StateRegisters) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor soc, soh, cycles, pack_count;
+  bms.set_state_of_charge_sensor(&soc);
+  bms.set_state_of_health_sensor(&soh);
+  bms.set_charging_cycles_sensor(&cycles);
+  bms.set_pack_count_sensor(&pack_count);
+
+  bms.decode_eia(EIA_DATA);
+
+  EXPECT_NEAR(soc.state, 75.0f, 0.1f);
+  EXPECT_NEAR(soh.state, 98.0f, 0.1f);
+  EXPECT_FLOAT_EQ(cycles.state, 50.0f);
+  EXPECT_FLOAT_EQ(pack_count.state, 1.0f);
+}
+
+// ── EIA: current limit registers ─────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleEiaTest, CurrentLimitRegisters) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor max_disch, max_chg;
+  bms.set_max_discharge_current_sensor(&max_disch);
+  bms.set_max_charge_current_sensor(&max_chg);
+
+  bms.decode_eia(EIA_DATA);
+
+  EXPECT_NEAR(max_disch.state, 100.0f, 0.1f);
+  EXPECT_NEAR(max_chg.state, 50.0f, 0.1f);
+}
+
+// ── EIA: derived values ───────────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleEiaTest, DerivedCycleCapacity) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor cycle_charge, cycles, cycle_cap;
+  bms.set_cycle_charge_sensor(&cycle_charge);
+  bms.set_charging_cycles_sensor(&cycles);
+  bms.set_cycle_capacity_sensor(&cycle_cap);
+
+  bms.decode_eia(EIA_DATA);
+
+  // cycle_capacity = cycle_charge / cycles = 10000 / 50 = 200 Ah/cycle
+  EXPECT_NEAR(cycle_cap.state, 200.0f, 0.1f);
+}
+
+TEST(SeplosBmsV3BleEiaTest, DerivedRuntime) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor cap_rem, current, runtime;
+  bms.set_capacity_remaining_sensor(&cap_rem);
+  bms.set_current_sensor(&current);
+  bms.set_runtime_sensor(&runtime);
+
+  bms.decode_eia(EIA_DATA_DISCHARGING);
+
+  // runtime = remaining / |current| = 150.0 Ah / 10.0 A = 15.0 h
+  EXPECT_NEAR(runtime.state, 15.0f, 0.1f);
+}
+
+// ── EIB: cell voltage extremes ────────────────────────────────────────────────
+
+TEST(SeplosBmsV3BleEibTest, CellVoltageExtremes) {
   TestableSeplosBmsV3Ble bms;
   sensor::Sensor max_v, min_v, max_cell, min_cell, delta;
   bms.set_max_cell_voltage_sensor(&max_v);
@@ -73,9 +152,9 @@ TEST(SeplosBmsV3BleStatusTest, CellVoltageStats) {
   EXPECT_NEAR(delta.state, 0.060f, 0.001f);
 }
 
-// ── Pack voltage statistics ───────────────────────────────────────────────────
+// ── EIB: pack voltage extremes ────────────────────────────────────────────────
 
-TEST(SeplosBmsV3BleStatusTest, PackVoltageStats) {
+TEST(SeplosBmsV3BleEibTest, PackVoltageExtremes) {
   TestableSeplosBmsV3Ble bms;
   sensor::Sensor max_pack, min_pack, max_pack_id, min_pack_id;
   bms.set_max_pack_voltage_sensor(&max_pack);
@@ -91,9 +170,9 @@ TEST(SeplosBmsV3BleStatusTest, PackVoltageStats) {
   EXPECT_FLOAT_EQ(min_pack_id.state, 1.0f);
 }
 
-// ── Cell temperature statistics ───────────────────────────────────────────────
+// ── EIB: cell temperature extremes ───────────────────────────────────────────
 
-TEST(SeplosBmsV3BleStatusTest, CellTemperatureStats) {
+TEST(SeplosBmsV3BleEibTest, CellTemperatureExtremes) {
   TestableSeplosBmsV3Ble bms;
   sensor::Sensor max_temp, min_temp, avg_temp, max_temp_cell, min_temp_cell;
   bms.set_max_cell_temperature_sensor(&max_temp);
@@ -104,32 +183,40 @@ TEST(SeplosBmsV3BleStatusTest, CellTemperatureStats) {
 
   bms.decode_eib(EIB_DATA);
 
-  EXPECT_NEAR(max_temp.state, 26.05f, 0.1f);
-  EXPECT_NEAR(min_temp.state, 24.05f, 0.1f);
-  EXPECT_NEAR(avg_temp.state, 25.05f, 0.1f);
+  // 0.1K encoding: °C = (raw − 2731.5) / 10
+  // 2992 → 26.05 °C, 2972 → 24.05 °C, 2982 → 25.05 °C
+  EXPECT_NEAR(max_temp.state, 26.05f, 0.05f);
+  EXPECT_NEAR(min_temp.state, 24.05f, 0.05f);
+  EXPECT_NEAR(avg_temp.state, 25.05f, 0.05f);
   EXPECT_FLOAT_EQ(max_temp_cell.state, 3.0f);
   EXPECT_FLOAT_EQ(min_temp_cell.state, 7.0f);
 }
 
-// ── Problem code ──────────────────────────────────────────────────────────────
+// ── EIC: problem code and text ────────────────────────────────────────────────
 
-TEST(SeplosBmsV3BleStatusTest, ProblemCodeNoProblems) {
+TEST(SeplosBmsV3BleEicTest, NoProblems) {
   TestableSeplosBmsV3Ble bms;
+  sensor::Sensor problem_code;
   text_sensor::TextSensor problem_text;
+  bms.set_problem_code_sensor(&problem_code);
   bms.set_problem_text_sensor(&problem_text);
 
   bms.decode_eic(EIC_DATA_NO_PROBLEM);
 
+  EXPECT_FLOAT_EQ(problem_code.state, 0.0f);
   EXPECT_EQ(problem_text.state, "No problems");
 }
 
-TEST(SeplosBmsV3BleStatusTest, ProblemCodeWithProblem) {
+TEST(SeplosBmsV3BleEicTest, WithProblem) {
   TestableSeplosBmsV3Ble bms;
+  sensor::Sensor problem_code;
   text_sensor::TextSensor problem_text;
+  bms.set_problem_code_sensor(&problem_code);
   bms.set_problem_text_sensor(&problem_text);
 
   bms.decode_eic(EIC_DATA_WITH_PROBLEM);
 
+  EXPECT_NE(problem_code.state, 0.0f);
   EXPECT_EQ(problem_text.state, "Problem detected");
 }
 
@@ -139,8 +226,10 @@ TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
   TestableSeplosBmsV3Ble bms;
 
   EXPECT_NO_FATAL_FAILURE(bms.decode_eia(EIA_DATA));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_eia(EIA_DATA_DISCHARGING));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eib(EIB_DATA));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_NO_PROBLEM));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_WITH_PROBLEM));
 }
 
 }  // namespace esphome::seplos_bms_v3_ble::testing

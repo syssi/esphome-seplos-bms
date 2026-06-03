@@ -463,14 +463,14 @@
 | 2105 | Min Pack Voltage | R | UINT16 | 2 | 10mV |
 | 2106 | Max Pack Voltage Id | R | UINT16 | 2 | |
 | 2107 | Min Pack Voltage Id | R | UINT16 | 2 | |
-| 2108 | Max Cell Temperature | R | INT16 | 2 | 1℃ |
-| 2109 | Min Cell Temperature | R | INT16 | 2 | 1℃ |
-| 210A | Avg Cell Temperature | R | INT16 | 2 | 1℃ |
+| 2108 | Max Cell Temperature | R | UINT16 | 2 | 0.1K (°C = (raw−2731.5)/10) |
+| 2109 | Min Cell Temperature | R | UINT16 | 2 | 0.1K (°C = (raw−2731.5)/10) |
+| 210A | Avg Cell Temperature | R | UINT16 | 2 | 0.1K (°C = (raw−2731.5)/10) |
 | 210B | Max Cell Temperature Id | R | UINT16 | 2 | |
 | 210C | Min Cell Temperature Id | R | UINT16 | 2 | |
-| 210D | Max Pack Power temperature | R | INT16 | 2 | 1℃ |
-| 210E | Min Pack Power temperature | R | INT16 | 2 | 1℃ |
-| 210F | Avg Pack Power temperature | R | INT16 | 2 | 1℃ |
+| 210D | Max Pack Power temperature | R | UINT16 | 2 | 0.1K (°C = (raw−2731.5)/10) |
+| 210E | Min Pack Power temperature | R | UINT16 | 2 | 0.1K (°C = (raw−2731.5)/10) |
+| 210F | Avg Pack Power temperature | R | UINT16 | 2 | 0.1K (°C = (raw−2731.5)/10) |
 | 2110 | Max Pack Power temperature Id | R | INT16 | 2 | |
 | 2111 | Min Pack Power temperature Id | R | INT16 | 2 | |
 | 2112 | Max Pack Soc | R | UINT16 | 2 | 0.1% |

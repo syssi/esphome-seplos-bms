@@ -19,10 +19,11 @@ from esphome.const import (
     UNIT_PERCENT,
     UNIT_VOLT,
     UNIT_WATT,
-    UNIT_WATT_HOURS,
 )
 
 from . import CONF_SEPLOS_BMS_V3_BLE_ID, SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA
+
+UNIT_AMPERE_HOUR = "Ah"
 
 DEPENDENCIES = ["seplos_bms_v3_ble"]
 
@@ -101,7 +102,7 @@ SENSOR_DEFS = {
         "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_CAPACITY_REMAINING: {
-        "unit_of_measurement": UNIT_WATT_HOURS,
+        "unit_of_measurement": UNIT_AMPERE_HOUR,
         "icon": "mdi:battery-50",
         "accuracy_decimals": 1,
         "device_class": DEVICE_CLASS_EMPTY,
@@ -143,18 +144,18 @@ SENSOR_DEFS = {
         "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_CYCLE_CHARGE: {
-        "unit_of_measurement": UNIT_WATT_HOURS,
+        "unit_of_measurement": UNIT_AMPERE_HOUR,
         "icon": "mdi:battery-charging-100",
-        "accuracy_decimals": 2,
+        "accuracy_decimals": 1,
         "device_class": DEVICE_CLASS_EMPTY,
         "state_class": STATE_CLASS_TOTAL_INCREASING,
     },
     CONF_CYCLE_CAPACITY: {
-        "unit_of_measurement": UNIT_WATT_HOURS,
+        "unit_of_measurement": UNIT_AMPERE_HOUR,
         "icon": "mdi:battery-50",
-        "accuracy_decimals": 2,
+        "accuracy_decimals": 1,
         "device_class": DEVICE_CLASS_EMPTY,
-        "state_class": STATE_CLASS_TOTAL_INCREASING,
+        "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_RUNTIME: {
         "unit_of_measurement": UNIT_HOUR,
@@ -171,14 +172,14 @@ SENSOR_DEFS = {
         "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_TOTAL_CAPACITY: {
-        "unit_of_measurement": UNIT_WATT_HOURS,
+        "unit_of_measurement": UNIT_AMPERE_HOUR,
         "icon": "mdi:battery-outline",
         "accuracy_decimals": 1,
         "device_class": DEVICE_CLASS_EMPTY,
         "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_RATED_CAPACITY: {
-        "unit_of_measurement": UNIT_WATT_HOURS,
+        "unit_of_measurement": UNIT_AMPERE_HOUR,
         "icon": "mdi:battery-check",
         "accuracy_decimals": 1,
         "device_class": DEVICE_CLASS_EMPTY,
