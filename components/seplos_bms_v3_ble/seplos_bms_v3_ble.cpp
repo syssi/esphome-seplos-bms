@@ -441,18 +441,42 @@ void SeplosBmsV3Ble::decode_eib_data_(const std::vector<uint8_t> &data) {
 void SeplosBmsV3Ble::decode_eic_data_(const std::vector<uint8_t> &data) {
   ESP_LOGD(TAG, "Decoding EIC data (%zu bytes)", data.size());
 
-  // Problem code (1-9, 64-bit)
-  uint64_t problem_code = 0;
-  for (uint8_t i = 1; i < 10; i++) {
-    problem_code = (problem_code << 8) | data[i];
+  if (data.size() < 10) {
+    ESP_LOGW(TAG, "EIC data too short: %zu bytes", data.size());
+    return;
   }
 
-  problem_code = problem_code & 0xFFFF00FF00FF0000ULL;
+  // EIC carries ten single-byte event codes (registers 0x2200–0x2248, see protocol
+  // status tables). System state (TB09), FET event (TB07) and equalization state
+  // (TB08) describe normal operation, not faults, so they must not raise a problem.
+  // Each remaining alarm/protection/fault byte contributes one bit to the problem code.
+  struct EventCode {
+    uint8_t index;
+    uint8_t fault_mask;
+    uint32_t flag;
+    const char *name;
+  };
+  static const EventCode EVENT_CODES[] = {
+      {1, 0xFF, 1 << 0, "voltage"},              // TB02
+      {2, 0xFF, 1 << 1, "cell temperature"},     // TB03
+      {3, 0x3F, 1 << 2, "ambient temperature"},  // TB04 (bit6 "low temperature heating" is status)
+      {4, 0xFF, 1 << 3, "current"},              // TB05
+      {5, 0xFF, 1 << 4, "current latch"},        // TB16
+      {6, 0xFF, 1 << 5, "capacity"},             // TB06
+      {9, 0xFF, 1 << 6, "hard fault"},           // TB15
+  };
+
+  uint32_t problem_code = 0;
+  for (auto &event : EVENT_CODES) {
+    uint8_t value = data[event.index] & event.fault_mask;
+    if (value == 0)
+      continue;
+    problem_code |= event.flag;
+    ESP_LOGD(TAG, "  %s event code: 0x%02X", event.name, value);
+  }
 
   this->publish_state_(this->problem_code_sensor_, (float) problem_code);
-
-  bool has_problem = (problem_code != 0);
-  this->publish_state_(this->problem_text_sensor_, has_problem ? "Problem detected" : "No problems");
+  this->publish_state_(this->problem_text_sensor_, problem_code != 0 ? "Problem detected" : "No problems");
 }
 
 void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
