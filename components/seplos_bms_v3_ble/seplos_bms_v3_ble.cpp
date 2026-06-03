@@ -473,13 +473,13 @@ void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
   // Reg 0x1700–0x1709: Factory Name (20 bytes)
   std::string factory_name = extract_string(0, 20);
   ESP_LOGI(TAG, "  Factory Name:     '%s'", factory_name.c_str());
-  ESP_LOGD(TAG, "  Factory Name hex: %s", format_hex_pretty(data.data(), 20).c_str());
+  ESP_LOGD(TAG, "  Factory Name hex: %s", format_hex_pretty(data.data(), 20).c_str());  // NOLINT
   this->publish_state_(this->factory_name_text_sensor_, factory_name);
 
   // Reg 0x170A–0x1713: Device Name (20 bytes)
   std::string device_name = extract_string(20, 20);
   ESP_LOGI(TAG, "  Device Name:      '%s'", device_name.c_str());
-  ESP_LOGD(TAG, "  Device Name hex:  %s", format_hex_pretty(data.data() + 20, 20).c_str());
+  ESP_LOGD(TAG, "  Device Name hex:  %s", format_hex_pretty(data.data() + 20, 20).c_str());  // NOLINT
   this->publish_state_(this->device_name_text_sensor_, device_name);
 
   // Reg 0x1714: Firmware Version (2 bytes)
@@ -490,13 +490,13 @@ void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
   // Reg 0x1715–0x1723: BMS SN (30 bytes)
   std::string bms_serial = extract_string(42, 30);
   ESP_LOGI(TAG, "  BMS SN:           '%s'", bms_serial.c_str());
-  ESP_LOGD(TAG, "  BMS SN hex:       %s", format_hex_pretty(data.data() + 42, 30).c_str());
+  ESP_LOGD(TAG, "  BMS SN hex:       %s", format_hex_pretty(data.data() + 42, 30).c_str());  // NOLINT
   this->publish_state_(this->bms_serial_number_text_sensor_, bms_serial);
 
   // Reg 0x1724–0x1732: Pack SN (30 bytes)
   std::string pack_serial = extract_string(72, 30);
   ESP_LOGI(TAG, "  Pack SN:          '%s'", pack_serial.c_str());
-  ESP_LOGD(TAG, "  Pack SN hex:      %s", format_hex_pretty(data.data() + 72, 30).c_str());
+  ESP_LOGD(TAG, "  Pack SN hex:      %s", format_hex_pretty(data.data() + 72, 30).c_str());  // NOLINT
   this->publish_state_(this->pack_serial_number_text_sensor_, pack_serial);
 }
 
