@@ -266,6 +266,24 @@ class SeplosBmsV3Ble :
   uint8_t next_command_{0};
   uint16_t pending_reg_start_{0};
   uint8_t pack_count_{0};
+
+  struct SpaParameters {
+    uint16_t ntc_number{0};
+    uint16_t cell_count{0};
+    float pack_overvoltage_protection{0};      // V
+    float pack_undervoltage_protection{0};     // V
+    uint16_t cell_overvoltage_protection{0};   // mV
+    uint16_t cell_undervoltage_protection{0};  // mV
+    uint16_t cell_diff_protection{0};          // mV
+    float rated_capacity{0};                   // Ah
+    float total_capacity{0};                   // Ah
+    float charge_current_limit{0};             // A
+    float discharge_current_limit{0};          // A
+    float soc_low_alarm{0};                    // %
+    uint16_t balancing_open_voltage{0};        // mV
+    uint16_t balancing_open_difference{0};     // mV
+  } spa_;
+
   std::vector<SeplosBmsV3BlePack *> pack_devices_;
   std::vector<SeplosV3Command> dynamic_command_queue_;
   std::vector<uint8_t> build_modbus_payload_(const SeplosV3Command &cmd);
@@ -283,7 +301,7 @@ class SeplosBmsV3Ble :
   void decode_via_data_(const std::vector<uint8_t> &data);
   void decode_pct_data_(const std::vector<uint8_t> &data);
   void decode_sfa_data_(const std::vector<uint8_t> &data);
-  void decode_spa_data_(const std::vector<uint8_t> &data);
+  void decode_spa_data_(const std::vector<uint8_t> &data, uint16_t reg_start);
   void build_dynamic_command_queue_();
 };
 

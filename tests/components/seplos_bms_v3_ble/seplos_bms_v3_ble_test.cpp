@@ -230,6 +230,55 @@ TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
   EXPECT_NO_FATAL_FAILURE(bms.decode_eib(EIB_DATA));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_NO_PROBLEM));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_WITH_PROBLEM));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_spa(SPA_DATA_1, 0x1300));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_spa(SPA_DATA_2, 0x1335));
+}
+
+// ── SPA: first request (registers 0x1300–0x1334) ──────────────────────────────
+
+TEST(SeplosBmsV3BleSpaTest, FirstRequestParameters) {
+  TestableSeplosBmsV3Ble bms;
+
+  bms.decode_spa(SPA_DATA_1, 0x1300);
+
+  EXPECT_EQ(bms.spa().ntc_number, 4);
+  EXPECT_EQ(bms.spa().cell_count, 16);
+  EXPECT_NEAR(bms.spa().pack_overvoltage_protection, 57.60f, 0.01f);
+  EXPECT_NEAR(bms.spa().pack_undervoltage_protection, 43.20f, 0.01f);
+  EXPECT_EQ(bms.spa().cell_overvoltage_protection, 3650);
+  EXPECT_EQ(bms.spa().cell_undervoltage_protection, 2700);
+  EXPECT_EQ(bms.spa().cell_diff_protection, 1000);
+}
+
+// ── SPA: second request (registers 0x1335–0x1369) ─────────────────────────────
+
+TEST(SeplosBmsV3BleSpaTest, SecondRequestParameters) {
+  TestableSeplosBmsV3Ble bms;
+
+  bms.decode_spa(SPA_DATA_2, 0x1335);
+
+  EXPECT_EQ(bms.spa().balancing_open_voltage, 3400);
+  EXPECT_EQ(bms.spa().balancing_open_difference, 50);
+  EXPECT_NEAR(bms.spa().soc_low_alarm, 5.0f, 0.01f);
+  EXPECT_NEAR(bms.spa().rated_capacity, 330.0f, 0.01f);
+  EXPECT_NEAR(bms.spa().total_capacity, 330.0f, 0.01f);
+  EXPECT_NEAR(bms.spa().charge_current_limit, 180.0f, 0.01f);
+  EXPECT_NEAR(bms.spa().discharge_current_limit, 180.0f, 0.01f);
+}
+
+// ── SPA: the two requests must not cross-contaminate each other's fields ───────
+
+TEST(SeplosBmsV3BleSpaTest, RequestsDoNotCrossContaminate) {
+  TestableSeplosBmsV3Ble bms;
+
+  bms.decode_spa(SPA_DATA_1, 0x1300);
+  bms.decode_spa(SPA_DATA_2, 0x1335);
+
+  // First-request fields survive the second (out-of-range) request
+  EXPECT_EQ(bms.spa().cell_count, 16);
+  EXPECT_EQ(bms.spa().cell_overvoltage_protection, 3650);
+  // Second-request fields are populated
+  EXPECT_NEAR(bms.spa().rated_capacity, 330.0f, 0.01f);
 }
 
 }  // namespace esphome::seplos_bms_v3_ble::testing
