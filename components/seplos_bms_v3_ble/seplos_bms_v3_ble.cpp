@@ -557,99 +557,67 @@ void SeplosBmsV3Ble::decode_sfa_data_(const std::vector<uint8_t> &data) {
 
 void SeplosBmsV3Ble::decode_spa_data_(const std::vector<uint8_t> &data, uint16_t reg_start) {
   // The SPA block (registers 0x1300–0x1367, see "XZH BMS Modbus-RTU Protocol")
-  // is fetched in two requests (0x1300 and 0x1335). Both responses arrive here;
-  // decode by absolute register address relative to reg_start so each half maps
-  // to the correct field. Register values are plain big-endian UINT16.
+  // is fetched in two requests (0x1300 and 0x1335). Each response is a full
+  // SEPLOS_V3_SPA_LENGTH-register block, so a single size guard covers every
+  // field below; reg() addresses are relative to reg_start. Plain big-endian UINT16.
   ESP_LOGD(TAG, "Decoding SPA data (System Parameters) reg 0x%04X - %zu bytes", reg_start, data.size());
 
-  auto in_range = [&](uint16_t addr) -> bool {
-    if (addr < reg_start)
-      return false;
-    size_t offset = (size_t) (addr - reg_start) * 2;
-    return offset + 1 < data.size();
-  };
+  if (data.size() < SEPLOS_V3_SPA_LENGTH * 2) {
+    ESP_LOGW(TAG, "SPA data too short: %zu bytes", data.size());
+    return;
+  }
+
   auto reg = [&](uint16_t addr) -> uint16_t {
     size_t offset = (size_t) (addr - reg_start) * 2;
     return (uint16_t(data[offset]) << 8) | uint16_t(data[offset + 1]);
   };
   auto temperature = [&](uint16_t addr) -> float { return (reg(addr) - 2731.5f) * 0.1f; };
 
-  // Frame 1: registers 0x1300–0x1334
-  if (in_range(0x1300)) {
+  if (reg_start == SEPLOS_V3_REG_SPA1_START) {
+    // Registers 0x1300–0x1334
     this->spa_.ntc_number = reg(0x1300);
-    ESP_LOGD(TAG, "NTC Count: %u", this->spa_.ntc_number);
-  }
-  if (in_range(0x1301)) {
     this->spa_.cell_count = reg(0x1301);
-    ESP_LOGD(TAG, "Cell Count: %u", this->spa_.cell_count);
-  }
-  if (in_range(0x1305)) {
     this->spa_.pack_overvoltage_protection = reg(0x1305) * 0.01f;
+    this->spa_.pack_undervoltage_protection = reg(0x1309) * 0.01f;
+    this->spa_.cell_overvoltage_protection = reg(0x130D);
+    this->spa_.cell_undervoltage_protection = reg(0x1311);
+    this->spa_.cell_diff_protection = reg(0x1313);
+
+    ESP_LOGD(TAG, "NTC Count: %u", this->spa_.ntc_number);
+    ESP_LOGD(TAG, "Cell Count: %u", this->spa_.cell_count);
     ESP_LOGD(TAG, "Pack Overvoltage Recover: %.2f V", reg(0x1304) * 0.01f);
     ESP_LOGD(TAG, "Pack Overvoltage Protection: %.2f V", this->spa_.pack_overvoltage_protection);
-  }
-  if (in_range(0x1309)) {
-    this->spa_.pack_undervoltage_protection = reg(0x1309) * 0.01f;
     ESP_LOGD(TAG, "Pack Undervoltage Recover: %.2f V", reg(0x1308) * 0.01f);
     ESP_LOGD(TAG, "Pack Undervoltage Protection: %.2f V", this->spa_.pack_undervoltage_protection);
-  }
-  if (in_range(0x130D)) {
-    this->spa_.cell_overvoltage_protection = reg(0x130D);
     ESP_LOGD(TAG, "Cell Overvoltage Recover: %u mV", reg(0x130C));
     ESP_LOGD(TAG, "Cell Overvoltage Protection: %u mV", this->spa_.cell_overvoltage_protection);
-  }
-  if (in_range(0x1311)) {
-    this->spa_.cell_undervoltage_protection = reg(0x1311);
     ESP_LOGD(TAG, "Cell Undervoltage Recover: %u mV", reg(0x1310));
     ESP_LOGD(TAG, "Cell Undervoltage Protection: %u mV", this->spa_.cell_undervoltage_protection);
-  }
-  if (in_range(0x1313)) {
-    this->spa_.cell_diff_protection = reg(0x1313);
     ESP_LOGD(TAG, "Cell Difference Protection: %u mV", this->spa_.cell_diff_protection);
-  }
-  if (in_range(0x1317))
     ESP_LOGD(TAG, "Charge Overcurrent Protection: %d A", reg(0x1317));
-  if (in_range(0x131D))
     ESP_LOGD(TAG, "Discharge Overcurrent Protection: %d A", (int16_t) reg(0x131D));
-  if (in_range(0x1332))
     ESP_LOGD(TAG, "Charge Overtemperature Protection: %.1f °C", temperature(0x1332));
-  if (in_range(0x1334))
     ESP_LOGD(TAG, "Charge Low Temperature Alarm: %.1f °C", temperature(0x1334));
-
-  // Frame 2: registers 0x1335–0x1367
-  if (in_range(0x133A))
-    ESP_LOGD(TAG, "Discharge Overtemperature Protection: %.1f °C", temperature(0x133A));
-  if (in_range(0x1346))
-    ESP_LOGD(TAG, "Under Environment Temperature Protection: %.1f °C", temperature(0x1346));
-  if (in_range(0x134A))
-    ESP_LOGD(TAG, "Over Power Temperature Protection: %.1f °C", temperature(0x134A));
-  if (in_range(0x1350)) {
+  } else if (reg_start == SEPLOS_V3_REG_SPA2_START) {
+    // Registers 0x1335–0x1369
     this->spa_.balancing_open_voltage = reg(0x1350);
-    ESP_LOGD(TAG, "Balancing Open Voltage: %u mV", this->spa_.balancing_open_voltage);
-  }
-  if (in_range(0x1351)) {
     this->spa_.balancing_open_difference = reg(0x1351);
-    ESP_LOGD(TAG, "Balancing Open Difference: %u mV", this->spa_.balancing_open_difference);
-  }
-  if (in_range(0x1355)) {
     this->spa_.soc_low_alarm = reg(0x1355) * 0.1f;
-    ESP_LOGD(TAG, "SOC Low Alarm: %.1f %%", this->spa_.soc_low_alarm);
-  }
-  if (in_range(0x1358)) {
     this->spa_.rated_capacity = reg(0x1358) * 0.01f;
-    ESP_LOGD(TAG, "Rated Capacity: %.2f Ah", this->spa_.rated_capacity);
-  }
-  if (in_range(0x1359)) {
     this->spa_.total_capacity = reg(0x1359) * 0.01f;
-    ESP_LOGD(TAG, "Total Capacity: %.2f Ah", this->spa_.total_capacity);
-  }
-  if (in_range(0x1366)) {
     this->spa_.charge_current_limit = (float) reg(0x1366);
-    ESP_LOGD(TAG, "PCS Charge Current Limit: %.0f A", this->spa_.charge_current_limit);
-  }
-  if (in_range(0x1367)) {
     int16_t discharge_limit = (int16_t) reg(0x1367);
     this->spa_.discharge_current_limit = discharge_limit < 0 ? -discharge_limit : discharge_limit;
+
+    ESP_LOGD(TAG, "Discharge Overtemperature Protection: %.1f °C", temperature(0x133A));
+    ESP_LOGD(TAG, "Under Environment Temperature Protection: %.1f °C", temperature(0x1346));
+    ESP_LOGD(TAG, "Over Power Temperature Protection: %.1f °C", temperature(0x134A));
+    ESP_LOGD(TAG, "Balancing Open Voltage: %u mV", this->spa_.balancing_open_voltage);
+    ESP_LOGD(TAG, "Balancing Open Difference: %u mV", this->spa_.balancing_open_difference);
+    ESP_LOGD(TAG, "SOC Low Alarm: %.1f %%", this->spa_.soc_low_alarm);
+    ESP_LOGD(TAG, "Rated Capacity: %.2f Ah", this->spa_.rated_capacity);
+    ESP_LOGD(TAG, "Total Capacity: %.2f Ah", this->spa_.total_capacity);
+    ESP_LOGD(TAG, "PCS Charge Current Limit: %.0f A", this->spa_.charge_current_limit);
     ESP_LOGD(TAG, "PCS Discharge Current Limit: %.0f A", this->spa_.discharge_current_limit);
   }
 }
