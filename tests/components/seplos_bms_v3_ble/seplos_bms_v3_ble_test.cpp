@@ -220,6 +220,48 @@ TEST(SeplosBmsV3BleEicTest, WithProblem) {
   EXPECT_EQ(problem_text.state, "Problem detected");
 }
 
+// Operating-status codes (system state, FETs on, equalization) must not be a problem.
+TEST(SeplosBmsV3BleEicTest, StatusCodesAreNotProblems) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor problem_code;
+  text_sensor::TextSensor problem_text;
+  bms.set_problem_code_sensor(&problem_code);
+  bms.set_problem_text_sensor(&problem_text);
+
+  bms.decode_eic(EIC_DATA_STATUS_ONLY);
+
+  EXPECT_FLOAT_EQ(problem_code.state, 0.0f);
+  EXPECT_EQ(problem_text.state, "No problems");
+}
+
+// Hard fault codes (byte 9) were dropped by the old mask; they must be detected now.
+TEST(SeplosBmsV3BleEicTest, HardFaultDetected) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor problem_code;
+  text_sensor::TextSensor problem_text;
+  bms.set_problem_code_sensor(&problem_code);
+  bms.set_problem_text_sensor(&problem_text);
+
+  bms.decode_eic(EIC_DATA_HARD_FAULT);
+
+  EXPECT_NE(problem_code.state, 0.0f);
+  EXPECT_EQ(problem_text.state, "Problem detected");
+}
+
+// "Cell temperature low heating" (TB04 bit6) is an operating state, not a fault.
+TEST(SeplosBmsV3BleEicTest, HeatingIsNotAProblem) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor problem_code;
+  text_sensor::TextSensor problem_text;
+  bms.set_problem_code_sensor(&problem_code);
+  bms.set_problem_text_sensor(&problem_text);
+
+  bms.decode_eic(EIC_DATA_HEATING);
+
+  EXPECT_FLOAT_EQ(problem_code.state, 0.0f);
+  EXPECT_EQ(problem_text.state, "No problems");
+}
+
 // ── Null sensors do not crash ─────────────────────────────────────────────────
 
 TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {

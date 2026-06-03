@@ -121,9 +121,25 @@ static const std::vector<uint8_t> EIC_DATA_NO_PROBLEM = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-// EIC with active alarm in data[2] (masked value != 0 → "Problem detected")
+// EIC with active alarm in data[2] (cell temperature event → "Problem detected")
 static const std::vector<uint8_t> EIC_DATA_WITH_PROBLEM = {
     0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+// EIC with only operating-status codes set (real capture): system state = standby (TB09,
+// byte 0) and FET event = charge+discharge FETs on (TB07, byte 7). Must NOT be a problem.
+static const std::vector<uint8_t> EIC_DATA_STATUS_ONLY = {
+    0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x00, 0x00,
+};
+
+// EIC with a hard fault (TB15, byte 9, Bit1 = AFE fault) — previously dropped by the mask.
+static const std::vector<uint8_t> EIC_DATA_HARD_FAULT = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
+};
+
+// EIC with only "cell temperature low heating" status (TB04, byte 3, Bit6) — not a fault.
+static const std::vector<uint8_t> EIC_DATA_HEATING = {
+    0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
 // SPA captures retained for upcoming sensor tests (no consumer yet).
