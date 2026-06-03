@@ -503,38 +503,33 @@ void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsV3Ble::decode_pct_data_(const std::vector<uint8_t> &data) {
+  // PCT (PCS Control, registers 0x1800–0x1823, see "XZH BMS Modbus-RTU Protocol").
+  // The payload is the register block itself (big-endian UINT16, no length prefix).
   ESP_LOGD(TAG, "Decoding PCT data (Protocol Control Type) - %zu bytes", data.size());
 
-  // Length field (byte 2)
-  uint8_t length = data[2];
-  ESP_LOGD(TAG, "  Length: %d", length);
+  if (data.size() < SEPLOS_V3_PCT_LENGTH * 2) {  // 0x24 * 2 = 72 bytes
+    ESP_LOGW(TAG, "PCT data too short: %zu bytes", data.size());
+    return;
+  }
 
-  // PCS Protocol type Switch (bytes 3-4)
-  uint16_t protocol_type = (data[3] << 8) | data[4];
-  ESP_LOGD(TAG, "  Protocol Type Switch: 0x%04X (%d)", protocol_type, protocol_type);
+  auto extract_string = [&](size_t offset, size_t len) -> std::string {
+    std::string s(data.begin() + offset, data.begin() + offset + len);
+    s.erase(std::find(s.begin(), s.end(), '\0'), s.end());
+    return s;
+  };
 
-  // PCS baud rate (bytes 5-6)
-  uint16_t baud_rate = (data[5] << 8) | data[6];
-  ESP_LOGD(TAG, "  Baud Rate: %d", baud_rate);
-
-  // PCS name (bytes 7-38) - 32 ASCII characters
-  std::string pcs_name(data.begin() + 7, data.begin() + 39);
-  pcs_name.erase(std::find(pcs_name.begin(), pcs_name.end(), '\0'), pcs_name.end());
-  ESP_LOGD(TAG, "  PCS Name: '%s'", pcs_name.c_str());
-
-  // Protocol support name (bytes 39-70) - 32 ASCII characters
-  std::string protocol_name(data.begin() + 39, data.begin() + 71);
-  protocol_name.erase(std::find(protocol_name.begin(), protocol_name.end(), '\0'), protocol_name.end());
-  ESP_LOGD(TAG, "  Protocol Support Name: '%s'", protocol_name.c_str());
-
-  // Protocol version (bytes 71-72) - 2 ASCII characters
-  std::string protocol_version(data.begin() + 71, data.begin() + 73);
-  protocol_version.erase(std::find(protocol_version.begin(), protocol_version.end(), '\0'), protocol_version.end());
-  ESP_LOGD(TAG, "  Protocol Version: '%s'", protocol_version.c_str());
-
-  // Protocol pre Switch (bytes 73-74)
-  uint16_t protocol_pre_switch = (data[73] << 8) | data[74];
-  ESP_LOGD(TAG, "  Protocol Pre Switch: 0x%04X (%d)", protocol_pre_switch, protocol_pre_switch);
+  // Reg 0x1800: PCS protocol type switch
+  ESP_LOGD(TAG, "  Protocol Type Switch: 0x%04X", (data[0] << 8) | data[1]);
+  // Reg 0x1801: PCS baud rate
+  ESP_LOGD(TAG, "  Baud Rate: %u", (data[2] << 8) | data[3]);
+  // Reg 0x1802–0x1811: PCS name (32 ASCII)
+  ESP_LOGD(TAG, "  PCS Name: '%s'", extract_string(4, 32).c_str());
+  // Reg 0x1812–0x1821: protocol support name (32 ASCII)
+  ESP_LOGD(TAG, "  Protocol Support Name: '%s'", extract_string(36, 32).c_str());
+  // Reg 0x1822: protocol version (2 ASCII)
+  ESP_LOGD(TAG, "  Protocol Version: '%s'", extract_string(68, 2).c_str());
+  // Reg 0x1823: PCS protocol pre switch
+  ESP_LOGD(TAG, "  Protocol Pre Switch: 0x%04X", (data[70] << 8) | data[71]);
 }
 
 void SeplosBmsV3Ble::decode_sfa_data_(const std::vector<uint8_t> &data) {
