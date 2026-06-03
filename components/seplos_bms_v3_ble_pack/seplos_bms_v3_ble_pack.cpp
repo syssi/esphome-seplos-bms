@@ -114,13 +114,10 @@ void SeplosBmsV3BlePack::decode_pack_pib_data_(const std::vector<uint8_t> &data)
     this->publish_state_(this->pack_temperature_sensors_[i], (seplos_get_16bit(32 + i * 2) - 2731.5f) * 0.1f);
   }
 
-  // Environment temperature (bytes 40-41) if available
-  if (data.size() >= 42) {
-    uint16_t env_temperature_raw = seplos_get_16bit(40);
-    float env_temperature_celsius = (env_temperature_raw - 2731.5f) * 0.1f;
-    ESP_LOGD(TAG, "  Environment temperature: %d (%.1f °C)", env_temperature_raw, env_temperature_celsius);
-    // TODO: Add environment temperature sensor when available
-  }
+  // Bytes 40-47 are reserved registers (0x1114-0x1117). Ambient temperature is
+  // register 0x1118 (byte 48) and mosfet/power temperature is 0x1119 (byte 50).
+  this->publish_state_(this->ambient_temperature_sensor_, (seplos_get_16bit(48) - 2731.5f) * 0.1f);
+  this->publish_state_(this->mosfet_temperature_sensor_, (seplos_get_16bit(50) - 2731.5f) * 0.1f);
 }
 
 void SeplosBmsV3BlePack::decode_pack_pic_data_(const std::vector<uint8_t> &data) {
