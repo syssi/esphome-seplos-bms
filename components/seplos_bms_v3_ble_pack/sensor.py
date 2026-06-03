@@ -17,8 +17,6 @@ from esphome.const import (
 
 from . import SEPLOS_BMS_V3_BLE_PACK_COMPONENT_SCHEMA
 
-UNIT_AMPERE_HOURS = "Ah"
-
 DEPENDENCIES = ["seplos_bms_v3_ble_pack"]
 CODEOWNERS = ["@syssi"]
 

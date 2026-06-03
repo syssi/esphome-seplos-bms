@@ -292,53 +292,47 @@ void SeplosBmsV3Ble::decode_eia_data_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->discharging_binary_sensor_, true);
   }
 
-  // Cycle charge
-  float cycle_charge = seplos_get_32bit(8) * 0.01f;
+  // Remaining capacity (Reg 0x2004, 10mAH → Ah)
+  float remaining_capacity = seplos_get_32bit(8) * 0.01f;
+  this->publish_state_(this->capacity_remaining_sensor_, remaining_capacity);
+
+  // Total capacity (Reg 0x2006, 10mAH → Ah)
+  this->publish_state_(this->total_capacity_sensor_, seplos_get_32bit(12) * 0.01f);
+
+  // Total discharge capacity = cumulative cycle charge (Reg 0x2008, 10AH → Ah)
+  float cycle_charge = seplos_get_32bit(16) * 10.0f;
   this->publish_state_(this->cycle_charge_sensor_, cycle_charge);
 
-  // Pack count
+  // Rated capacity (Reg 0x200A, 10mAH → Ah)
+  this->publish_state_(this->rated_capacity_sensor_, seplos_get_32bit(20) * 0.01f);
+
+  // Max discharge current (Reg 0x2010, 100mA → A)
+  this->publish_state_(this->max_discharge_current_sensor_, seplos_get_32bit(32) * 0.1f);
+
+  // Max charge current (Reg 0x2012, 100mA → A)
+  this->publish_state_(this->max_charge_current_sensor_, seplos_get_32bit(36) * 0.1f);
+
+  // Pack count (Reg 0x2016)
   uint16_t pack_count = seplos_get_16bit(44);
   this->pack_count_ = std::min(pack_count, (uint16_t) 16);
   this->publish_state_(this->pack_count_sensor_, (float) this->pack_count_);
 
-  // Cycles
+  // Cycles (Reg 0x2017)
   uint16_t cycles = seplos_get_16bit(46);
   this->publish_state_(this->charging_cycles_sensor_, (float) cycles);
 
-  // Battery level
+  // SOC (Reg 0x2018, 0.1% → %)
   this->publish_state_(this->state_of_charge_sensor_, seplos_get_16bit(48) * 0.1f);
 
-  // State of Health
+  // SOH (Reg 0x2019, 0.1% → %)
   this->publish_state_(this->state_of_health_sensor_, seplos_get_16bit(50) * 0.1f);
 
-  // Remaining capacity - EIA register 0x2004
-  float remaining_capacity = seplos_get_32bit(16) * 0.01f;
-  this->publish_state_(this->capacity_remaining_sensor_, remaining_capacity);
-
-  // Total capacity - EIA register 0x2006
-  this->publish_state_(this->total_capacity_sensor_, seplos_get_32bit(20) * 0.01f);
-
-  // Rated capacity - EIA register 0x200A
-  this->publish_state_(this->rated_capacity_sensor_, seplos_get_32bit(40) * 0.01f);
-
-  // Max discharge current - EIA register 0x2010
-  this->publish_state_(this->max_discharge_current_sensor_, seplos_get_32bit(32) * 0.1f);
-
-  // Max charge current - EIA register 0x2012
-  this->publish_state_(this->max_charge_current_sensor_, seplos_get_32bit(36) * 0.1f);
-
-  // Calculate derived values
   if (cycles > 0) {
-    float cycle_capacity = cycle_charge / cycles;
-    this->publish_state_(this->cycle_capacity_sensor_, cycle_capacity);
+    this->publish_state_(this->cycle_capacity_sensor_, cycle_charge / cycles);
   }
 
-  // Use the actual remaining capacity from register instead of calculation
-  // The real remaining capacity is now read from EIA/PIA registers above
-
   if (current < 0 && remaining_capacity > 0) {
-    float runtime = remaining_capacity / (-current);
-    this->publish_state_(this->runtime_sensor_, runtime);
+    this->publish_state_(this->runtime_sensor_, remaining_capacity / (-current));
   }
 }
 
