@@ -643,18 +643,27 @@ void SeplosBmsV3Ble::decode_spa2_data_(const std::vector<uint8_t> &data) {
   };
   auto temperature = [&](uint16_t addr) -> float { return (reg(addr) - 2731.5f) * 0.1f; };
 
-  int16_t discharge_limit = (int16_t) reg(0x1367);
-
-  ESP_LOGD(TAG, "Discharge Overtemperature Protection: %.1f °C", temperature(0x133A));
-  ESP_LOGD(TAG, "Under Environment Temperature Protection: %.1f °C", temperature(0x1346));
-  ESP_LOGD(TAG, "Over Power Temperature Protection: %.1f °C", temperature(0x134A));
-  ESP_LOGD(TAG, "Balancing Open Voltage: %u mV", reg(0x1350));
-  ESP_LOGD(TAG, "Balancing Open Difference: %u mV", reg(0x1351));
-  ESP_LOGD(TAG, "SOC Low Alarm: %.1f %%", reg(0x1355) * 0.1f);
+  // Reg 4922: discharge overtemperature protection
+  this->publish_state_(this->discharge_overtemperature_protection_sensor_, temperature(0x133A));
+  // Reg 4934: environment undertemperature protection
+  this->publish_state_(this->environment_undertemperature_protection_sensor_, temperature(0x1346));
+  // Reg 4938: mosfet overtemperature protection
+  this->publish_state_(this->mosfet_overtemperature_protection_sensor_, temperature(0x134A));
+  // Reg 4944: balancing start voltage
+  this->publish_state_(this->balancing_start_voltage_sensor_, reg(0x1350) * 0.001f);
+  // Reg 4945: balancing start difference
+  this->publish_state_(this->balancing_start_difference_sensor_, reg(0x1351) * 0.001f);
+  // Reg 4949: low state of charge alarm
+  this->publish_state_(this->low_state_of_charge_alarm_sensor_, reg(0x1355) * 0.1f);
+  // Reg 4952/4953: rated/total capacity already published via EIA, log only
   ESP_LOGD(TAG, "Rated Capacity: %.2f Ah", reg(0x1358) * 0.01f);
   ESP_LOGD(TAG, "Total Capacity: %.2f Ah", reg(0x1359) * 0.01f);
-  ESP_LOGD(TAG, "PCS Charge Current Limit: %u A", reg(0x1366));
-  ESP_LOGD(TAG, "PCS Discharge Current Limit: %d A", discharge_limit < 0 ? -discharge_limit : discharge_limit);
+  // Reg 4966: inverter charge current limit
+  this->publish_state_(this->inverter_charge_current_limit_sensor_, (float) reg(0x1366));
+  // Reg 4967: inverter discharge current limit (signed, magnitude)
+  int16_t discharge_limit = (int16_t) reg(0x1367);
+  this->publish_state_(this->inverter_discharge_current_limit_sensor_,
+                       (float) (discharge_limit < 0 ? -discharge_limit : discharge_limit));
 }
 
 #ifdef USE_ESP32

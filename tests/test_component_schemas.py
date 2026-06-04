@@ -115,7 +115,7 @@ class TestSeplosBmsBleSwitchConstants:
 class TestSeplosBmsV3BleSensorLists:
     def test_sensor_defs_completeness(self):
         assert "total_voltage" in v3_sensor.SENSOR_DEFS
-        assert len(v3_sensor.SENSOR_DEFS) == 54
+        assert len(v3_sensor.SENSOR_DEFS) == 62
 
     def test_binary_sensor_defs_dict(self):
         assert len(v3_binary_sensor.BINARY_SENSOR_DEFS) == 7

@@ -392,6 +392,54 @@ TEST(SeplosBmsV3BleSpa1Test, NullSensorsDoNotCrash) {
   EXPECT_NO_FATAL_FAILURE(bms.decode_spa1(SPA_DATA_1));
 }
 
+// ── SPA2: configuration sensors (registers 0x1335–0x1369) ──────────────────────
+
+TEST(SeplosBmsV3BleSpa2Test, TemperatureThresholds) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor discharge_otp, environment_utp, mosfet_otp;
+  bms.set_discharge_overtemperature_protection_sensor(&discharge_otp);
+  bms.set_environment_undertemperature_protection_sensor(&environment_utp);
+  bms.set_mosfet_overtemperature_protection_sensor(&mosfet_otp);
+
+  bms.decode_spa2(SPA_DATA_2);
+
+  EXPECT_NEAR(discharge_otp.state, 60.0f, 0.1f);
+  EXPECT_NEAR(environment_utp.state, -10.1f, 0.1f);
+  EXPECT_NEAR(mosfet_otp.state, 110.0f, 0.1f);
+}
+
+TEST(SeplosBmsV3BleSpa2Test, BalancingParameters) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor start_voltage, start_difference;
+  bms.set_balancing_start_voltage_sensor(&start_voltage);
+  bms.set_balancing_start_difference_sensor(&start_difference);
+
+  bms.decode_spa2(SPA_DATA_2);
+
+  EXPECT_NEAR(start_voltage.state, 3.400f, 0.001f);
+  EXPECT_NEAR(start_difference.state, 0.050f, 0.001f);
+}
+
+TEST(SeplosBmsV3BleSpa2Test, CapacityAndCurrentConfig) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor low_state_of_charge_alarm, charge_limit, discharge_limit;
+  bms.set_low_state_of_charge_alarm_sensor(&low_state_of_charge_alarm);
+  bms.set_inverter_charge_current_limit_sensor(&charge_limit);
+  bms.set_inverter_discharge_current_limit_sensor(&discharge_limit);
+
+  bms.decode_spa2(SPA_DATA_2);
+
+  EXPECT_NEAR(low_state_of_charge_alarm.state, 5.0f, 0.1f);
+  EXPECT_FLOAT_EQ(charge_limit.state, 180.0f);
+  EXPECT_FLOAT_EQ(discharge_limit.state, 180.0f);
+}
+
+TEST(SeplosBmsV3BleSpa2Test, NullSensorsDoNotCrash) {
+  TestableSeplosBmsV3Ble bms;
+
+  EXPECT_NO_FATAL_FAILURE(bms.decode_spa2(SPA_DATA_2));
+}
+
 // ── Null sensors do not crash ─────────────────────────────────────────────────
 
 TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
