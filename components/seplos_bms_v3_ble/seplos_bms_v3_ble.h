@@ -161,6 +161,15 @@ class SeplosBmsV3Ble :
   void set_max_charge_current_sensor(sensor::Sensor *max_charge_current_sensor) {
     max_charge_current_sensor_ = max_charge_current_sensor;
   }
+  void set_inverter_protocol_sensor(sensor::Sensor *inverter_protocol_sensor) {
+    inverter_protocol_sensor_ = inverter_protocol_sensor;
+  }
+  void set_inverter_baud_rate_sensor(sensor::Sensor *inverter_baud_rate_sensor) {
+    inverter_baud_rate_sensor_ = inverter_baud_rate_sensor;
+  }
+  void set_inverter_protocol_pre_switch_sensor(sensor::Sensor *inverter_protocol_pre_switch_sensor) {
+    inverter_protocol_pre_switch_sensor_ = inverter_protocol_pre_switch_sensor;
+  }
 
   void set_min_cell_voltage_sensor(sensor::Sensor *min_cell_voltage_sensor) {
     min_cell_voltage_sensor_ = min_cell_voltage_sensor;
@@ -192,6 +201,15 @@ class SeplosBmsV3Ble :
   }
   void set_pack_serial_number_text_sensor(text_sensor::TextSensor *pack_serial_number_text_sensor) {
     pack_serial_number_text_sensor_ = pack_serial_number_text_sensor;
+  }
+  void set_inverter_name_text_sensor(text_sensor::TextSensor *inverter_name_text_sensor) {
+    inverter_name_text_sensor_ = inverter_name_text_sensor;
+  }
+  void set_inverter_protocol_name_text_sensor(text_sensor::TextSensor *inverter_protocol_name_text_sensor) {
+    inverter_protocol_name_text_sensor_ = inverter_protocol_name_text_sensor;
+  }
+  void set_inverter_protocol_version_text_sensor(text_sensor::TextSensor *inverter_protocol_version_text_sensor) {
+    inverter_protocol_version_text_sensor_ = inverter_protocol_version_text_sensor;
   }
 
   void register_pack_component(SeplosBmsV3BlePack *pack_device) {
@@ -245,6 +263,9 @@ class SeplosBmsV3Ble :
   sensor::Sensor *current_event_code_sensor_{nullptr};
   sensor::Sensor *max_discharge_current_sensor_{nullptr};
   sensor::Sensor *max_charge_current_sensor_{nullptr};
+  sensor::Sensor *inverter_protocol_sensor_{nullptr};
+  sensor::Sensor *inverter_baud_rate_sensor_{nullptr};
+  sensor::Sensor *inverter_protocol_pre_switch_sensor_{nullptr};
 
   sensor::Sensor *min_cell_voltage_sensor_{nullptr};
   sensor::Sensor *max_cell_voltage_sensor_{nullptr};
@@ -257,6 +278,9 @@ class SeplosBmsV3Ble :
   text_sensor::TextSensor *firmware_version_text_sensor_{nullptr};
   text_sensor::TextSensor *bms_serial_number_text_sensor_{nullptr};
   text_sensor::TextSensor *pack_serial_number_text_sensor_{nullptr};
+  text_sensor::TextSensor *inverter_name_text_sensor_{nullptr};
+  text_sensor::TextSensor *inverter_protocol_name_text_sensor_{nullptr};
+  text_sensor::TextSensor *inverter_protocol_version_text_sensor_{nullptr};
 
   std::vector<uint8_t> frame_buffer_;
 #ifdef USE_ESP32

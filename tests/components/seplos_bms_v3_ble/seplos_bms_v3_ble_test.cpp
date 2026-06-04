@@ -285,6 +285,35 @@ TEST(SeplosBmsV3BleEicTest, HeatingIsNotAProblem) {
   EXPECT_EQ(problem_text.state, "No problems");
 }
 
+// ── PCT: inverter / protocol sensors ──────────────────────────────────────────
+
+TEST(SeplosBmsV3BlePctTest, Sensors) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor protocol, baud_rate, protocol_pre_switch;
+  text_sensor::TextSensor inverter_name, inverter_protocol_name, inverter_protocol_version;
+  bms.set_inverter_protocol_sensor(&protocol);
+  bms.set_inverter_baud_rate_sensor(&baud_rate);
+  bms.set_inverter_protocol_pre_switch_sensor(&protocol_pre_switch);
+  bms.set_inverter_name_text_sensor(&inverter_name);
+  bms.set_inverter_protocol_name_text_sensor(&inverter_protocol_name);
+  bms.set_inverter_protocol_version_text_sensor(&inverter_protocol_version);
+
+  bms.decode_pct(PCT_DATA);
+
+  EXPECT_FLOAT_EQ(protocol.state, 0.0f);
+  EXPECT_FLOAT_EQ(baud_rate.state, 500.0f);
+  EXPECT_FLOAT_EQ(protocol_pre_switch.state, 0.0f);
+  EXPECT_EQ(inverter_name.state, "SUN-3.6K-SG03P1-EU");
+  EXPECT_EQ(inverter_protocol_name.state, "Pylon CAN Protocol");
+  EXPECT_EQ(inverter_protocol_version.state, "20");
+}
+
+TEST(SeplosBmsV3BlePctTest, NullSensorsDoNotCrash) {
+  TestableSeplosBmsV3Ble bms;
+
+  EXPECT_NO_FATAL_FAILURE(bms.decode_pct(PCT_DATA));
+}
+
 // ── Null sensors do not crash ─────────────────────────────────────────────────
 
 TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {

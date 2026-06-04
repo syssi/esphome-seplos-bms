@@ -523,7 +523,7 @@ void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
 }
 
 void SeplosBmsV3Ble::decode_pct_data_(const std::vector<uint8_t> &data) {
-  // PCT (PCS Control, registers 0x1800–0x1823, see "XZH BMS Modbus-RTU Protocol").
+  // PCT (inverter protocol settings, registers 6144–6179, see "XZH BMS Modbus-RTU Protocol").
   // The payload is the register block itself (big-endian UINT16, no length prefix).
   ESP_LOGD(TAG, "Decoding PCT data (Protocol Control Type) - %zu bytes", data.size());
 
@@ -532,24 +532,29 @@ void SeplosBmsV3Ble::decode_pct_data_(const std::vector<uint8_t> &data) {
     return;
   }
 
-  auto extract_string = [&](size_t offset, size_t len) -> std::string {
+  auto reg = [&](uint16_t addr) -> uint16_t {
+    size_t offset = (size_t) (addr - SEPLOS_V3_REG_PCT_START) * 2;
+    return (uint16_t(data[offset]) << 8) | uint16_t(data[offset + 1]);
+  };
+  auto extract_string = [&](uint16_t addr, size_t len) -> std::string {
+    size_t offset = (size_t) (addr - SEPLOS_V3_REG_PCT_START) * 2;
     std::string s(data.begin() + offset, data.begin() + offset + len);
     s.erase(std::find(s.begin(), s.end(), '\0'), s.end());
     return s;
   };
 
-  // Reg 0x1800: PCS protocol type switch
-  ESP_LOGD(TAG, "  Protocol Type Switch: 0x%04X", (data[0] << 8) | data[1]);
-  // Reg 0x1801: PCS baud rate
-  ESP_LOGD(TAG, "  Baud Rate: %u", (data[2] << 8) | data[3]);
-  // Reg 0x1802–0x1811: PCS name (32 ASCII)
-  ESP_LOGD(TAG, "  PCS Name: '%s'", extract_string(4, 32).c_str());
-  // Reg 0x1812–0x1821: protocol support name (32 ASCII)
-  ESP_LOGD(TAG, "  Protocol Support Name: '%s'", extract_string(36, 32).c_str());
-  // Reg 0x1822: protocol version (2 ASCII)
-  ESP_LOGD(TAG, "  Protocol Version: '%s'", extract_string(68, 2).c_str());
-  // Reg 0x1823: PCS protocol pre switch
-  ESP_LOGD(TAG, "  Protocol Pre Switch: 0x%04X", (data[70] << 8) | data[71]);
+  // Reg 6144: inverter protocol type switch
+  this->publish_state_(this->inverter_protocol_sensor_, (float) reg(0x1800));
+  // Reg 6145: inverter baud rate
+  this->publish_state_(this->inverter_baud_rate_sensor_, (float) reg(0x1801));
+  // Reg 6146–6161: inverter name (32 ASCII)
+  this->publish_state_(this->inverter_name_text_sensor_, extract_string(0x1802, 32));
+  // Reg 6162–6177: inverter protocol name (32 ASCII)
+  this->publish_state_(this->inverter_protocol_name_text_sensor_, extract_string(0x1812, 32));
+  // Reg 6178: inverter protocol version (2 ASCII)
+  this->publish_state_(this->inverter_protocol_version_text_sensor_, extract_string(0x1822, 2));
+  // Reg 6179: inverter protocol pre switch
+  this->publish_state_(this->inverter_protocol_pre_switch_sensor_, (float) reg(0x1823));
 }
 
 void SeplosBmsV3Ble::decode_sfa_data_(const std::vector<uint8_t> &data) {

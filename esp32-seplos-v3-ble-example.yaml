@@ -157,6 +157,12 @@ sensor:
       name: "max discharge current"
     max_charge_current:
       name: "max charge current"
+    inverter_protocol:
+      name: "inverter protocol"
+    inverter_baud_rate:
+      name: "inverter baud rate"
+    inverter_protocol_pre_switch:
+      name: "inverter protocol pre switch"
 
   # Pack-specific sensors
   - platform: seplos_bms_v3_ble_pack
@@ -290,3 +296,9 @@ text_sensor:
       name: "BMS serial number"
     pack_serial_number:
       name: "pack serial number"
+    inverter_name:
+      name: "inverter name"
+    inverter_protocol_name:
+      name: "inverter protocol name"
+    inverter_protocol_version:
+      name: "inverter protocol version"

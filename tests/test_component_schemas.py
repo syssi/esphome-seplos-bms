@@ -115,7 +115,7 @@ class TestSeplosBmsBleSwitchConstants:
 class TestSeplosBmsV3BleSensorLists:
     def test_sensor_defs_completeness(self):
         assert "total_voltage" in v3_sensor.SENSOR_DEFS
-        assert len(v3_sensor.SENSOR_DEFS) == 36
+        assert len(v3_sensor.SENSOR_DEFS) == 39
 
     def test_binary_sensor_defs_dict(self):
         assert len(v3_binary_sensor.BINARY_SENSOR_DEFS) == 7
@@ -125,4 +125,9 @@ class TestSeplosBmsV3BleTextSensorConstants:
     def test_text_sensors_list(self):
         assert v3_text_sensor.CONF_PROBLEM in v3_text_sensor.TEXT_SENSORS
         assert v3_text_sensor.CONF_FACTORY_NAME in v3_text_sensor.TEXT_SENSORS
-        assert len(v3_text_sensor.TEXT_SENSORS) == 6
+        assert v3_text_sensor.CONF_INVERTER_NAME in v3_text_sensor.TEXT_SENSORS
+        assert v3_text_sensor.CONF_INVERTER_PROTOCOL_NAME in v3_text_sensor.TEXT_SENSORS
+        assert (
+            v3_text_sensor.CONF_INVERTER_PROTOCOL_VERSION in v3_text_sensor.TEXT_SENSORS
+        )
+        assert len(v3_text_sensor.TEXT_SENSORS) == 9
