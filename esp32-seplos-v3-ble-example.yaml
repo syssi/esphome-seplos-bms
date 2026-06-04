@@ -81,6 +81,8 @@ binary_sensor:
       name: "current protection"
     system_fault:
       name: "system fault"
+    heating:
+      name: "heating"
 
 sensor:
   - platform: seplos_bms_v3_ble

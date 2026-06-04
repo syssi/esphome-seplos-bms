@@ -74,6 +74,9 @@ class SeplosBmsV3Ble :
   void set_system_fault_binary_sensor(binary_sensor::BinarySensor *system_fault_binary_sensor) {
     system_fault_binary_sensor_ = system_fault_binary_sensor;
   }
+  void set_heating_binary_sensor(binary_sensor::BinarySensor *heating_binary_sensor) {
+    heating_binary_sensor_ = heating_binary_sensor;
+  }
 
   void set_total_voltage_sensor(sensor::Sensor *total_voltage_sensor) { total_voltage_sensor_ = total_voltage_sensor; }
   void set_current_sensor(sensor::Sensor *current_sensor) { current_sensor_ = current_sensor; }
@@ -296,6 +299,7 @@ class SeplosBmsV3Ble :
   binary_sensor::BinarySensor *temperature_protection_binary_sensor_{nullptr};
   binary_sensor::BinarySensor *current_protection_binary_sensor_{nullptr};
   binary_sensor::BinarySensor *system_fault_binary_sensor_{nullptr};
+  binary_sensor::BinarySensor *heating_binary_sensor_{nullptr};
 
   sensor::Sensor *total_voltage_sensor_{nullptr};
   sensor::Sensor *current_sensor_{nullptr};

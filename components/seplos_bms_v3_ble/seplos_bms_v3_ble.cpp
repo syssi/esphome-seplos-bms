@@ -444,35 +444,38 @@ void SeplosBmsV3Ble::decode_eic_data_(const std::vector<uint8_t> &data) {
 
   // EIC carries ten single-byte event codes (registers 0x2200–0x2248, see protocol
   // status tables). System state (TB09), FET event (TB07) and equalization state
-  // (TB08) describe normal operation, not faults, so they must not raise a problem.
-  // Each remaining alarm/protection/fault byte contributes one bit to the problem code.
-  struct EventCode {
-    uint8_t index;
-    uint8_t fault_mask;
-    uint32_t flag;
-    const char *name;
-  };
-  static const EventCode EVENT_CODES[] = {
-      {1, 0xFF, 1 << 0, "voltage"},              // TB02
-      {2, 0xFF, 1 << 1, "cell temperature"},     // TB03
-      {3, 0x3F, 1 << 2, "ambient temperature"},  // TB04 (bit6 "low temperature heating" is status)
-      {4, 0xFF, 1 << 3, "current"},              // TB05
-      {5, 0xFF, 1 << 4, "current latch"},        // TB16
-      {6, 0xFF, 1 << 5, "capacity"},             // TB06
-      {9, 0xFF, 1 << 6, "hard fault"},           // TB15
-  };
-
+  // (TB08) describe normal operation, not faults, so they do not raise a problem.
+  // Each remaining alarm/protection/fault byte contributes one bit to the problem
+  // code; TB04 bit6 ("low temperature heating") is an operating state and is masked.
   uint32_t problem_code = 0;
-  for (auto &event : EVENT_CODES) {
-    uint8_t value = data[event.index] & event.fault_mask;
-    if (value == 0)
-      continue;
-    problem_code |= event.flag;
-    ESP_LOGD(TAG, "  %s event code: 0x%02X", event.name, value);
-  }
+  problem_code |= uint32_t(data[1] != 0) << 0;           // TB02 voltage
+  problem_code |= uint32_t(data[2] != 0) << 1;           // TB03 cell temperature
+  problem_code |= uint32_t((data[3] & 0x3F) != 0) << 2;  // TB04 ambient temperature
+  problem_code |= uint32_t(data[4] != 0) << 3;           // TB05 current
+  problem_code |= uint32_t(data[5] != 0) << 4;           // TB16 current latch
+  problem_code |= uint32_t(data[6] != 0) << 5;           // TB06 capacity
+  problem_code |= uint32_t(data[9] != 0) << 6;           // TB15 hard fault
 
   this->publish_state_(this->problem_code_sensor_, (float) problem_code);
   this->publish_state_(this->problem_text_sensor_, problem_code != 0 ? "Problem detected" : "No problems");
+
+  // Raw event-code registers (diagnostic). The temperature code merges the cell
+  // (TB03, data[2]) and ambient/power (TB04, data[3]) event bytes into one 16-bit
+  // value — TB03 high byte, TB04 low byte — so neither table is lost.
+  this->publish_state_(this->system_state_code_sensor_, (float) data[0]);                          // TB09
+  this->publish_state_(this->voltage_event_code_sensor_, (float) data[1]);                         // TB02
+  this->publish_state_(this->temperature_event_code_sensor_, (float) ((data[2] << 8) | data[3]));  // TB03 + TB04
+  this->publish_state_(this->current_event_code_sensor_, (float) data[4]);                         // TB05
+
+  // Protection / fault flags. "Low temperature heating" (TB04 bit6) is an operating
+  // state, not a fault, so it is masked out of the temperature protection flag.
+  this->publish_state_(this->voltage_protection_binary_sensor_, data[1] != 0);
+  this->publish_state_(this->temperature_protection_binary_sensor_, (data[2] != 0) || ((data[3] & 0x3F) != 0));
+  this->publish_state_(this->current_protection_binary_sensor_, (data[4] != 0) || (data[5] != 0));
+  this->publish_state_(this->system_fault_binary_sensor_, data[9] != 0);
+
+  // TB04 bit6: low-temperature heating is active (operating state, not a fault).
+  this->publish_state_(this->heating_binary_sensor_, (data[3] & 0x40) != 0);
 }
 
 void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {

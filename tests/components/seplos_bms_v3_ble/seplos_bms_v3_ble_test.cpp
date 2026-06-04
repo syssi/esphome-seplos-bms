@@ -285,6 +285,109 @@ TEST(SeplosBmsV3BleEicTest, HeatingIsNotAProblem) {
   EXPECT_EQ(problem_text.state, "No problems");
 }
 
+// ── EIC: event-code sensors and protection binary sensors ─────────────────────
+
+// Raw event-code registers: TB09 state (byte 0), TB02 voltage (byte 1),
+// TB05 current (byte 4); the cell-temperature alarm (TB03, byte 2) lands in the
+// high byte of the combined temperature code.
+TEST(SeplosBmsV3BleEicTest, EventCodeSensors) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor system_state, voltage_code, temperature_code, current_code;
+  bms.set_system_state_code_sensor(&system_state);
+  bms.set_voltage_event_code_sensor(&voltage_code);
+  bms.set_temperature_event_code_sensor(&temperature_code);
+  bms.set_current_event_code_sensor(&current_code);
+
+  bms.decode_eic(EIC_DATA_WITH_PROBLEM);  // data[2] = 0x01
+
+  EXPECT_FLOAT_EQ(system_state.state, 0.0f);
+  EXPECT_FLOAT_EQ(voltage_code.state, 0.0f);
+  EXPECT_FLOAT_EQ(temperature_code.state, 256.0f);  // (0x01 << 8) | 0x00
+  EXPECT_FLOAT_EQ(current_code.state, 0.0f);
+}
+
+// TB03 (cell temperature, high byte) and TB04 (ambient/power temperature, low byte)
+// share one temperature event-code sensor; an ambient fault sets the low byte and
+// raises temperature protection.
+TEST(SeplosBmsV3BleEicTest, TemperatureEventCodeCombinesCellAndAmbient) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor temperature_code;
+  binary_sensor::BinarySensor temperature_protection, heating;
+  bms.set_temperature_event_code_sensor(&temperature_code);
+  bms.set_temperature_protection_binary_sensor(&temperature_protection);
+  bms.set_heating_binary_sensor(&heating);
+
+  bms.decode_eic(EIC_DATA_AMBIENT_TEMP);  // data[3] = 0x01
+
+  EXPECT_FLOAT_EQ(temperature_code.state, 1.0f);  // (0x00 << 8) | 0x01
+  EXPECT_TRUE(temperature_protection.state);
+  EXPECT_FALSE(heating.state);  // bit6 not set
+}
+
+// The heating status bit (TB04 bit6) is kept in the raw event code and drives the
+// dedicated heating sensor, but is masked out of the protection flag.
+TEST(SeplosBmsV3BleEicTest, HeatingShowsInCodeButNotProtection) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor temperature_code;
+  binary_sensor::BinarySensor temperature_protection, heating;
+  bms.set_temperature_event_code_sensor(&temperature_code);
+  bms.set_temperature_protection_binary_sensor(&temperature_protection);
+  bms.set_heating_binary_sensor(&heating);
+
+  bms.decode_eic(EIC_DATA_HEATING);  // data[3] = 0x40
+
+  EXPECT_FLOAT_EQ(temperature_code.state, 64.0f);  // (0x00 << 8) | 0x40, raw byte kept
+  EXPECT_FALSE(temperature_protection.state);      // 0x40 & 0x3F == 0
+  EXPECT_TRUE(heating.state);                      // bit6 set
+}
+
+TEST(SeplosBmsV3BleEicTest, ProtectionBinarySensors) {
+  TestableSeplosBmsV3Ble bms;
+  binary_sensor::BinarySensor voltage_protection, temperature_protection, current_protection, system_fault;
+  bms.set_voltage_protection_binary_sensor(&voltage_protection);
+  bms.set_temperature_protection_binary_sensor(&temperature_protection);
+  bms.set_current_protection_binary_sensor(&current_protection);
+  bms.set_system_fault_binary_sensor(&system_fault);
+
+  bms.decode_eic(EIC_DATA_WITH_PROBLEM);  // data[2] = 0x01 (cell temperature)
+
+  EXPECT_FALSE(voltage_protection.state);
+  EXPECT_TRUE(temperature_protection.state);
+  EXPECT_FALSE(current_protection.state);
+  EXPECT_FALSE(system_fault.state);
+}
+
+// Hard fault (TB15, byte 9) drives the dedicated system-fault flag.
+TEST(SeplosBmsV3BleEicTest, SystemFaultBinarySensor) {
+  TestableSeplosBmsV3Ble bms;
+  binary_sensor::BinarySensor system_fault;
+  bms.set_system_fault_binary_sensor(&system_fault);
+
+  bms.decode_eic(EIC_DATA_HARD_FAULT);  // data[9] = 0x02
+
+  EXPECT_TRUE(system_fault.state);
+}
+
+// Operating-status state code (TB09) is exposed but is not a protection event.
+TEST(SeplosBmsV3BleEicTest, SystemStateCodeIsNotProtection) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor system_state;
+  binary_sensor::BinarySensor voltage_protection, temperature_protection, current_protection, system_fault;
+  bms.set_system_state_code_sensor(&system_state);
+  bms.set_voltage_protection_binary_sensor(&voltage_protection);
+  bms.set_temperature_protection_binary_sensor(&temperature_protection);
+  bms.set_current_protection_binary_sensor(&current_protection);
+  bms.set_system_fault_binary_sensor(&system_fault);
+
+  bms.decode_eic(EIC_DATA_STATUS_ONLY);  // data[0] = 0x10
+
+  EXPECT_FLOAT_EQ(system_state.state, 16.0f);
+  EXPECT_FALSE(voltage_protection.state);
+  EXPECT_FALSE(temperature_protection.state);
+  EXPECT_FALSE(current_protection.state);
+  EXPECT_FALSE(system_fault.state);
+}
+
 // ── PCT: inverter / protocol sensors ──────────────────────────────────────────
 
 TEST(SeplosBmsV3BlePctTest, Sensors) {
@@ -450,6 +553,7 @@ TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {
   EXPECT_NO_FATAL_FAILURE(bms.decode_eib(EIB_DATA));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_NO_PROBLEM));
   EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_WITH_PROBLEM));
+  EXPECT_NO_FATAL_FAILURE(bms.decode_eic(EIC_DATA_AMBIENT_TEMP));
 }
 
 }  // namespace esphome::seplos_bms_v3_ble::testing

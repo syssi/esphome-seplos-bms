@@ -118,7 +118,7 @@ class TestSeplosBmsV3BleSensorLists:
         assert len(v3_sensor.SENSOR_DEFS) == 62
 
     def test_binary_sensor_defs_dict(self):
-        assert len(v3_binary_sensor.BINARY_SENSOR_DEFS) == 7
+        assert len(v3_binary_sensor.BINARY_SENSOR_DEFS) == 8
 
 
 class TestSeplosBmsV3BleTextSensorConstants:
