@@ -63,6 +63,9 @@ CONF_TEMPERATURE_EVENT_CODE = "temperature_event_code"
 CONF_CURRENT_EVENT_CODE = "current_event_code"
 CONF_MAX_DISCHARGE_CURRENT = "max_discharge_current"
 CONF_MAX_CHARGE_CURRENT = "max_charge_current"
+CONF_INVERTER_PROTOCOL = "inverter_protocol"
+CONF_INVERTER_BAUD_RATE = "inverter_baud_rate"
+CONF_INVERTER_PROTOCOL_PRE_SWITCH = "inverter_protocol_pre_switch"
 
 # key: sensor_schema kwargs
 SENSOR_DEFS = {
@@ -281,6 +284,27 @@ SENSOR_DEFS = {
         "icon": "mdi:battery-arrow-up",
         "accuracy_decimals": 1,
         "device_class": DEVICE_CLASS_CURRENT,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_INVERTER_PROTOCOL: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:protocol",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_INVERTER_BAUD_RATE: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:speedometer",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_INVERTER_PROTOCOL_PRE_SWITCH: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:protocol",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
         "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_MIN_CELL_VOLTAGE: {

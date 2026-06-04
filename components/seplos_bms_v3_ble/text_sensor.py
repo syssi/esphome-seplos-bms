@@ -15,6 +15,9 @@ CONF_DEVICE_NAME = "device_name"
 CONF_FIRMWARE_VERSION = "firmware_version"
 CONF_BMS_SERIAL_NUMBER = "bms_serial_number"
 CONF_PACK_SERIAL_NUMBER = "pack_serial_number"
+CONF_INVERTER_NAME = "inverter_name"
+CONF_INVERTER_PROTOCOL_NAME = "inverter_protocol_name"
+CONF_INVERTER_PROTOCOL_VERSION = "inverter_protocol_version"
 
 
 TEXT_SENSORS = [
@@ -24,6 +27,9 @@ TEXT_SENSORS = [
     CONF_FIRMWARE_VERSION,
     CONF_BMS_SERIAL_NUMBER,
     CONF_PACK_SERIAL_NUMBER,
+    CONF_INVERTER_NAME,
+    CONF_INVERTER_PROTOCOL_NAME,
+    CONF_INVERTER_PROTOCOL_VERSION,
 ]
 
 CONFIG_SCHEMA = SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA.extend(
@@ -50,6 +56,18 @@ CONFIG_SCHEMA = SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA.extend(
         ),
         cv.Optional(CONF_PACK_SERIAL_NUMBER): text_sensor.text_sensor_schema(
             icon="mdi:battery-outline",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
+        cv.Optional(CONF_INVERTER_NAME): text_sensor.text_sensor_schema(
+            icon="mdi:solar-power",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
+        cv.Optional(CONF_INVERTER_PROTOCOL_NAME): text_sensor.text_sensor_schema(
+            icon="mdi:protocol",
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        ),
+        cv.Optional(CONF_INVERTER_PROTOCOL_VERSION): text_sensor.text_sensor_schema(
+            icon="mdi:information-outline",
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
         ),
     }
