@@ -595,21 +595,38 @@ void SeplosBmsV3Ble::decode_spa1_data_(const std::vector<uint8_t> &data) {
   };
   auto temperature = [&](uint16_t addr) -> float { return (reg(addr) - 2731.5f) * 0.1f; };
 
-  ESP_LOGD(TAG, "NTC Count: %u", reg(0x1300));
-  ESP_LOGD(TAG, "Cell Count: %u", reg(0x1301));
-  ESP_LOGD(TAG, "Pack Overvoltage Recover: %.2f V", reg(0x1304) * 0.01f);
-  ESP_LOGD(TAG, "Pack Overvoltage Protection: %.2f V", reg(0x1305) * 0.01f);
-  ESP_LOGD(TAG, "Pack Undervoltage Recover: %.2f V", reg(0x1308) * 0.01f);
-  ESP_LOGD(TAG, "Pack Undervoltage Protection: %.2f V", reg(0x1309) * 0.01f);
-  ESP_LOGD(TAG, "Cell Overvoltage Recover: %u mV", reg(0x130C));
-  ESP_LOGD(TAG, "Cell Overvoltage Protection: %u mV", reg(0x130D));
-  ESP_LOGD(TAG, "Cell Undervoltage Recover: %u mV", reg(0x1310));
-  ESP_LOGD(TAG, "Cell Undervoltage Protection: %u mV", reg(0x1311));
-  ESP_LOGD(TAG, "Cell Difference Protection: %u mV", reg(0x1313));
-  ESP_LOGD(TAG, "Charge Overcurrent Protection: %d A", reg(0x1317));
-  ESP_LOGD(TAG, "Discharge Overcurrent Protection: %d A", (int16_t) reg(0x131D));
-  ESP_LOGD(TAG, "Charge Overtemperature Protection: %.1f °C", temperature(0x1332));
-  ESP_LOGD(TAG, "Charge Low Temperature Alarm: %.1f °C", temperature(0x1334));
+  // Reg 4864: temperature sensor count
+  this->publish_state_(this->temperature_sensor_count_sensor_, (float) reg(0x1300));
+  // Reg 4865: cell count
+  this->publish_state_(this->cell_count_sensor_, (float) reg(0x1301));
+  // Reg 4868: pack overvoltage recovery voltage
+  this->publish_state_(this->pack_overvoltage_recovery_voltage_sensor_, reg(0x1304) * 0.01f);
+  // Reg 4869: pack overvoltage protection voltage
+  this->publish_state_(this->pack_overvoltage_protection_voltage_sensor_, reg(0x1305) * 0.01f);
+  // Reg 4872: pack undervoltage recovery voltage
+  this->publish_state_(this->pack_undervoltage_recovery_voltage_sensor_, reg(0x1308) * 0.01f);
+  // Reg 4873: pack undervoltage protection voltage
+  this->publish_state_(this->pack_undervoltage_protection_voltage_sensor_, reg(0x1309) * 0.01f);
+  // Reg 4876: cell overvoltage recovery voltage
+  this->publish_state_(this->cell_overvoltage_recovery_voltage_sensor_, reg(0x130C) * 0.001f);
+  // Reg 4877: cell overvoltage protection voltage
+  this->publish_state_(this->cell_overvoltage_protection_voltage_sensor_, reg(0x130D) * 0.001f);
+  // Reg 4880: cell undervoltage recovery voltage
+  this->publish_state_(this->cell_undervoltage_recovery_voltage_sensor_, reg(0x1310) * 0.001f);
+  // Reg 4881: cell undervoltage protection voltage
+  this->publish_state_(this->cell_undervoltage_protection_voltage_sensor_, reg(0x1311) * 0.001f);
+  // Reg 4883: cell voltage difference protection
+  this->publish_state_(this->cell_voltage_difference_protection_sensor_, reg(0x1313) * 0.001f);
+  // Reg 4887: charge overcurrent protection
+  this->publish_state_(this->charge_overcurrent_protection_sensor_, (float) reg(0x1317));
+  // Reg 4893: discharge overcurrent protection (signed, magnitude)
+  int16_t discharge_overcurrent = (int16_t) reg(0x131D);
+  this->publish_state_(this->discharge_overcurrent_protection_sensor_,
+                       (float) (discharge_overcurrent < 0 ? -discharge_overcurrent : discharge_overcurrent));
+  // Reg 4914: charge overtemperature protection
+  this->publish_state_(this->charge_overtemperature_protection_sensor_, temperature(0x1332));
+  // Reg 4916: charge low temperature alarm
+  this->publish_state_(this->charge_low_temperature_alarm_sensor_, temperature(0x1334));
 }
 
 void SeplosBmsV3Ble::decode_spa2_data_(const std::vector<uint8_t> &data) {
