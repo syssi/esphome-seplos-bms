@@ -213,6 +213,31 @@ class SeplosBmsV3Ble :
   void set_charge_low_temperature_alarm_sensor(sensor::Sensor *charge_low_temperature_alarm_sensor) {
     charge_low_temperature_alarm_sensor_ = charge_low_temperature_alarm_sensor;
   }
+  void set_discharge_overtemperature_protection_sensor(sensor::Sensor *discharge_overtemperature_protection_sensor) {
+    discharge_overtemperature_protection_sensor_ = discharge_overtemperature_protection_sensor;
+  }
+  void set_environment_undertemperature_protection_sensor(
+      sensor::Sensor *environment_undertemperature_protection_sensor) {
+    environment_undertemperature_protection_sensor_ = environment_undertemperature_protection_sensor;
+  }
+  void set_mosfet_overtemperature_protection_sensor(sensor::Sensor *mosfet_overtemperature_protection_sensor) {
+    mosfet_overtemperature_protection_sensor_ = mosfet_overtemperature_protection_sensor;
+  }
+  void set_balancing_start_voltage_sensor(sensor::Sensor *balancing_start_voltage_sensor) {
+    balancing_start_voltage_sensor_ = balancing_start_voltage_sensor;
+  }
+  void set_balancing_start_difference_sensor(sensor::Sensor *balancing_start_difference_sensor) {
+    balancing_start_difference_sensor_ = balancing_start_difference_sensor;
+  }
+  void set_low_state_of_charge_alarm_sensor(sensor::Sensor *low_state_of_charge_alarm_sensor) {
+    low_state_of_charge_alarm_sensor_ = low_state_of_charge_alarm_sensor;
+  }
+  void set_inverter_charge_current_limit_sensor(sensor::Sensor *inverter_charge_current_limit_sensor) {
+    inverter_charge_current_limit_sensor_ = inverter_charge_current_limit_sensor;
+  }
+  void set_inverter_discharge_current_limit_sensor(sensor::Sensor *inverter_discharge_current_limit_sensor) {
+    inverter_discharge_current_limit_sensor_ = inverter_discharge_current_limit_sensor;
+  }
 
   void set_min_cell_voltage_sensor(sensor::Sensor *min_cell_voltage_sensor) {
     min_cell_voltage_sensor_ = min_cell_voltage_sensor;
@@ -324,6 +349,14 @@ class SeplosBmsV3Ble :
   sensor::Sensor *discharge_overcurrent_protection_sensor_{nullptr};
   sensor::Sensor *charge_overtemperature_protection_sensor_{nullptr};
   sensor::Sensor *charge_low_temperature_alarm_sensor_{nullptr};
+  sensor::Sensor *discharge_overtemperature_protection_sensor_{nullptr};
+  sensor::Sensor *environment_undertemperature_protection_sensor_{nullptr};
+  sensor::Sensor *mosfet_overtemperature_protection_sensor_{nullptr};
+  sensor::Sensor *balancing_start_voltage_sensor_{nullptr};
+  sensor::Sensor *balancing_start_difference_sensor_{nullptr};
+  sensor::Sensor *low_state_of_charge_alarm_sensor_{nullptr};
+  sensor::Sensor *inverter_charge_current_limit_sensor_{nullptr};
+  sensor::Sensor *inverter_discharge_current_limit_sensor_{nullptr};
 
   sensor::Sensor *min_cell_voltage_sensor_{nullptr};
   sensor::Sensor *max_cell_voltage_sensor_{nullptr};

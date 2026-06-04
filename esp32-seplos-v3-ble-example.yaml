@@ -193,6 +193,22 @@ sensor:
       name: "charge overtemperature protection"
     charge_low_temperature_alarm:
       name: "charge low temperature alarm"
+    discharge_overtemperature_protection:
+      name: "discharge overtemperature protection"
+    environment_undertemperature_protection:
+      name: "environment undertemperature protection"
+    mosfet_overtemperature_protection:
+      name: "mosfet overtemperature protection"
+    balancing_start_voltage:
+      name: "balancing start voltage"
+    balancing_start_difference:
+      name: "balancing start difference"
+    low_state_of_charge_alarm:
+      name: "low state of charge alarm"
+    inverter_charge_current_limit:
+      name: "inverter charge current limit"
+    inverter_discharge_current_limit:
+      name: "inverter discharge current limit"
 
   # Pack-specific sensors
   - platform: seplos_bms_v3_ble_pack

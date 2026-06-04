@@ -187,9 +187,9 @@ static const std::vector<uint8_t> SPA_DATA_1 = {
 // SPA payload, second request (106 bytes) – System Parameters, registers 0x1335–0x1369
 //
 // Reg     Field                          Raw     Decoded
-// 0x1350  Balancing Open Voltage          0x0D48  3400 mV
-// 0x1351  Balancing Open Difference       0x0032  50 mV
-// 0x1355  SOC Low Alarm                   0x0032  5.0 %
+// 0x1350  Balancing Start Voltage          0x0D48  3400 mV
+// 0x1351  Balancing Start Difference       0x0032  50 mV
+// 0x1355  Low State Of Charge Alarm                   0x0032  5.0 %
 // 0x1358  Rated Capacity                  0x80E8  330.00 Ah
 // 0x1359  Total Capacity                  0x80E8  330.00 Ah
 // 0x1366  PCS Charge Current Limit        0x00B4  180 A
