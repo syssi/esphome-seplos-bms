@@ -170,6 +170,49 @@ class SeplosBmsV3Ble :
   void set_inverter_protocol_pre_switch_sensor(sensor::Sensor *inverter_protocol_pre_switch_sensor) {
     inverter_protocol_pre_switch_sensor_ = inverter_protocol_pre_switch_sensor;
   }
+  void set_temperature_sensor_count_sensor(sensor::Sensor *temperature_sensor_count_sensor) {
+    temperature_sensor_count_sensor_ = temperature_sensor_count_sensor;
+  }
+  void set_cell_count_sensor(sensor::Sensor *cell_count_sensor) { cell_count_sensor_ = cell_count_sensor; }
+  void set_pack_overvoltage_recovery_voltage_sensor(sensor::Sensor *pack_overvoltage_recovery_voltage_sensor) {
+    pack_overvoltage_recovery_voltage_sensor_ = pack_overvoltage_recovery_voltage_sensor;
+  }
+  void set_pack_overvoltage_protection_voltage_sensor(sensor::Sensor *pack_overvoltage_protection_voltage_sensor) {
+    pack_overvoltage_protection_voltage_sensor_ = pack_overvoltage_protection_voltage_sensor;
+  }
+  void set_pack_undervoltage_recovery_voltage_sensor(sensor::Sensor *pack_undervoltage_recovery_voltage_sensor) {
+    pack_undervoltage_recovery_voltage_sensor_ = pack_undervoltage_recovery_voltage_sensor;
+  }
+  void set_pack_undervoltage_protection_voltage_sensor(sensor::Sensor *pack_undervoltage_protection_voltage_sensor) {
+    pack_undervoltage_protection_voltage_sensor_ = pack_undervoltage_protection_voltage_sensor;
+  }
+  void set_cell_overvoltage_recovery_voltage_sensor(sensor::Sensor *cell_overvoltage_recovery_voltage_sensor) {
+    cell_overvoltage_recovery_voltage_sensor_ = cell_overvoltage_recovery_voltage_sensor;
+  }
+  void set_cell_overvoltage_protection_voltage_sensor(sensor::Sensor *cell_overvoltage_protection_voltage_sensor) {
+    cell_overvoltage_protection_voltage_sensor_ = cell_overvoltage_protection_voltage_sensor;
+  }
+  void set_cell_undervoltage_recovery_voltage_sensor(sensor::Sensor *cell_undervoltage_recovery_voltage_sensor) {
+    cell_undervoltage_recovery_voltage_sensor_ = cell_undervoltage_recovery_voltage_sensor;
+  }
+  void set_cell_undervoltage_protection_voltage_sensor(sensor::Sensor *cell_undervoltage_protection_voltage_sensor) {
+    cell_undervoltage_protection_voltage_sensor_ = cell_undervoltage_protection_voltage_sensor;
+  }
+  void set_cell_voltage_difference_protection_sensor(sensor::Sensor *cell_voltage_difference_protection_sensor) {
+    cell_voltage_difference_protection_sensor_ = cell_voltage_difference_protection_sensor;
+  }
+  void set_charge_overcurrent_protection_sensor(sensor::Sensor *charge_overcurrent_protection_sensor) {
+    charge_overcurrent_protection_sensor_ = charge_overcurrent_protection_sensor;
+  }
+  void set_discharge_overcurrent_protection_sensor(sensor::Sensor *discharge_overcurrent_protection_sensor) {
+    discharge_overcurrent_protection_sensor_ = discharge_overcurrent_protection_sensor;
+  }
+  void set_charge_overtemperature_protection_sensor(sensor::Sensor *charge_overtemperature_protection_sensor) {
+    charge_overtemperature_protection_sensor_ = charge_overtemperature_protection_sensor;
+  }
+  void set_charge_low_temperature_alarm_sensor(sensor::Sensor *charge_low_temperature_alarm_sensor) {
+    charge_low_temperature_alarm_sensor_ = charge_low_temperature_alarm_sensor;
+  }
 
   void set_min_cell_voltage_sensor(sensor::Sensor *min_cell_voltage_sensor) {
     min_cell_voltage_sensor_ = min_cell_voltage_sensor;
@@ -266,6 +309,21 @@ class SeplosBmsV3Ble :
   sensor::Sensor *inverter_protocol_sensor_{nullptr};
   sensor::Sensor *inverter_baud_rate_sensor_{nullptr};
   sensor::Sensor *inverter_protocol_pre_switch_sensor_{nullptr};
+  sensor::Sensor *temperature_sensor_count_sensor_{nullptr};
+  sensor::Sensor *cell_count_sensor_{nullptr};
+  sensor::Sensor *pack_overvoltage_recovery_voltage_sensor_{nullptr};
+  sensor::Sensor *pack_overvoltage_protection_voltage_sensor_{nullptr};
+  sensor::Sensor *pack_undervoltage_recovery_voltage_sensor_{nullptr};
+  sensor::Sensor *pack_undervoltage_protection_voltage_sensor_{nullptr};
+  sensor::Sensor *cell_overvoltage_recovery_voltage_sensor_{nullptr};
+  sensor::Sensor *cell_overvoltage_protection_voltage_sensor_{nullptr};
+  sensor::Sensor *cell_undervoltage_recovery_voltage_sensor_{nullptr};
+  sensor::Sensor *cell_undervoltage_protection_voltage_sensor_{nullptr};
+  sensor::Sensor *cell_voltage_difference_protection_sensor_{nullptr};
+  sensor::Sensor *charge_overcurrent_protection_sensor_{nullptr};
+  sensor::Sensor *discharge_overcurrent_protection_sensor_{nullptr};
+  sensor::Sensor *charge_overtemperature_protection_sensor_{nullptr};
+  sensor::Sensor *charge_low_temperature_alarm_sensor_{nullptr};
 
   sensor::Sensor *min_cell_voltage_sensor_{nullptr};
   sensor::Sensor *max_cell_voltage_sensor_{nullptr};

@@ -66,6 +66,21 @@ CONF_MAX_CHARGE_CURRENT = "max_charge_current"
 CONF_INVERTER_PROTOCOL = "inverter_protocol"
 CONF_INVERTER_BAUD_RATE = "inverter_baud_rate"
 CONF_INVERTER_PROTOCOL_PRE_SWITCH = "inverter_protocol_pre_switch"
+CONF_TEMPERATURE_SENSOR_COUNT = "temperature_sensor_count"
+CONF_CELL_COUNT = "cell_count"
+CONF_PACK_OVERVOLTAGE_RECOVERY_VOLTAGE = "pack_overvoltage_recovery_voltage"
+CONF_PACK_OVERVOLTAGE_PROTECTION_VOLTAGE = "pack_overvoltage_protection_voltage"
+CONF_PACK_UNDERVOLTAGE_RECOVERY_VOLTAGE = "pack_undervoltage_recovery_voltage"
+CONF_PACK_UNDERVOLTAGE_PROTECTION_VOLTAGE = "pack_undervoltage_protection_voltage"
+CONF_CELL_OVERVOLTAGE_RECOVERY_VOLTAGE = "cell_overvoltage_recovery_voltage"
+CONF_CELL_OVERVOLTAGE_PROTECTION_VOLTAGE = "cell_overvoltage_protection_voltage"
+CONF_CELL_UNDERVOLTAGE_RECOVERY_VOLTAGE = "cell_undervoltage_recovery_voltage"
+CONF_CELL_UNDERVOLTAGE_PROTECTION_VOLTAGE = "cell_undervoltage_protection_voltage"
+CONF_CELL_VOLTAGE_DIFFERENCE_PROTECTION = "cell_voltage_difference_protection"
+CONF_CHARGE_OVERCURRENT_PROTECTION = "charge_overcurrent_protection"
+CONF_DISCHARGE_OVERCURRENT_PROTECTION = "discharge_overcurrent_protection"
+CONF_CHARGE_OVERTEMPERATURE_PROTECTION = "charge_overtemperature_protection"
+CONF_CHARGE_LOW_TEMPERATURE_ALARM = "charge_low_temperature_alarm"
 
 # key: sensor_schema kwargs
 SENSOR_DEFS = {
@@ -305,6 +320,111 @@ SENSOR_DEFS = {
         "icon": "mdi:protocol",
         "accuracy_decimals": 0,
         "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_TEMPERATURE_SENSOR_COUNT: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:counter",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CELL_COUNT: {
+        "unit_of_measurement": UNIT_EMPTY,
+        "icon": "mdi:counter",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_EMPTY,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_PACK_OVERVOLTAGE_RECOVERY_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-plus",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_PACK_OVERVOLTAGE_PROTECTION_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-plus",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_PACK_UNDERVOLTAGE_RECOVERY_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-minus",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_PACK_UNDERVOLTAGE_PROTECTION_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-minus",
+        "accuracy_decimals": 2,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CELL_OVERVOLTAGE_RECOVERY_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-plus-outline",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CELL_OVERVOLTAGE_PROTECTION_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-plus-outline",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CELL_UNDERVOLTAGE_RECOVERY_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-minus-outline",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CELL_UNDERVOLTAGE_PROTECTION_VOLTAGE: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-minus-outline",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CELL_VOLTAGE_DIFFERENCE_PROTECTION: {
+        "unit_of_measurement": UNIT_VOLT,
+        "icon": "mdi:battery-unknown",
+        "accuracy_decimals": 3,
+        "device_class": DEVICE_CLASS_VOLTAGE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CHARGE_OVERCURRENT_PROTECTION: {
+        "unit_of_measurement": UNIT_AMPERE,
+        "icon": "mdi:battery-arrow-up",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_CURRENT,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_DISCHARGE_OVERCURRENT_PROTECTION: {
+        "unit_of_measurement": UNIT_AMPERE,
+        "icon": "mdi:battery-arrow-down",
+        "accuracy_decimals": 0,
+        "device_class": DEVICE_CLASS_CURRENT,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CHARGE_OVERTEMPERATURE_PROTECTION: {
+        "unit_of_measurement": UNIT_CELSIUS,
+        "icon": "mdi:thermometer-plus",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_TEMPERATURE,
+        "state_class": STATE_CLASS_MEASUREMENT,
+    },
+    CONF_CHARGE_LOW_TEMPERATURE_ALARM: {
+        "unit_of_measurement": UNIT_CELSIUS,
+        "icon": "mdi:thermometer-minus",
+        "accuracy_decimals": 1,
+        "device_class": DEVICE_CLASS_TEMPERATURE,
         "state_class": STATE_CLASS_MEASUREMENT,
     },
     CONF_MIN_CELL_VOLTAGE: {

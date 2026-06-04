@@ -314,6 +314,84 @@ TEST(SeplosBmsV3BlePctTest, NullSensorsDoNotCrash) {
   EXPECT_NO_FATAL_FAILURE(bms.decode_pct(PCT_DATA));
 }
 
+// ── SPA1: protection threshold sensors (registers 0x1300–0x1334) ───────────────
+
+TEST(SeplosBmsV3BleSpa1Test, CountRegisters) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor temperature_sensor_count, cell_count;
+  bms.set_temperature_sensor_count_sensor(&temperature_sensor_count);
+  bms.set_cell_count_sensor(&cell_count);
+
+  bms.decode_spa1(SPA_DATA_1);
+
+  EXPECT_FLOAT_EQ(temperature_sensor_count.state, 4.0f);
+  EXPECT_FLOAT_EQ(cell_count.state, 16.0f);
+}
+
+TEST(SeplosBmsV3BleSpa1Test, PackVoltageThresholds) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor ov_recover, ov_protect, uv_recover, uv_protect;
+  bms.set_pack_overvoltage_recovery_voltage_sensor(&ov_recover);
+  bms.set_pack_overvoltage_protection_voltage_sensor(&ov_protect);
+  bms.set_pack_undervoltage_recovery_voltage_sensor(&uv_recover);
+  bms.set_pack_undervoltage_protection_voltage_sensor(&uv_protect);
+
+  bms.decode_spa1(SPA_DATA_1);
+
+  EXPECT_NEAR(ov_recover.state, 54.00f, 0.01f);
+  EXPECT_NEAR(ov_protect.state, 57.60f, 0.01f);
+  EXPECT_NEAR(uv_recover.state, 48.00f, 0.01f);
+  EXPECT_NEAR(uv_protect.state, 43.20f, 0.01f);
+}
+
+TEST(SeplosBmsV3BleSpa1Test, CellVoltageThresholds) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor ov_recover, ov_protect, uv_recover, uv_protect, diff;
+  bms.set_cell_overvoltage_recovery_voltage_sensor(&ov_recover);
+  bms.set_cell_overvoltage_protection_voltage_sensor(&ov_protect);
+  bms.set_cell_undervoltage_recovery_voltage_sensor(&uv_recover);
+  bms.set_cell_undervoltage_protection_voltage_sensor(&uv_protect);
+  bms.set_cell_voltage_difference_protection_sensor(&diff);
+
+  bms.decode_spa1(SPA_DATA_1);
+
+  EXPECT_NEAR(ov_recover.state, 3.400f, 0.001f);
+  EXPECT_NEAR(ov_protect.state, 3.650f, 0.001f);
+  EXPECT_NEAR(uv_recover.state, 3.100f, 0.001f);
+  EXPECT_NEAR(uv_protect.state, 2.700f, 0.001f);
+  EXPECT_NEAR(diff.state, 1.000f, 0.001f);
+}
+
+TEST(SeplosBmsV3BleSpa1Test, CurrentProtection) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor charge_oc, discharge_oc;
+  bms.set_charge_overcurrent_protection_sensor(&charge_oc);
+  bms.set_discharge_overcurrent_protection_sensor(&discharge_oc);
+
+  bms.decode_spa1(SPA_DATA_1);
+
+  EXPECT_FLOAT_EQ(charge_oc.state, 210.0f);
+  EXPECT_FLOAT_EQ(discharge_oc.state, 210.0f);
+}
+
+TEST(SeplosBmsV3BleSpa1Test, TemperatureThresholds) {
+  TestableSeplosBmsV3Ble bms;
+  sensor::Sensor charge_otp, charge_lta;
+  bms.set_charge_overtemperature_protection_sensor(&charge_otp);
+  bms.set_charge_low_temperature_alarm_sensor(&charge_lta);
+
+  bms.decode_spa1(SPA_DATA_1);
+
+  EXPECT_NEAR(charge_otp.state, 55.0f, 0.1f);
+  EXPECT_NEAR(charge_lta.state, 3.0f, 0.1f);
+}
+
+TEST(SeplosBmsV3BleSpa1Test, NullSensorsDoNotCrash) {
+  TestableSeplosBmsV3Ble bms;
+
+  EXPECT_NO_FATAL_FAILURE(bms.decode_spa1(SPA_DATA_1));
+}
+
 // ── Null sensors do not crash ─────────────────────────────────────────────────
 
 TEST(SeplosBmsV3BleSafetyTest, NullSensorsDoNotCrash) {

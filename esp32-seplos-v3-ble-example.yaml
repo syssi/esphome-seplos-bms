@@ -163,6 +163,36 @@ sensor:
       name: "inverter baud rate"
     inverter_protocol_pre_switch:
       name: "inverter protocol pre switch"
+    temperature_sensor_count:
+      name: "temperature sensor count"
+    cell_count:
+      name: "cell count"
+    pack_overvoltage_recovery_voltage:
+      name: "pack overvoltage recovery voltage"
+    pack_overvoltage_protection_voltage:
+      name: "pack overvoltage protection voltage"
+    pack_undervoltage_recovery_voltage:
+      name: "pack undervoltage recovery voltage"
+    pack_undervoltage_protection_voltage:
+      name: "pack undervoltage protection voltage"
+    cell_overvoltage_recovery_voltage:
+      name: "cell overvoltage recovery voltage"
+    cell_overvoltage_protection_voltage:
+      name: "cell overvoltage protection voltage"
+    cell_undervoltage_recovery_voltage:
+      name: "cell undervoltage recovery voltage"
+    cell_undervoltage_protection_voltage:
+      name: "cell undervoltage protection voltage"
+    cell_voltage_difference_protection:
+      name: "cell voltage difference protection"
+    charge_overcurrent_protection:
+      name: "charge overcurrent protection"
+    discharge_overcurrent_protection:
+      name: "discharge overcurrent protection"
+    charge_overtemperature_protection:
+      name: "charge overtemperature protection"
+    charge_low_temperature_alarm:
+      name: "charge low temperature alarm"
 
   # Pack-specific sensors
   - platform: seplos_bms_v3_ble_pack

@@ -168,7 +168,7 @@ static const std::vector<uint8_t> EIC_DATA_HEATING = {
 // Modbus function 0x04, captured from an SG16S200A-SP57B-A (16S LFP). Plain big-endian UINT16.
 //
 // Reg     Field                          Raw     Decoded
-// 0x1300  NTC Count                       0x0004  4
+// 0x1300  Temperature Sensor Count        0x0004  4
 // 0x1301  Cell Count                      0x0010  16
 // 0x1305  Pack Overvoltage Protection     0x1680  57.60 V
 // 0x1309  Pack Undervoltage Protection    0x10E0  43.20 V
