@@ -162,6 +162,13 @@ static const std::vector<uint8_t> EIC_DATA_HEATING = {
     0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
+// EIC with an ambient/power temperature fault (TB04, byte 3, Bit0) — unlike the
+// heating status bit this is a real fault, so it must fold into the temperature
+// event code and raise temperature protection.
+static const std::vector<uint8_t> EIC_DATA_AMBIENT_TEMP = {
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
 // SPA captures retained for upcoming sensor tests (no consumer yet).
 //
 // SPA payload, first request (106 bytes) – System Parameters, registers 0x1300–0x1334

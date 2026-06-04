@@ -16,6 +16,7 @@ CONF_VOLTAGE_PROTECTION = "voltage_protection"
 CONF_TEMPERATURE_PROTECTION = "temperature_protection"
 CONF_CURRENT_PROTECTION = "current_protection"
 CONF_SYSTEM_FAULT = "system_fault"
+CONF_HEATING = "heating"
 
 
 # key: binary_sensor_schema kwargs
@@ -44,6 +45,10 @@ BINARY_SENSOR_DEFS = {
     CONF_SYSTEM_FAULT: {
         "icon": "mdi:alert-circle",
         "device_class": DEVICE_CLASS_PROBLEM,
+        "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
+    },
+    CONF_HEATING: {
+        "icon": "mdi:radiator",
         "entity_category": ENTITY_CATEGORY_DIAGNOSTIC,
     },
 }
