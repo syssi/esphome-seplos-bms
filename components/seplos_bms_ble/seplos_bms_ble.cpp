@@ -543,155 +543,219 @@ void SeplosBmsBle::decode_settings_data_(const std::vector<uint8_t> &data) {
   // Function switches with detailed bitmask interpretation
   uint8_t switch1 = data[136];
   ESP_LOGD(TAG, "Function switch 1: 0x%02X", switch1);
-  if (switch1 & 0x01)
+  if (switch1 & 0x01) {
     ESP_LOGD(TAG, "  - Voltage sensing failure enabled");
-  if (switch1 & 0x02)
+  }
+  if (switch1 & 0x02) {
     ESP_LOGD(TAG, "  - Temperature sensing failure enabled");
-  if (switch1 & 0x04)
+  }
+  if (switch1 & 0x04) {
     ESP_LOGD(TAG, "  - Current sensing failure enabled");
-  if (switch1 & 0x08)
+  }
+  if (switch1 & 0x08) {
     ESP_LOGD(TAG, "  - Key switch failure enabled");
-  if (switch1 & 0x10)
+  }
+  if (switch1 & 0x10) {
     ESP_LOGD(TAG, "  - Cell voltage difference failure enabled");
-  if (switch1 & 0x20)
+  }
+  if (switch1 & 0x20) {
     ESP_LOGD(TAG, "  - Charging switch failure enabled");
-  if (switch1 & 0x40)
+  }
+  if (switch1 & 0x40) {
     ESP_LOGD(TAG, "  - Discharge switch failure enabled");
-  if (switch1 & 0x80)
+  }
+  if (switch1 & 0x80) {
     ESP_LOGD(TAG, "  - Current limit switch failure enabled");
+  }
 
   uint8_t switch2 = data[137];
   ESP_LOGD(TAG, "Function switch 2: 0x%02X", switch2);
-  if (switch2 & 0x01)
+  if (switch2 & 0x01) {
     ESP_LOGD(TAG, "  - Single high voltage alarm enabled");
-  if (switch2 & 0x02)
+  }
+  if (switch2 & 0x02) {
     ESP_LOGD(TAG, "  - Single overvoltage protection enabled");
-  if (switch2 & 0x04)
+  }
+  if (switch2 & 0x04) {
     ESP_LOGD(TAG, "  - Single unit low voltage alarm enabled");
-  if (switch2 & 0x08)
+  }
+  if (switch2 & 0x08) {
     ESP_LOGD(TAG, "  - Single unit undervoltage protection enabled");
-  if (switch2 & 0x10)
+  }
+  if (switch2 & 0x10) {
     ESP_LOGD(TAG, "  - Total pressure high voltage alarm enabled");
-  if (switch2 & 0x20)
+  }
+  if (switch2 & 0x20) {
     ESP_LOGD(TAG, "  - Total voltage overvoltage protection enabled");
-  if (switch2 & 0x40)
+  }
+  if (switch2 & 0x40) {
     ESP_LOGD(TAG, "  - Total pressure low pressure alarm enabled");
-  if (switch2 & 0x80)
+  }
+  if (switch2 & 0x80) {
     ESP_LOGD(TAG, "  - Total voltage undervoltage protection enabled");
+  }
 
   uint8_t switch3 = data[138];
   ESP_LOGD(TAG, "Function switch 3: 0x%02X", switch3);
-  if (switch3 & 0x01)
+  if (switch3 & 0x01) {
     ESP_LOGD(TAG, "  - Charging high temperature alarm enabled");
-  if (switch3 & 0x02)
+  }
+  if (switch3 & 0x02) {
     ESP_LOGD(TAG, "  - Charging over-temperature protection enabled");
-  if (switch3 & 0x04)
+  }
+  if (switch3 & 0x04) {
     ESP_LOGD(TAG, "  - Charging low temperature alarm enabled");
-  if (switch3 & 0x08)
+  }
+  if (switch3 & 0x08) {
     ESP_LOGD(TAG, "  - Charging under-temperature protection enabled");
-  if (switch3 & 0x10)
+  }
+  if (switch3 & 0x10) {
     ESP_LOGD(TAG, "  - Discharge high temperature alarm enabled");
-  if (switch3 & 0x20)
+  }
+  if (switch3 & 0x20) {
     ESP_LOGD(TAG, "  - Discharge over-temperature protection enabled");
-  if (switch3 & 0x40)
+  }
+  if (switch3 & 0x40) {
     ESP_LOGD(TAG, "  - Discharge low temperature alarm enabled");
-  if (switch3 & 0x80)
+  }
+  if (switch3 & 0x80) {
     ESP_LOGD(TAG, "  - Discharge under-temperature protection enabled");
+  }
 
   uint8_t switch4 = data[139];
   ESP_LOGD(TAG, "Function switch 4: 0x%02X", switch4);
-  if (switch4 & 0x01)
+  if (switch4 & 0x01) {
     ESP_LOGD(TAG, "  - Ambient high temperature alarm enabled");
-  if (switch4 & 0x02)
+  }
+  if (switch4 & 0x02) {
     ESP_LOGD(TAG, "  - Environmental over-temperature protection enabled");
-  if (switch4 & 0x04)
+  }
+  if (switch4 & 0x04) {
     ESP_LOGD(TAG, "  - Ambient low temperature alarm enabled");
-  if (switch4 & 0x08)
+  }
+  if (switch4 & 0x08) {
     ESP_LOGD(TAG, "  - Environmental under-temperature protection enabled");
-  if (switch4 & 0x10)
+  }
+  if (switch4 & 0x10) {
     ESP_LOGD(TAG, "  - Power over-temperature protection enabled");
-  if (switch4 & 0x20)
+  }
+  if (switch4 & 0x20) {
     ESP_LOGD(TAG, "  - Power high temperature alarm enabled");
-  if (switch4 & 0x40)
+  }
+  if (switch4 & 0x40) {
     ESP_LOGD(TAG, "  - Battery core low-temperature heating enabled");
-  if (switch4 & 0x80)
+  }
+  if (switch4 & 0x80) {
     ESP_LOGD(TAG, "  - Secondary trip protection enabled");
+  }
 
   uint8_t switch5 = data[140];
   ESP_LOGD(TAG, "Function switch 5: 0x%02X", switch5);
-  if (switch5 & 0x01)
+  if (switch5 & 0x01) {
     ESP_LOGD(TAG, "  - Charging overcurrent alarm enabled");
-  if (switch5 & 0x02)
+  }
+  if (switch5 & 0x02) {
     ESP_LOGD(TAG, "  - Charging overcurrent protection enabled");
-  if (switch5 & 0x04)
+  }
+  if (switch5 & 0x04) {
     ESP_LOGD(TAG, "  - Discharge overcurrent alarm enabled");
-  if (switch5 & 0x08)
+  }
+  if (switch5 & 0x08) {
     ESP_LOGD(TAG, "  - Discharge overcurrent protection enabled");
-  if (switch5 & 0x10)
+  }
+  if (switch5 & 0x10) {
     ESP_LOGD(TAG, "  - Transient overcurrent protection enabled");
-  if (switch5 & 0x20)
+  }
+  if (switch5 & 0x20) {
     ESP_LOGD(TAG, "  - Output short circuit protection enabled");
-  if (switch5 & 0x40)
+  }
+  if (switch5 & 0x40) {
     ESP_LOGD(TAG, "  - Transient overcurrent lockout enabled");
-  if (switch5 & 0x80)
+  }
+  if (switch5 & 0x80) {
     ESP_LOGD(TAG, "  - Output short circuit lockout enabled");
+  }
 
   uint8_t switch6 = data[141];
   ESP_LOGD(TAG, "Function switch 6: 0x%02X", switch6);
-  if (switch6 & 0x01)
+  if (switch6 & 0x01) {
     ESP_LOGD(TAG, "  - Charging high voltage protection enabled");
-  if (switch6 & 0x02)
+  }
+  if (switch6 & 0x02) {
     ESP_LOGD(TAG, "  - Intermittent power supply function enabled");
-  if (switch6 & 0x04)
+  }
+  if (switch6 & 0x04) {
     ESP_LOGD(TAG, "  - Remaining capacity alarm enabled");
-  if (switch6 & 0x08)
+  }
+  if (switch6 & 0x08) {
     ESP_LOGD(TAG, "  - Remaining capacity protection enabled");
-  if (switch6 & 0x10)
+  }
+  if (switch6 & 0x10) {
     ESP_LOGD(TAG, "  - Battery cell low voltage charging prohibited enabled");
-  if (switch6 & 0x20)
+  }
+  if (switch6 & 0x20) {
     ESP_LOGD(TAG, "  - Output reverse polarity protection enabled");
-  if (switch6 & 0x40)
+  }
+  if (switch6 & 0x40) {
     ESP_LOGD(TAG, "  - Output connection failure enabled");
-  if (switch6 & 0x80)
+  }
+  if (switch6 & 0x80) {
     ESP_LOGD(TAG, "  - Output soft start function enabled");
+  }
 
   uint8_t switch7 = data[142];
   ESP_LOGD(TAG, "Function switch 7: 0x%02X", switch7);
-  if (switch7 & 0x01)
+  if (switch7 & 0x01) {
     ESP_LOGD(TAG, "  - Charge balancing function enabled");
-  if (switch7 & 0x02)
+  }
+  if (switch7 & 0x02) {
     ESP_LOGD(TAG, "  - Static equalization function enabled");
-  if (switch7 & 0x04)
+  }
+  if (switch7 & 0x04) {
     ESP_LOGD(TAG, "  - Timeout prohibits equalization enabled");
-  if (switch7 & 0x08)
+  }
+  if (switch7 & 0x08) {
     ESP_LOGD(TAG, "  - Over-temperature prohibition equalization enabled");
-  if (switch7 & 0x10)
+  }
+  if (switch7 & 0x10) {
     ESP_LOGD(TAG, "  - Automatic activation of charging enabled");
-  if (switch7 & 0x20)
+  }
+  if (switch7 & 0x20) {
     ESP_LOGD(TAG, "  - Manual activation of charging enabled");
-  if (switch7 & 0x40)
+  }
+  if (switch7 & 0x40) {
     ESP_LOGD(TAG, "  - Active current limiting charging enabled");
-  if (switch7 & 0x80)
+  }
+  if (switch7 & 0x80) {
     ESP_LOGD(TAG, "  - Passive current limiting charging enabled");
+  }
 
   uint8_t switch8 = data[143];
   ESP_LOGD(TAG, "Function switch 8: 0x%02X", switch8);
-  if (switch8 & 0x01)
+  if (switch8 & 0x01) {
     ESP_LOGD(TAG, "  - Switch shutdown function enabled");
-  if (switch8 & 0x02)
+  }
+  if (switch8 & 0x02) {
     ESP_LOGD(TAG, "  - Standby power-off function enabled");
-  if (switch8 & 0x04)
+  }
+  if (switch8 & 0x04) {
     ESP_LOGD(TAG, "  - History function enabled");
-  if (switch8 & 0x08)
+  }
+  if (switch8 & 0x08) {
     ESP_LOGD(TAG, "  - LCD display function enabled");
-  if (switch8 & 0x10)
+  }
+  if (switch8 & 0x10) {
     ESP_LOGD(TAG, "  - Bluetooth communication function enabled");
-  if (switch8 & 0x20)
+  }
+  if (switch8 & 0x20) {
     ESP_LOGD(TAG, "  - Automatic address encoding enabled");
-  if (switch8 & 0x40)
+  }
+  if (switch8 & 0x40) {
     ESP_LOGD(TAG, "  - Parallel external polling enabled");
-  if (switch8 & 0x80)
+  }
+  if (switch8 & 0x80) {
     ESP_LOGD(TAG, "  - Standalone 1.0C charging enabled");
+  }
 }
 
 void SeplosBmsBle::decode_parallel_data_(const std::vector<uint8_t> &data) {
