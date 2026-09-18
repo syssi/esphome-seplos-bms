@@ -328,7 +328,8 @@ void SeplosBmsBle::decode(const std::vector<uint8_t> &data) {
       ESP_LOGD(TAG, "  %s", format_hex_pretty(&data.front(), data.size()).c_str());  // NOLINT
       if (data.size() >= 9) {
         uint8_t result = data[7];
-        ESP_LOGI(TAG, "Switch control result: %s", result == 0x00 ? "SUCCESS" : "FAILED");
+        ESP_LOGI(TAG, "Switch control result: %s",
+                 result == 0x00 ? LOG_STR_LITERAL("SUCCESS") : LOG_STR_LITERAL("FAILED"));
       }
       break;
     default:
