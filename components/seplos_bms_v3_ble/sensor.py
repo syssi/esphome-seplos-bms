@@ -23,7 +23,10 @@ from esphome.const import (
 
 from . import CONF_SEPLOS_BMS_V3_BLE_ID, SEPLOS_BMS_V3_BLE_COMPONENT_SCHEMA
 
-UNIT_AMPERE_HOUR = "Ah"
+try:
+    from esphome.components.const import UNIT_AMPERE_HOUR
+except ImportError:  # ESPHome < 2026.2.0
+    UNIT_AMPERE_HOUR = "Ah"
 
 DEPENDENCIES = ["seplos_bms_v3_ble"]
 
