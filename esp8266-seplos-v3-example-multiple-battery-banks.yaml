@@ -11,6 +11,7 @@ esphome:
   name: ${name}
   friendly_name: ${name}
   comment: ${device_description}
+  min_version: 2026.9.0
   project:
     name: "syssi.esphome-seplos-bms"
     version: 1.6.0
@@ -59,22 +60,20 @@ modbus:
   - id: modbus0
     uart_id: uart_0
     send_wait_time: 200ms
+    turnaround_time: 200ms
 
 modbus_controller:
   - id: bms0
-    address: 0x00
-    modbus_id: modbus0
-    command_throttle: 200ms
-    update_interval: 10s
-  - id: bms1
     address: 0x01
     modbus_id: modbus0
-    command_throttle: 200ms
     update_interval: 10s
-  - id: bms2
+  - id: bms1
     address: 0x02
     modbus_id: modbus0
-    command_throttle: 200ms
+    update_interval: 10s
+  - id: bms2
+    address: 0x03
+    modbus_id: modbus0
     update_interval: 10s
 
 sensor:
