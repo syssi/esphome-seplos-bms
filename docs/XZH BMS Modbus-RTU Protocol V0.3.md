@@ -23,6 +23,14 @@ Seplos has since sent its own English edition of V0.3 (PDF dated 2024-11-28), in
   - it also keeps V0.1's label "Secondary Charge current" for 0x1314, which the Chinese edition corrects to cell voltage difference protection recovery
 - **Current unit:** Seplos told me (October 2026) that 400 A boards aren't in use yet. So V0.2's 0.1 A PIA current unit concerns 300 A boards.
 
+## Notes from Seplos (October 2026)
+
+Seplos's sales and engineering team answered a few questions that neither edition of the document covers, and agreed to their being published here:
+
+- **Growatt LV CAN mode:** a standalone pack sends its 16 cell voltages on CAN IDs 0x315-0x318. With packs in parallel, 0x315-0x318 are not sent, and the maximum and minimum cell voltages on 0x319 are calculated across all packs.
+- **Inverter protocol select (PCT 0x1800):** the value 1 is Growatt CAN. Seplos's command to switch a pack to it is `00 10 18 00 00 01 02 00 01 F2 01`: FC 0x10 to unit 0x00, writing 0x0001 to register 0x1800 (the CRC checks). Reading 0x1800 is a quick way to confirm a pack's setting. The values for other protocols weren't given.
+- **400 A boards** aren't in use yet, so V0.2's 0.1 A PIA current unit concerns 300 A boards.
+
 ## Revision history
 
 | Date | Version | Change |
@@ -444,7 +452,7 @@ Special notes from the document:
 
 | Address | Name | R/W | Type | Bytes | Unit |
 |---|---|---|---|---|---|
-| 0x1800 | Inverter protocol selection | R/W | UINT16 | 2 | / |
+| 0x1800 | Inverter protocol selection | R/W | UINT16 | 2 | / (1 = Growatt CAN, per Seplos; see below) |
 | 0x1801 | Inverter link rate | R | UINT16 | 2 | kbps / bps |
 | 0x1802 | Inverter name | R | ASCII | 32 | / |
 | 0x1812 | Protocol name | R | ASCII | 32 | / |
