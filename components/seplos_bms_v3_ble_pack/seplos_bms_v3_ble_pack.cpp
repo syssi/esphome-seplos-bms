@@ -1,9 +1,14 @@
 #include "seplos_bms_v3_ble_pack.h"
 #include "esphome/core/log.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::seplos_bms_v3_ble_pack {
 
-static const char *const TAG = "seplos_bms_v3_ble_pack";
+ESPHOME_LOG_TAG(TAG, "seplos_bms_v3_ble_pack");
 
 static const uint16_t SEPLOS_V3_PIA_LENGTH = 0x11;
 static const uint16_t SEPLOS_V3_PIB_LENGTH = 0x1A;

@@ -2,9 +2,14 @@
 #include "esphome/core/log.h"
 #include "esphome/core/application.h"
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::seplos_bms_ble {
 
-static const char *const TAG = "seplos_bms_ble.switch";
+ESPHOME_LOG_TAG(TAG, "seplos_bms_ble.switch");
 
 static const uint8_t SEPLOS_CMD_SET_MOSFET_CONTROL = 0xAA;
 
