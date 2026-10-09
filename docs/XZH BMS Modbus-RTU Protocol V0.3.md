@@ -4,10 +4,24 @@
 - **Version:** V0.3 (revised 2024-10-15), document no.: none
 - **Port:** RS485, 19200 8N1
 - **Original file:** `XZH BMS Modbus-RTU Protocol V0.3 (Chinese).pdf` in this folder
+- **Official English edition:** `XZH BMS Modbus-RTU Protocol V0.3 (English, official).pdf` in this folder (see below for how it differs)
 
 This is a community translation of the Chinese edition of Seplos's own protocol document, which Seplos supplied in September 2026. It is not published or endorsed by Seplos. I've kept the structure, register addresses, units and example values exactly as in the original. Where the Chinese text contains an obvious slip, the translation says what it clearly means and flags the slip with [sic].
 
 It covers the RS485 Modbus RTU interface of the Seplos BMS 3.0 generation (10E and later boards). It does not cover the CAN inverter protocols.
+
+## The official English edition
+
+Seplos has since sent its own English edition of V0.3 (PDF dated 2024-11-28), included in this folder. This translation follows the Chinese edition, which is the more complete of the two. Where they differ:
+
+- **EIA / EIB / EIC device ID:** the English edition gives the EMS as **0xB0-0xBF** and an "ECU" as **0xC0**. The Chinese edition says 0x00 (section 2.2). Both list 0xC0 among the Bluetooth IDs.
+- **0x1011:** the English edition names it **"Precharge percent"** (UINT16, 0.1%). The Chinese edition leaves it reserved, though its worked example shows `03 E8` = 100.0% there.
+- **Exception codes:** the English edition gives **0x06** for "slave device busy", the standard Modbus code, where the Chinese edition has 0x07. It also adds **0x81, "No history record"**.
+- **What the English edition doesn't have:**
+  - the float lock registers 0x1328-0x132A
+  - the network block (SPB, 0x1900-0x1974), despite V0.3's revision note
+  - it also keeps V0.1's label "Secondary Charge current" for 0x1314, which the Chinese edition corrects to cell voltage difference protection recovery
+- **Current unit:** Seplos told me (October 2026) that 400 A boards aren't in use yet. So V0.2's 0.1 A PIA current unit concerns 300 A boards.
 
 ## Revision history
 
@@ -45,7 +59,7 @@ RS485: the BMS only responds to requests addressed to its own address.
 | Device | Device ID | Data blocks |
 |---|---|---|
 | BMS | 0x00 – 0x7F | PIA / PIB / PIC / SPA / SFA / SCA / HIA / VIA |
-| EMS | 0x00 | EIA / EIB / EIC |
+| EMS | 0x00 (the official English edition gives EMS 0xB0-0xBF and ECU 0xC0) | EIA / EIB / EIC |
 | 2.4″ / 5.0″ / 7.0″ display (TFT/LCD) | 0xE0 | PIA / PIB / PIC / VIA / PCT |
 | Bluetooth | 0xE0 / 0x00 – 0x10 / 0xC0 | PIA / PIB / PIC / EIA / EIB / EIC / SCA / PCT |
 
@@ -120,7 +134,7 @@ RS485: the BMS only responds to requests addressed to its own address.
 | 0x03 | Illegal data value | A value in the query is not an allowed value for the server. This indicates a fault in the structure of the rest of a complex request, for example an incorrect implied length. Modbus attaches no meaning to any particular value of any particular register; the register was given a value the application did not expect. |
 | 0x04 | Slave device failure | An unrecoverable error occurred while the server was attempting to perform the requested action. |
 | 0x05 | Acknowledge | Used with programming commands. The server has accepted the request and is processing it, but this will take a long time. The response is returned to prevent a timeout error in the client (master). The client can then send poll-program-complete messages to find out whether processing has finished. |
-| 0x07 | Slave device busy | Used with programming commands. The server is processing a long-duration program command. The client should retransmit the message later, when the server is free. |
+| 0x07 [sic: the official English edition and standard Modbus give 0x06] | Slave device busy | Used with programming commands. The server is processing a long-duration program command. The client should retransmit the message later, when the server is free. |
 | 0x08 | Memory parity error | Used with function codes 20 and 21 and reference type 6, to indicate that the extended file area failed a consistency check. The server read the record file but found a parity error in memory. The client can retry the request, but the server device may need servicing. |
 | 0x0A | Gateway path unavailable | Used with gateways. The gateway could not allocate an internal communication path from the input port to the output port to process the request. Usually means the gateway is misconfigured or overloaded. |
 | 0x0B | Gateway target device failed to respond | Used with gateways. No response was obtained from the target device. Usually means the device is not on the network. |
