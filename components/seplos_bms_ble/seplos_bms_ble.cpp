@@ -9,6 +9,11 @@
 #define ADDR_STR(x) (x).c_str()
 #endif
 
+// Fallback for ESPHome < 2026.10.0
+#ifndef ESPHOME_LOG_TAG
+#define ESPHOME_LOG_TAG(name, tag) static const char *const name = tag
+#endif
+
 namespace esphome::seplos_bms_ble {
 
 static uint16_t crc_xmodem(const uint8_t *data, uint16_t len) {
@@ -26,7 +31,7 @@ static uint16_t crc_xmodem(const uint8_t *data, uint16_t len) {
   return crc;
 }
 
-static const char *const TAG = "seplos_bms_ble";
+ESPHOME_LOG_TAG(TAG, "seplos_bms_ble");
 
 static constexpr const char *const ALARM_EVENT1_MESSAGES[8] = {
     "Voltage sensing failure",      // Bit 0
