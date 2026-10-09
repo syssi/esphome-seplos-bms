@@ -6,6 +6,7 @@ from esphome.const import CONF_ID
 AUTO_LOAD = ["sensor"]
 
 CODEOWNERS = ["@syssi"]
+DOMAIN = "seplos_bms_v3_ble_pack"
 
 MULTI_CONF = True
 
