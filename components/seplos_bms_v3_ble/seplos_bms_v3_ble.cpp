@@ -1,15 +1,8 @@
 #include "seplos_bms_v3_ble.h"
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
-#include "esphome/core/version.h"
 #include "../seplos_bms_v3_ble_pack/seplos_bms_v3_ble_pack.h"
 #include <cmath>
-
-#if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 12, 0)
-#define ADDR_STR(x) x
-#else
-#define ADDR_STR(x) (x).c_str()
-#endif
 
 // Fallback for ESPHome < 2026.10.0
 #ifndef ESPHOME_LOG_TAG
@@ -89,8 +82,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       auto *char_notify =
           this->parent_->get_characteristic(SEPLOS_BMS_V3_SERVICE_UUID, SEPLOS_BMS_V3_NOTIFY_CHARACTERISTIC_UUID);
       if (char_notify == nullptr) {
-        ESP_LOGE(TAG, "[%s] No notify service found at device, not a Seplos BMS V3..?",
-                 ADDR_STR(this->parent_->address_str()));
+        ESP_LOGE(TAG, "[%s] No notify service found at device, not a Seplos BMS V3..?", this->parent_->address_str());
         break;
       }
       this->char_notify_handle_ = char_notify->handle;
@@ -104,8 +96,7 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       auto *char_command =
           this->parent_->get_characteristic(SEPLOS_BMS_V3_SERVICE_UUID, SEPLOS_BMS_V3_CONTROL_CHARACTERISTIC_UUID);
       if (char_command == nullptr) {
-        ESP_LOGE(TAG, "[%s] No control service found at device, not a Seplos BMS V3..?",
-                 ADDR_STR(this->parent_->address_str()));
+        ESP_LOGE(TAG, "[%s] No control service found at device, not a Seplos BMS V3..?", this->parent_->address_str());
         break;
       }
       this->char_command_handle_ = char_command->handle;
@@ -143,7 +134,7 @@ void SeplosBmsV3Ble::dump_config() {
 #ifdef USE_ESP32
 void SeplosBmsV3Ble::update() {
   if (this->node_state != espbt::ClientState::ESTABLISHED) {
-    ESP_LOGW(TAG, "[%s] Not connected", ADDR_STR(this->parent_->address_str()));
+    ESP_LOGW(TAG, "[%s] Not connected", this->parent_->address_str());
     return;
   }
 
