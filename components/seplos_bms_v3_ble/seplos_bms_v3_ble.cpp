@@ -20,6 +20,8 @@ namespace esphome::seplos_bms_v3_ble {
 
 ESPHOME_LOG_TAG(TAG, "seplos_bms_v3_ble");
 
+static constexpr size_t MAX_HEX_DUMP_BYTES = 100;
+
 static const uint16_t SEPLOS_BMS_V3_SERVICE_UUID = 0xFFF0;
 static const uint16_t SEPLOS_BMS_V3_NOTIFY_CHARACTERISTIC_UUID = 0xFFF1;
 static const uint16_t SEPLOS_BMS_V3_CONTROL_CHARACTERISTIC_UUID = 0xFFF2;
@@ -123,8 +125,9 @@ void SeplosBmsV3Ble::gattc_event_handler(esp_gattc_cb_event_t event, esp_gatt_if
       break;
     }
     case ESP_GATTC_NOTIFY_EVT: {
+      char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
       ESP_LOGVV(TAG, "Notification received: %s",
-                format_hex_pretty(param->notify.value, param->notify.value_len).c_str());  // NOLINT
+                format_hex_pretty_to(hex_buf, param->notify.value, param->notify.value_len, '.'));
       this->assemble(param->notify.value, param->notify.value_len);
       break;
     }
@@ -503,13 +506,14 @@ void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
   // Reg 0x1700–0x1709: Factory Name (20 bytes)
   std::string factory_name = extract_string(0, 20);
   ESP_LOGI(TAG, "  Factory Name:     '%s'", factory_name.c_str());
-  ESP_LOGD(TAG, "  Factory Name hex: %s", format_hex_pretty(data.data(), 20).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGD(TAG, "  Factory Name hex: %s", format_hex_pretty_to(hex_buf, data.data(), 20, '.'));
   this->publish_state_(this->factory_name_text_sensor_, factory_name);
 
   // Reg 0x170A–0x1713: Device Name (20 bytes)
   std::string device_name = extract_string(20, 20);
   ESP_LOGI(TAG, "  Device Name:      '%s'", device_name.c_str());
-  ESP_LOGD(TAG, "  Device Name hex:  %s", format_hex_pretty(data.data() + 20, 20).c_str());  // NOLINT
+  ESP_LOGD(TAG, "  Device Name hex:  %s", format_hex_pretty_to(hex_buf, data.data() + 20, 20, '.'));
   this->publish_state_(this->device_name_text_sensor_, device_name);
 
   // Reg 0x1714: Firmware Version (2 bytes)
@@ -520,13 +524,13 @@ void SeplosBmsV3Ble::decode_via_data_(const std::vector<uint8_t> &data) {
   // Reg 0x1715–0x1723: BMS SN (30 bytes)
   std::string bms_serial = extract_string(42, 30);
   ESP_LOGI(TAG, "  BMS SN:           '%s'", bms_serial.c_str());
-  ESP_LOGD(TAG, "  BMS SN hex:       %s", format_hex_pretty(data.data() + 42, 30).c_str());  // NOLINT
+  ESP_LOGD(TAG, "  BMS SN hex:       %s", format_hex_pretty_to(hex_buf, data.data() + 42, 30, '.'));
   this->publish_state_(this->bms_serial_number_text_sensor_, bms_serial);
 
   // Reg 0x1724–0x1732: Pack SN (30 bytes)
   std::string pack_serial = extract_string(72, 30);
   ESP_LOGI(TAG, "  Pack SN:          '%s'", pack_serial.c_str());
-  ESP_LOGD(TAG, "  Pack SN hex:      %s", format_hex_pretty(data.data() + 72, 30).c_str());  // NOLINT
+  ESP_LOGD(TAG, "  Pack SN hex:      %s", format_hex_pretty_to(hex_buf, data.data() + 72, 30, '.'));
   this->publish_state_(this->pack_serial_number_text_sensor_, pack_serial);
 }
 
@@ -681,7 +685,8 @@ bool SeplosBmsV3Ble::send_command_(uint8_t function, const std::vector<uint8_t> 
     return false;
   }
 
-  ESP_LOGD(TAG, "Sending command 0x%02X with payload: %s", function, format_hex_pretty(payload).c_str());  // NOLINT
+  char hex_buf[format_hex_pretty_size(MAX_HEX_DUMP_BYTES)];
+  ESP_LOGD(TAG, "Sending command 0x%02X with payload: %s", function, format_hex_pretty_to(hex_buf, payload, '.'));
 
   auto status = esp_ble_gattc_write_char(this->parent_->get_gattc_if(), this->parent_->get_conn_id(),
                                          this->char_command_handle_, payload.size(), (uint8_t *) payload.data(),
