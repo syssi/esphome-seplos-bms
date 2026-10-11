@@ -13,15 +13,13 @@ ESPHOME_LOG_TAG(TAG, "seplos_bms");
 
 static constexpr size_t MAX_HEX_DUMP_BYTES = 100;
 
-#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 static void log_hex_chunked(const char *tag, const uint8_t *data, size_t size) {
   char buf[format_hex_pretty_size(100)];
   for (size_t i = 0; i < size; i += 100) {
     size_t len = std::min<size_t>(100, size - i);
-    ESP_LOGD(tag, "  %s", format_hex_pretty_to(buf, sizeof(buf), data + i, len, '.'));
+    ESP_LOGVV(tag, "  %s", format_hex_pretty_to(buf, sizeof(buf), data + i, len, '.'));
   }
 }
-#endif
 
 static const uint8_t MAX_NO_RESPONSE_COUNT = 5;
 
@@ -48,9 +46,7 @@ void SeplosBms::on_telemetry_data_(const std::vector<uint8_t> &data) {
   };
 
   ESP_LOGI(TAG, "Telemetry frame (%zu bytes) received", data.size());
-#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
   log_hex_chunked(TAG, data.data(), data.size());
-#endif
 
   // ->
   // 0x2000460010960001100CD70CE90CF40CD60CEF0CE50CE10CDC0CE90CF00CE80CEF0CEA0CDA0CDE0CD8060BA60BA00B970BA60BA50BA2FD5C14A0344E0A426803134650004603E8149F0000000000000000
