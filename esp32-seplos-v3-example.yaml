@@ -8,6 +8,7 @@ esphome:
   name: ${name}
   friendly_name: ${name}
   comment: ${device_description}
+  min_version: 2026.10.0
   project:
     name: "syssi.esphome-seplos-bms"
     version: 1.6.0
@@ -55,6 +56,8 @@ modbus:
 modbus_controller:
   - id: bms0
     address: 0x00
+    # The Seplos V3 firmware answers reads sent to the broadcast address
+    allow_broadcast_read: true
     modbus_id: modbus0
     command_throttle: 200ms
     update_interval: 10s
