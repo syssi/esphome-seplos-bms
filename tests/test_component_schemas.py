@@ -1,9 +1,9 @@
 """Schema structure tests for seplos_bms ESPHome component modules."""
 
-import os
+from pathlib import Path
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import components.seplos_bms as hub  # noqa: E402
 from components.seplos_bms import binary_sensor, sensor, text_sensor  # noqa: E402
