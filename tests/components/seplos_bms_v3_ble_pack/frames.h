@@ -4,6 +4,8 @@
 
 namespace esphome::seplos_bms_v3_ble_pack::testing {
 
+// clang-format off
+
 // PIA frame for pack address 0x01: voltage, current, battery level, cycle count
 // Frame: [device=0x01, function=0x04, data_len=0x22=34, payload(34 bytes), CRC_L, CRC_H]
 // Decoded values:
@@ -65,5 +67,7 @@ static const std::vector<uint8_t> PACK_PIB_FRAME = {
     0x0B, 0x89,                                      // mosfet temp (reg 0x1119)  = 2953 → 22.15 °C
     0x00, 0x00,                                      // CRC placeholder
 };
+
+// clang-format on
 
 }  // namespace esphome::seplos_bms_v3_ble_pack::testing
