@@ -4,13 +4,13 @@ import esphome.config_validation as cv
 from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_BLE_ID, SEPLOS_BMS_BLE_COMPONENT_SCHEMA
+from .const import CONF_DISCHARGING
 
 DEPENDENCIES = ["seplos_bms_ble"]
 
 CODEOWNERS = ["@syssi"]
 
 CONF_CHARGING = "charging"
-CONF_DISCHARGING = "discharging"
 CONF_LIMITING_CURRENT = "limiting_current"
 CONF_ONLINE_STATUS = "online_status"
 
