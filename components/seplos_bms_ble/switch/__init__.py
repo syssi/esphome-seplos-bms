@@ -7,6 +7,7 @@ from .. import (
     SEPLOS_BMS_BLE_COMPONENT_SCHEMA,
     seplos_bms_ble_ns,
 )
+from ..const import CONF_CHARGING, CONF_DISCHARGING
 
 DEPENDENCIES = ["seplos_bms_ble"]
 
@@ -14,8 +15,6 @@ CODEOWNERS = ["@syssi"]
 
 SeplosBmsBle = seplos_bms_ble_ns.class_("SeplosBmsBle")
 
-CONF_DISCHARGING = "discharging"
-CONF_CHARGING = "charging"
 CONF_CURRENT_LIMIT = "current_limit"
 CONF_HEATING = "heating"
 
