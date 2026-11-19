@@ -30,7 +30,7 @@ SWITCHES = {
     CONF_HEATING: 0x08,  # Bit 3 - Heating switch
 }
 
-SeplosSwitch = seplos_bms_ble_ns.class_("SeplosSwitch", switch.Switch, cg.Component)
+SeplosSwitch = seplos_bms_ble_ns.class_("SeplosSwitch", switch.Switch)
 
 CONFIG_SCHEMA = SEPLOS_BMS_BLE_COMPONENT_SCHEMA.extend(
     {
@@ -56,7 +56,6 @@ async def to_code(config):
         if key in config:
             conf = config[key]
             var = await switch.new_switch(conf)
-            await cg.register_component(var, conf)
             cg.add(getattr(hub, f"set_{key}_switch")(var))
             cg.add(var.set_parent(hub))
             cg.add(var.set_holding_register(payload))
