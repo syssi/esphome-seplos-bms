@@ -12,7 +12,6 @@ class SeplosSwitch : public switch_::Switch, public Component {
   void set_parent(SeplosBmsBle *parent) { this->parent_ = parent; };
   void set_holding_register(uint8_t payload) { this->holding_register_ = payload; };
   void dump_config() override;
-  void loop() override {}
   float get_setup_priority() const override { return setup_priority::DATA; }
 
  protected:
