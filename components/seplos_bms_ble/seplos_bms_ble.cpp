@@ -1333,6 +1333,11 @@ void SeplosBmsBle::dump_config() {  // NOLINT(google-readability-function-size,r
   LOG_TEXT_SENSOR("", "Current protection", this->current_protection_text_sensor_);
   LOG_TEXT_SENSOR("", "Temperature protection", this->temperature_protection_text_sensor_);
   LOG_TEXT_SENSOR("", "Alarms", this->alarms_text_sensor_);
+
+  LOG_SWITCH("", "Discharging", this->discharging_switch_);
+  LOG_SWITCH("", "Charging", this->charging_switch_);
+  LOG_SWITCH("", "Current limit", this->current_limit_switch_);
+  LOG_SWITCH("", "Heating", this->heating_switch_);
 }
 
 void SeplosBmsBle::publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {

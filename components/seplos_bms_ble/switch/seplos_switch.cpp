@@ -12,11 +12,6 @@ ESPHOME_LOG_TAG(TAG, "seplos_bms_ble.switch");
 
 static const uint8_t SEPLOS_CMD_SET_MOSFET_CONTROL = 0xAA;
 
-void SeplosSwitch::dump_config() {
-  LOG_SWITCH("", "SeplosBmsBle Switch", this);
-  ESP_LOGCONFIG(TAG, "  Holding register: 0x%02X", this->holding_register_);
-}
-
 void SeplosSwitch::write_state(bool state) {
   if (this->parent_ == nullptr) {
     ESP_LOGW(TAG, "Cannot control switch - parent not set");
