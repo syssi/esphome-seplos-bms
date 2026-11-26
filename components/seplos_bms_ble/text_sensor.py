@@ -5,13 +5,17 @@ from esphome.const import ENTITY_CATEGORY_DIAGNOSTIC
 
 from . import CONF_SEPLOS_BMS_BLE_ID, SEPLOS_BMS_BLE_COMPONENT_SCHEMA
 
+try:
+    from esphome.components.const import CONF_HARDWARE_VERSION
+except ImportError:  # ESPHome < 2026.12.0
+    CONF_HARDWARE_VERSION = "hardware_version"
+
 DEPENDENCIES = ["seplos_bms_ble"]
 
 CODEOWNERS = ["@syssi"]
 
 CONF_SOFTWARE_VERSION = "software_version"
 CONF_DEVICE_MODEL = "device_model"
-CONF_HARDWARE_VERSION = "hardware_version"
 CONF_VOLTAGE_PROTECTION = "voltage_protection"
 CONF_CURRENT_PROTECTION = "current_protection"
 CONF_TEMPERATURE_PROTECTION = "temperature_protection"
